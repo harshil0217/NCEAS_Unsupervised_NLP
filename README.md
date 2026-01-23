@@ -1,6 +1,15 @@
 # NCEAS_Unsupervised_NLP
 NCEAS Project for SS26 Data Science Capstone
 
+## Class Description
+The CMSE 495 data science capstone course is intended to provide students with an opportunity to put together what they have learned across multiple courses to develop a final project that demonstrates their ability to work in a team on real-world problems.
+
+The capstone course has three major goals:
+
+- Provide students with a high impact, end-to-end project experience where they can apply classroom experiences and data science skills to solve real-world problems.
+- Provide students with opportunities to learn and practice professional skills (communication, teamwork and leadership) in the context of team-based projects.
+- Provide opportunities for students and faculty in the department to build relationships and network with industry partners, community organizations, and campus colleagues.
+
 ## Objective
 The objective of the NCEAS_Unsupervised_NLP project is to support the development of improved methods for unsupervised analysis of unstructured textual data in the context of discourse and narratives surrounding US fisheries, particularly the ecologial and social dynamics concerning commericial fishing and government regulation.
 
