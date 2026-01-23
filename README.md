@@ -2,7 +2,7 @@
 NCEAS Project for SS26 Data Science Capstone
 
 ## Objective
-The objective of the NCEAS_Unsupervised_NLP project is to support the development of improved methods for unsupervised analysis of unstructured textual data in the context of discourse and narratives surrounding US fisheries, particularly the ecologial and social dynamics surrounding commericial fishing and government regulation.
+The objective of the NCEAS_Unsupervised_NLP project is to support the development of improved methods for unsupervised analysis of unstructured textual data in the context of discourse and narratives surrounding US fisheries, particularly the ecologial and social dynamics concerning commericial fishing and government regulation.
 
 ## Key Components
 ### Text Scraping and Data Collection
