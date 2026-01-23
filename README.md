@@ -21,6 +21,9 @@ The team will apply a few standard and emerging methods for dimensionality reduc
 ## Authors
 
 [Jisha Goyal](https://github.com/goyaljis)
+
 [Sidharth Rao](https://github.com/CharlieMalick)
+
 [Sukina Alkhalidy](https://github.com/sukaina13)
+
 [Harshil Chidura](https://github.com/harshil0217)
