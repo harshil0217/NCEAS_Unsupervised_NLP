@@ -209,5 +209,7 @@ __marimo__/
 # Data
 *.csv
 *.npy
+*.xlsx
+*.lock
 
 

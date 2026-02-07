@@ -8,7 +8,7 @@ import os
 import sys
 
 # Set the target folder name you want to reach
-target_folder = "phate-for-text"
+target_folder = "src"
 
 # Get the current working directory
 current_dir = os.getcwd()
@@ -26,8 +26,8 @@ os.chdir(current_dir)
 
 # Add the "phate-for-text" directory to sys.path
 sys.path.insert(0, current_dir)
-import openai
-from openai import OpenAI
+
+from groq import Groq
 import pandas as pd
 import numpy as np
 import json
@@ -36,10 +36,12 @@ import re
 from tqdm import tqdm
 import argparse
 import os
-key = os.getenv('GPT_API_KEY')
-openai.api_key=key
-client = OpenAI(api_key=key)
-def generate_hierarchy(topics, theme, terms=None, depth=2, temperature=0.7, model="gpt-4o-mini", num=3,with_synonyms=0,branching="constant",max_num=20):
+
+key = os.getenv('GROQ_API_KEY')
+client = Groq()
+model = 'openai/gpt-oss-120b'
+
+def generate_hierarchy(topics, theme, terms=None, depth=2, temperature=0.7, model=model, num=3,with_synonyms=0,branching="constant",max_num=20):
     """
     Generate hierarchical data using the OpenAI API while maintaining context across API calls.
     """
@@ -48,13 +50,14 @@ def generate_hierarchy(topics, theme, terms=None, depth=2, temperature=0.7, mode
     
     messages_init = [
         {"role": "system", "content": """
-            You generate hierarchical topic structures and maintain consistency across responses.
-            - Subtopics must be **distinct** and **separate** from one another.
-            - Subtopics must be more specific that than the parent but still general
-            - Each subtopic must be **measurable** in magnitude (able to increase or decrease, but does not include whether it is an increase or decrease).
-            - You have flexibility to generate **fewer** subtopics if meaningful distinctions become unclear.
-            - Subtopics should not describe **change itself** (e.g., "fluctuation in X"), but rather be **the thing that changes**.
-            - Subtopics should not merely influence the parent topic but be an sub example or more specific application of the parent.   
+            You are an expert in Social-Ecological Systems (SES) and systems dynamics. You generate hierarchies of measurable variables (stocks and flows), NOT abstract themes.
+                Constraint 1 (Measurability): Every "subtopic" must be a variable that can increase or decrease (e.g., use "Nitrogen Runoff Rate" instead of "Pollution"; use "Household Trust Score" instead of "Social Capital").
+                Constraint 2 (Distinction): Variables must be distinct. "Fish Biomass" and "Fish Count" are too similar; choose one.
+                Task: Expand the Root Variable: "{ROOT_VARIABLE}" (e.g., Coastal Resilience) into a 3-level hierarchy.
+                Level 1: Broad measurable dimensions (e.g., Economic Resource Availability, Ecological Diversity Index).
+                Level 2: Specific component variables (e.g., Local Employment Rate, Mangrove Area Coverage).
+                Level 3: Precise metric indicators (e.g., Percentage of Households with Savings, Sapling Density per Hectare).
+                Output Format: JSON Tree
         """}
     ]
 
@@ -161,6 +164,8 @@ def generate_hierarchy(topics, theme, terms=None, depth=2, temperature=0.7, mode
         nonlocal content_init
 
         current_num = get_dynamic_num(level)
+        print(f"\n{'  ' * (level - 1)}[Level {level}] Expanding: {topic}")
+        
         # Generate subtopics first (without including synonyms yet)
         prompt = f"""
             Expand the given **Parent Topic** into a list of up to **{current_num}** or less specific **subtopics** that:  
@@ -192,7 +197,10 @@ def generate_hierarchy(topics, theme, terms=None, depth=2, temperature=0.7, mode
         )
 
         content = response.choices[0].message.content.strip()
+        print(f"{'  ' * (level - 1)}  → LLM Response: {content[:200]}..." if len(content) > 200 else f"{'  ' * (level - 1)}  → LLM Response: {content}")
+        
         subtopics = parse_json_response(content)
+        print(f"{'  ' * (level - 1)}  → Generated {len(subtopics)} subtopics: {subtopics}")
 
         parent_dict[topic] = {}  # Initialize the topic as a dictionary
 
@@ -343,39 +351,65 @@ with open('data_generation/theme_keys.json', 'r') as file:
     data = json.load(file)
 
 top_level_topics = data[theme]
-file_name = f'data_generation/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise0.0_{branching}.json'
+file_name = f'data_generation/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise0.0_{branching}.csv'
+
+print(f"\n=== Hierarchy Generation Script ===")
+print(f"Theme: {theme}")
+print(f"Temperature: {t}")
+print(f"Max Subtopics: {max_sub}")
+print(f"Depth: {depth}")
+print(f"Synonyms: {with_synonyms}")
+print(f"Branching: {branching}")
+print(f"Add Noise: {add_noise}")
+print(f"\nOutput file: {file_name}")
+print(f"Root topics: {top_level_topics}\n")
 
 if not os.path.exists(file_name):
-
+    print("Hierarchy file not found. Generating new hierarchy...")
     hierarchy = generate_hierarchy(top_level_topics, 
                                 theme, depth=depth, 
                                 temperature=t, 
-                                num=max_sub,model = "gpt-4o",
+                                num=max_sub,model = model,
                                 with_synonyms=with_synonyms,
                                 branching=branching)
     
-    hierarchy =clean_strings(hierarchy)
+    hierarchy = clean_strings(hierarchy)
+    file_name = f'data_generation/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise0.0_{branching}.csv'
 
-    with open(file_name, 'w') as f:
+    # Save JSON version
+    json_file = file_name.replace('.csv', '.json')
+    print(f"Saving JSON hierarchy to: {json_file}")
+    with open(json_file, 'w') as f:
         json.dump(hierarchy, f, indent=2)
 
+    # Convert to DataFrame and save CSV
+    print(f"Converting hierarchy to DataFrame...")
     df = hierarchy_to_df(hierarchy)
-    df.to_csv(f'data_generation/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise0.0_{branching}.csv')
+    print(f"DataFrame shape: {df.shape}")
+    print(f"Saving CSV to: {file_name}")
+    df.to_csv(file_name, index=False)
+    print(f"✓ Hierarchy generation complete!\n")
 else:
+    print(f"Loading existing hierarchy from: {file_name}")
+    df = pd.read_csv(file_name)
+    print(f"Loaded DataFrame shape: {df.shape}\n")
 
-    df = pd.read_csv(f'data_generation/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise0.0_{branching}.csv')
 
-
-if add_noise>0.0:
-    noise_file=f'data_generation/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise{add_noise}_{branching}.csv'
+if add_noise > 0.0:
+    noise_file = f'data_generation/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise{add_noise}_{branching}.csv'
     if not os.path.exists(noise_file):
-        num_noise = int(add_noise*len(df))
-
-        print("Adding Noise!!")
-        for i in tqdm(range(num_noise)):
+        num_noise = int(add_noise * len(df))
+        print(f"=== Adding Noise ===")
+        print(f"Original dataset size: {len(df)}")
+        print(f"Adding {num_noise} synthetic rows...")
+        for i in tqdm(range(num_noise), desc="Generating noise"):
             df = add_noise_row(df, column_name="topic", num_samples=10)
-
-
-        df.to_csv(noise_file)
+        
+        print(f"New dataset size: {len(df)}")
+        print(f"Saving noisy dataset to: {noise_file}")
+        df.to_csv(noise_file, index=False)
+        print(f"✓ Noise addition complete!\n")
+    else:
+        print(f"Noisy dataset already exists: {noise_file}\n")
 
 

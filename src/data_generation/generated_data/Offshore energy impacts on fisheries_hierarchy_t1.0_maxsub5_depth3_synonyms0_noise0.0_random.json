@@ -1,927 +1,809 @@
 {
   "Fish Population Metrics": {
-    "Fish Biomass": {
-      "Trophic Level Biomass Distribution": {
-        "Herbivorous Fish Biomass": {},
-        "Carnivorous Fish Biomass": {}
+    "Adult Fish Abundance Near Turbine Foundations": {
+      "Adult Fish Biomass Density Adjacent to Turbine Foundations (kg\u202fper\u202fm\u00b2)": {
+        "Species\u2011Specific Adult Biomass Density Adjacent to Turbine Foundations (kg\u202fper\u202fm\u00b2)": {},
+        "Mean Adult Fish Body Mass Adjacent to Turbine Foundations (g\u202fper\u202findividual)": {},
+        "Monthly Variation in Adult Biomass Density Adjacent to Turbine Foundations (kg\u202fper\u202fm\u00b2)": {}
       },
-      "Predator-Prey Biomass Ratio": {
-        "Predator Biomass near Offshore Installations": {},
-        "Prey Biomass near Offshore Installations": {}
-      },
-      "Benthic Fish Biomass": {
-        "Habitat Coverage for Benthic Species": {},
-        "Reproductive Rates of Benthic Fish": {},
-        "Juvenile Benthic Fish Survival Rates": {},
-        "Benthic Fish Food Availability": {},
-        "Benthic Habitat Structural Complexity": {}
-      },
-      "Pelagic Fish Biomass": {
-        "Nutrient Availability in Surface Waters": {},
-        "Depth-Integrated Biomass Distribution": {},
-        "Habitat Range Overlapping with Offshore Structures": {},
-        "Spawning Area Biomass Concentration": {}
-      },
-      "Seasonal Biomass Variation": {
-        "Spawning Biomass Accumulation": {},
-        "Juvenile Fish Biomass Growth": {},
-        "Migratory Biomass Flux": {}
-      },
-      "Biomass Density in Habitat Zones": {
-        "Reef Fish Biomass Density": {},
-        "Seagrass Bed Fish Biomass Density": {},
-        "Deep Sea Fish Biomass Density": {}
+      "Adult Fish Encounter Rate in Proximity to Turbine Foundations (individuals per 10\u2011minute transect)": {
+        "Adult Fish Species Diversity Index Near Turbine Foundations (Shannon Index per transect)": {},
+        "Adult Fish Size-Class Proportion Near Turbine Foundations (percentage of individuals >30\u202fcm per transect)": {}
       }
     },
-    "Fish Recruitment Rates": {
-      "Larval Survival Rate": {
-        "Larval Predation Pressure": {},
-        "Larval Food Availability": {},
-        "Larval Habitat Stability": {}
+    "Juvenile Recruitment Rate in Turbine Wake Zones": {
+      "Larval Settlement Success in Turbine Wake Zones": {
+        "Larval Settlement Density in Turbine Wake Zones": {},
+        "Species-Specific Larval Settlement Success Rate in Turbine Wake Zones": {},
+        "Seasonal Timing Index of Larval Settlement within Turbine Wake Zones": {}
       },
-      "Egg Hatching Success": {
-        "Thermal Conditions in Spawning Areas": {},
-        "Hydrodynamic Stability of Spawning Grounds": {},
-        "Sediment Deposition on Egg Beds": {}
+      "Juvenile Growth Rate Within Turbine Wake Zones": {
+        "Juvenile Specific Growth Rate (SGR) within Turbine Wake Zones": {},
+        "Juvenile Body Condition Index in Turbine Wake Areas": {},
+        "Juvenile Metabolic Rate Measured in Turbine Wake Zones": {},
+        "Juvenile Lipid Content Percentage in Turbine Wake": {},
+        "Juvenile Otolith Increment Width in Turbine Wake": {},
+        "Juvenile Feeding Frequency in Turbine Wake Zones": {},
+        "Juvenile Energy Allocation Ratio to Somatic Growth in Turbine Wake": {},
+        "Juvenile Cortisol Concentration in Turbine Wake Zones": {}
       },
-      "Juvenile Growth Rate": {
-        "Feeding Efficiency": {},
-        "Metabolic Rate": {},
-        "Habitat Accessibility": {},
-        "Predation Pressure": {},
-        "Nutrient Availability": {},
-        "Genetic Variability": {}
-      },
-      "Nursery Habitat Availability": {
-        "Seagrass Bed Extent": {},
-        "Coral Reef Coverage": {},
-        "Kelp Forest Density": {},
-        "Mangrove Forest Area": {},
-        "Salt Marsh Size": {},
-        "Estuarine Zone Area": {}
-      },
-      "Environmental Suitability for Early Life Stages": {
-        "Water Temperature Variability": {},
-        "Oxygen Level Stability": {},
-        "Salinity Balance": {},
-        "Predation Pressure on Larvae": {},
-        "Habitat Complexity": {},
-        "Food Availability for Larvae": {}
-      }
-    },
-    "Fish Age Structure": {
-      "Proportion of Juvenile Fish": {
-        "Juvenile Fish Growth Rate": {},
-        "Juvenile Fish Habitat Availability": {}
-      },
-      "Proportion of Mature Fish": {
-        "Size Distribution of Mature Fish": {},
-        "Reproductive Output of Mature Fish": {},
-        "Growth Rates of Mature Fish": {},
-        "Health and Condition of Mature Fish": {},
-        "Mortality Rates of Mature Fish": {}
-      },
-      "Age-Class Distribution Diversity": {
-        "Age-Class Range Variability": {},
-        "Evenness of Age Distribution": {},
-        "Age-Class Representation Balance": {}
-      }
-    },
-    "Fish Distribution Patterns": {
-      "Geographic Range Shifts": {
-        "Latitude Dispersion": {},
-        "Regional Occupancy Rate": {},
-        "Proximity to Offshore Structures": {}
-      },
-      "Depth Distribution Variability": {
-        "Vertical Migration Patterns": {},
-        "Thermal Layer Occupancy": {},
-        "Nutrient Zone Utilization": {},
-        "Light Penetration Zone Occupancy": {},
-        "Pressure Tolerance Distribution": {}
-      },
-      "Habitat Utilization Changes": {
-        "Species-Specific Habitat Preference": {},
-        "Availability of Shelter Habitat": {},
-        "Proximity to Food Resources": {},
-        "Reproductive Site Utilization": {}
-      },
-      "Seasonal Migration Alteration": {
-        "Migration Timing Shifts": {},
-        "Migration Route Changes": {},
-        "Migration Group Size Variation": {}
-      },
-      "Aggregation Density Variation": {
-        "Spatial Distribution Consistency": {},
-        "Reproductive Aggregation Frequency": {},
-        "Predator Avoidance Clustering": {},
-        "Food Availability Clustering": {},
-        "Population Density Hotspots": {}
-      }
-    },
-    "Spawning Stock Size": {
-      "Reproductive Maturity Rates": {
-        "Age at Reproductive Maturity": {},
-        "Percentage of Individuals Reaching Maturity": {},
-        "Proportion of Mature Individuals in Population": {},
-        "Maturation Size": {},
-        "Genetic Diversity in Maturation Traits": {}
-      },
-      "Egg Production Capacity": {
-        "Yolk Quality": {},
-        "Egg Size": {},
-        "Fecundity Rate": {},
-        "Larval Viability": {},
-        "Spawning Ground Quality": {}
-      },
-      "Spawning Habitat Area": {
-        "Seafloor Roughness": {},
-        "Underwater Noise Levels": {}
-      },
-      "Spawning Frequency": {
-        "Duration of Spawning Seasons": {},
-        "Number of Spawning Per Cycle": {},
-        "Spawning Group Size": {}
-      }
-    },
-    "Fish Mortality Rates": {
-      "Species-specific Mortality": {
-        "Habitat Displacement": {},
-        "Thermal Stress": {}
-      },
-      "Age-specific Mortality": {
-        "Spawning Success Rates": {},
-        "Juvenile Growth Rates": {},
-        "Maturity Age Distribution": {},
-        "Larval Survival": {},
-        "Adult Longevity": {}
-      }
-    },
-    "Species Composition": {
-      "Species Richness": {
-        "Number of Endemic Fish Species": {},
-        "Diversity of Habitat Preferences Among Fish": {},
-        "Variety of Trophic Levels Represented": {},
-        "Range of Fish Morphological Traits": {},
-        "Variety of Migratory Fish Species": {}
-      },
-      "Species Evenness": {
-        "Distribution of Fish Age Classes": {},
-        "Relative Abundance of Non-native Species": {},
-        "Diversity of Fish Trophic Levels": {},
-        "Balance of Predatory and Non-predatory Species": {}
-      },
-      "Dominance of Invasive Species": {
-        "Invasive Species Biomass Relative to Native Species": {},
-        "Invasive Species Reproduction Rates": {},
-        "Invasive Predation on Native Fish": {}
-      },
-      "Genetic Diversity within Species": {
-        "Allele Frequency Variety": {},
-        "Genetic Drift Degree": {},
-        "Subpopulation Differentiation": {},
-        "Gene Flow Rate": {},
-        "Inbreeding Levels": {},
-        "Genetic Mutation Rates": {}
-      },
-      "Proportion of Demersal Species": {
-        "Age Structure of Demersal Species": {},
-        "Reproductive Rate of Demersal Species": {},
-        "Spatial Distribution of Demersal Fish": {},
-        "Juvenile Recruitment of Demersal Species": {},
-        "Mortality Rate of Demersal Species": {},
-        "Biomass of Demersal Species": {}
-      },
-      "Presence of Sensitive Indicator Species": {
-        "Habitat Suitability Index": {},
-        "Species Condition Factor": {},
-        "Breeding Ground Accessibility": {},
-        "Feeding Habitat Quality": {},
-        "Nursery Habitat Area": {}
+      "Habitat Utilization Frequency of Juvenile Fish in Turbine Wakes": {
+        "Mean Residence Time of Juvenile Fish in Turbine Wake Zones (seconds)": {},
+        "Proportion of Juvenile Fish Observed in Turbine Wake Habitat (%)": {},
+        "Species\u2011Specific Utilization Frequency of Turbine Wakes (occurrences per observation hour)": {},
+        "Depth Range Utilized by Juvenile Fish Within Turbine Wakes (meters)": {},
+        "Diurnal Utilization Ratio of Turbine Wakes (day/night visits)": {},
+        "Seasonal Variation in Juvenile Fish Wake Utilization (visits per month)": {},
+        "Habitat Preference Index for Turbine Wake Zones (scaled 0\u20111)": {},
+        "Overlap Percentage of Juvenile Fish Movement Paths with Turbine Wakes (%)": {}
       }
     }
   },
   "Fishing Effort & Utilization": {
-    "Vessel Count in Fishing Areas": {
-      "Number of Active Fishing Vessels": {
-        "Vessel Operational Days": {},
-        "Fishing Trip Frequency": {},
-        "Crew Size on Vessels": {},
-        "Fuel Consumption per Vessel": {}
+    "Vessel Hours Spent Fishing in Offshore Energy Lease Areas": {
+      "Total Vessel Hours per Day in Offshore Energy Lease Zones": {
+        "Total Vessel Hours per Day in Lease Zones by Vessel Size Class (e.g., <12\u202fm, 12\u201124\u202fm, >24\u202fm)": {},
+        "Total Vessel Hours per Day in Lease Zones during Peak Energy Production Hours": {},
+        "Total Vessel Hours per Day in Lease Zones under Specific Weather Conditions (e.g., wind speed <5\u202fkt vs. >15\u202fkt)": {},
+        "Total Vessel Hours per Day in Lease Zones adjacent to Different Energy Infrastructure Types (e.g., wind turbine arrays vs. oil & gas platforms)": {},
+        "Total Vessel Hours per Day in Lease Zones by Primary Fishing Objective (e.g., target species harvest vs. by\u2011catch mitigation)": {},
+        "Total Vessel Hours per Day in Lease Zones during Scheduled Maintenance or Shutdown Periods": {}
       },
-      "Presence of Non-local Vessels": {
-        "Distance Traveled by Non-local Vessels": {},
-        "Duration of Stay in Fishing Grounds by Non-local Vessels": {}
+      "Vessel Hours by Gear Type within Lease Areas (e.g., Trawl, Longline, Gillnet)": {
+        "Gear-Type Share of Vessel Hours in Lease Areas": {},
+        "Average Continuous Fishing Duration per Vessel for Each Gear Type within Lease Areas": {},
+        "Number of Gear-Type Switches per Vessel per Day in Lease Areas": {},
+        "Proportion of Gear-Specific Vessel Hours Within 1\u202fkm of Energy Infrastructure Foundations": {}
       },
-      "Vessel Capacity Utilization": {
-        "Gear Allocation Efficiency": {},
-        "Fishing Capacity Density": {},
-        "Trip Duration Frequency": {}
+      "Average Daily Vessel Hours per Active Fishing Vessel in Lease Zones": {
+        "Average Daily Vessel Hours per Active Fishing Vessel during Offshore Energy Construction Periods in Lease Zones": {},
+        "Average Daily Vessel Hours per Active Fishing Vessel within 500\u202fm of Operational Offshore Energy Installations in Lease Zones": {}
       },
-      "Vessel Registration Variability": {
-        "Frequency of Vessel Registration Updates": {},
-        "Diversity in Vessel Ownership": {},
-        "Regional Distribution of Registered Vessels": {},
-        "Types of Registration Categories": {},
-        "Duration of Active Registrations": {},
-        "Proportion of Renewable Energy Vessels": {}
+      "Proportion of Vessel Hours Occurring Within 3\u202fkm Radius of Lease Boundaries": {
+        "Proportion of Vessel Hours Within 3\u202fkm of Active Lease Boundaries": {},
+        "Proportion of Vessel Hours Within 3\u202fkm of Decommissioned Lease Sites": {},
+        "Proportion of Vessel Hours Within 3\u202fkm Buffer Occurring at Night (00:00\u201106:00)": {},
+        "Proportion of Vessel Hours Within 3\u202fkm Buffer Conducted by Vessels >\u202f30\u202fgt": {},
+        "Proportion of Vessel Hours Within 3\u202fkm Buffer Classified as Fishing Versus Transit": {},
+        "Proportion of Vessel Hours Within 3\u202fkm Buffer Overlapping Multiple Lease Zones": {},
+        "Proportion of Vessel Hours Within 3\u202fkm Buffer in Areas with Turbine Density >\u202f5\u202fturbines\u202fper\u202fkm\u00b2": {}
       },
-      "Concentration of Vessel Types": {
-        "Proportion of Trawl Vessels": {},
-        "Density of Longline Vessels": {},
-        "Prevalence of Jigging Vessels": {},
-        "Dominance of Pot Fishing Vessels": {}
-      },
-      "Vessel Turnover Rates": {
-        "Frequency of Vessel Replacement": {},
-        "Seasonal Switching of Vessel Roles": {},
-        "Transfer of Vessel Ownership": {},
-        "Vessel Decommissioning Rates": {},
-        "Fleet Modernization Activities": {}
+      "Seasonal Distribution of Vessel Hours in Lease Areas (Quarterly Vessel Hours)": {
+        "Quarterly Vessel Hours in Lease Areas for Domestic\u2011Registered Vessels": {},
+        "Quarterly Vessel Hours in Lease Areas for Foreign\u2011Flagged Vessels": {}
       }
     },
-    "Fishing Gear Type Usage": {
-      "Selectivity of Fishing Gear": {
-        "Mesh Size Variation": {},
-        "Bycatch Composition": {},
-        "Target Species Catch Rate": {},
-        "Depth of Gear Deployment": {},
-        "Seasonal Gear Adjustment": {},
-        "Non-target Species Selectivity": {},
-        "Size Selectivity in Gear": {}
+    "Number of Fishing Trips Originating from Ports Adjacent to Offshore Energy Sites": {
+      "Monthly Count of Fishing Trips Departing from Ports Adjacent to Offshore Energy Sites": {
+        "Monthly Count of Trips Restricted by Offshore Energy Exclusion Zones": {},
+        "Monthly Count of Trips Shifted to Alternative Fishing Grounds due to Energy Site Proximity": {},
+        "Monthly Count of Trips Using Vessels Equipped with Offshore Energy Navigation Aids": {},
+        "Monthly Count of Trips Initiated Within Scheduled Offshore Energy Maintenance Windows": {},
+        "Monthly Count of Trips Reporting Gear\u2011Conflict Incidents Near Energy Infrastructure": {}
       },
-      "Adaptation of Gear to Offshore Conditions": {
-        "Resilience of Fishing Gear Materials": {},
-        "Deployment Depth Capabilities": {},
-        "Gear Design Innovation for Stability": {},
-        "Efficiency in Gear Retrieval": {},
-        "Compatibility with Offshore Currents": {}
+      "Share of Departing Trips by Vessel Category from Adjacent Ports": {
+        "Share of Departing Trips by Vessel Category Operating Within 5\u202fkm of Offshore Energy Installations": {},
+        "Share of Departing Trips by Vessel Category Utilizing Passive Fishing Gear from Adjacent Ports": {}
+      },
+      "Average Travel Distance per Trip from Adjacent Ports to Offshore Energy Installations": {
+        "Mean Straight-Line Distance from Port to Nearest Offshore Energy Installation": {},
+        "Average Additional Distance Due to Navigational Exclusion Zones Around Installations": {},
+        "Average Travel Distance by Vessel Size Category (Small, Medium, Large) from Adjacent Ports": {},
+        "Mean Round-Trip Distance per Fishing Trip Including Energy Installation Visits": {},
+        "Average Travel Distance Variation with Seasonal Sea\u2011State Conditions": {}
+      },
+      "Proportion of Trips Targeting Structure\u2011Associated Species from Adjacent Ports": {
+        "Proportion of trips employing gear designed for structure\u2011associated species from adjacent ports": {},
+        "Average catch weight of structure\u2011associated species per trip from adjacent ports": {},
+        "Proportion of trips reporting at least one encounter with offshore wind turbine foundations": {},
+        "Average depth range utilized during trips targeting structure\u2011associated species from adjacent ports": {},
+        "Share of trips that list a structure\u2011associated species as the primary target": {},
+        "Frequency of trips that schedule departure to align with offshore structure activity windows": {}
+      },
+      "Average Duration of Fishing Trips Originating from Adjacent Ports": {
+        "Mean On\u2011Water Fishing Time per Trip from Adjacent Ports": {},
+        "Average Time Spent Traveling to Offshore Energy Sites per Trip": {},
+        "Proportion of Trip Duration Allocated to Energy\u2011Related Monitoring Activities": {},
+        "Average Rest Period Length Between Fishing Operations Within a Trip": {},
+        "Mean Duration of Trips Conducted During Offshore Energy Construction Phases": {},
+        "Average Duration of Multi\u2011Day Trips Originating from Adjacent Ports": {},
+        "Typical Time Spent Fishing within 5\u202fkm of Offshore Structures per Trip": {},
+        "Average Duration of Trips by Vessel Length Class from Adjacent Ports": {}
+      },
+      "Seasonal Variation Index of Trips Leaving Adjacent Ports": {
+        "Seasonal Variation in Fuel Use per Trip from Adjacent Ports": {},
+        "Seasonal Variation in Gear Type Proportion among Trips from Adjacent Ports": {},
+        "Seasonal Variation in Average Crew Count per Trip from Adjacent Ports": {},
+        "Seasonal Variation in Port Preparation Time before Departure": {},
+        "Seasonal Variation in Fishing Hours per Trip from Adjacent Ports": {}
       }
     },
-    "Fishing Trip Duration": {
-      "Distance Traveled During Fishing Trips": {
-        "Range of Fishing Locations": {},
-        "Fuel Consumption for Fishing Ventures": {},
-        "Access to Remote Fishing Zones": {}
+    "Gear Deployment Density Near Offshore Wind Turbine Foundations": {
+      "Average gear set count per turbine foundation": {
+        "Average gear set duration per turbine foundation (hours per set)": {},
+        "Average number of distinct fishing vessels operating per turbine foundation": {},
+        "Average haul weight per gear set at turbine foundations (kg per set)": {},
+        "Average proportion of passive gear deployments per turbine foundation (%)": {},
+        "Average compliance rate of gear set reporting near turbine foundations (%)": {}
       },
-      "Time Spent at Fishing Grounds": {
-        "Duration of Fishing Activity": {},
-        "Hours of Peak Fishing Effort": {},
-        "Length of Time Engaged in Gear Deployment": {},
-        "Time Allocated for Navigating Between Fishing Sites": {},
-        "Time Spent on Catch Processing Aboard": {}
+      "Proportion of trawl gear deployments within 500\u202fm of turbine foundations": {
+        "Seasonal proportion of trawl gear deployments within 500\u202fm of turbine foundations": {},
+        "Proportion of trawl gear deployments within 500\u202fm of turbine foundations by vessel size class": {}
       },
-      "Frequency of Fishing Trips Linked to Offshore Energy Areas": {
-        "Number of Vessels Engaged in Fishing": {},
-        "Fishing Hours Allocated to Offshore Areas": {},
-        "Frequency of Fish Catch Assessments Linked to Energy Areas": {},
-        "Overlap of Fishing Routes with Energy Installations": {}
+      "Mean vertical depth of gear deployments adjacent to turbine structures": {
+        "Average operating depth of bottom\u2011trawl gear within 500\u202fm of turbine foundations": {},
+        "Median depth of gillnet deployments adjacent to turbine structures": {},
+        "Depth range (maximum\u202f\u2013\u202fminimum) of gear deployments near turbines": {},
+        "Proportion of gear deployments occurring below the thermocline near turbine sites": {},
+        "Standard deviation of gear deployment depth adjacent to turbine foundations": {},
+        "Mean depth of gear deployments during peak fishing season near turbines": {},
+        "Frequency of gear deployments in the epipelagic zone (0\u2011200\u202fm) adjacent to turbines": {},
+        "Depth of gear deployment relative to turbine monopile tip (meters below monopile tip)": {}
+      },
+      "Temporal frequency of gear redeployment events near turbine foundations (events per month)": {
+        "Monthly count of distinct fishing vessels performing gear redeployments near turbine foundations (vessels per month)": {},
+        "Seasonal amplitude of gear redeployment frequency near turbine foundations (difference between peak and trough months, events per month)": {},
+        "Average interval between successive gear redeployment events near turbine foundations (days between events)": {}
+      },
+      "Spatial overlap percentage between gear deployment zones and turbine foundation footprints": {
+        "Percentage of total fishing effort hours occurring within turbine foundation influence zones": {},
+        "Proportion of cumulative vessel track length intersecting turbine foundation buffer areas": {},
+        "Gear area overlap ratio: fishing gear coverage area divided by turbine foundation footprint area": {},
+        "Spatial density of gear deployments (sets per square kilometer) inside turbine foundation zones": {},
+        "Fraction of fishing days spent operating inside turbine foundation footprints": {}
+      },
+      "Incidence rate of gear entanglement incidents with turbine foundations (incidents per 1,000 gear sets)": {
+        "Percentage of gear sets equipped with entanglement\u2011release devices": {},
+        "Average duration of gear deployment per set (hours)": {},
+        "Proportion of vessels operating within 1\u202fkm of turbine foundations": {},
+        "Seasonal fishing effort near turbine foundations (fishing\u2011hours per month)": {},
+        "Fisher compliance rate with turbine exclusion zones (%)": {},
+        "Frequency of post\u2011entanglement gear retrieval attempts (attempts per 1,000 gear sets)": {},
+        "Use rate of acoustic deterrent systems on gear (percent of gear sets)": {}
       }
     },
-    "Fishing Area Coverage": {
-      "Spatial Overlap with Energy Installations": {
-        "Fishing Effort Density": {},
-        "Fishing Gear Deployment": {},
-        "Vessel Traffic Intensity": {},
-        "Spatial Allocation of Fishing Zones": {}
+    "Catch per Unit Effort (CPUE) Within 5\u202fkm of Offshore Energy Installations": {
+      "Species\u2011specific CPUE for demersal fish within 5\u202fkm of offshore energy installations": {
+        "Quarterly CPUE for target demersal species within 5\u202fkm of offshore energy installations": {},
+        "CPUE of juvenile versus adult demersal fish within 5\u202fkm of offshore energy installations": {},
+        "Monthly CPUE trend for demersal fish within 5\u202fkm of offshore energy installations": {},
+        "CPUE under open\u2011access versus regulated zones within 5\u202fkm of offshore energy installations": {},
+        "CPUE per fishing\u2011trip hour for demersal fish within 5\u202fkm of offshore energy installations": {},
+        "CPUE by fleet ownership type (industrial vs. artisanal) within 5\u202fkm of offshore energy installations": {},
+        "Proportion of young\u2011of\u2011year fish in CPUE samples for demersal species within 5\u202fkm of offshore energy installations": {}
       },
-      "Access to Traditional Fishing Sites": {
-        "Navigability of Fishing Areas": {},
-        "Physical Barriers to Fishing Sites": {},
-        "Seasonal Access Variability": {},
-        "Cultural Site Preservation Impact": {},
-        "Fishing Zone Legal Designation": {},
-        "Infrastructure Development on Shorelines": {},
-        "Availability of Entry Points": {},
-        "Competition for Site Access": {}
+      "Gear\u2011type CPUE (e.g., trawl vs. hook\u2011and\u2011line) within 5\u202fkm of offshore energy installations": {
+        "Seasonal gear\u2011type CPUE patterns within 5\u202fkm of offshore energy installations": {},
+        "Gear\u2011type CPUE variation by mesh size (trawl) or hook size (hook\u2011and\u2011line) within 5\u202fkm of offshore energy installations": {},
+        "Substrate\u2011specific gear\u2011type CPUE (sandy vs. rocky bottoms) within 5\u202fkm of offshore energy installations": {},
+        "Wind\u2011condition\u2011linked gear\u2011type CPUE (high vs. low wind speed periods) within 5\u202fkm of offshore energy installations": {},
+        "Fishing\u2011effort\u2011intensity linked gear\u2011type CPUE (hours fished per day) within 5\u202fkm of offshore energy installations": {}
       },
-      "Exclusion Zones due to Energy Development": {
-        "Fishing Effort Redistribution": {},
-        "Fishing Gear Adaptation": {}
+      "Depth\u2011stratified CPUE (e.g., 0\u201130\u202fm, 30\u201160\u202fm) within 5\u202fkm of offshore energy installations": {
+        "Seasonal variation in depth\u2011stratified CPUE (e.g., spring vs. autumn) within 5\u202fkm of offshore energy installations": {},
+        "Depth\u2011stratified CPUE by fishing fleet type (small\u2011scale vs. industrial) within 5\u202fkm of offshore energy installations": {},
+        "Depth\u2011stratified CPUE standardized per fishing\u2011hour within 5\u202fkm of offshore energy installations": {}
+      },
+      "Diurnal CPUE variation (day versus night) within 5\u202fkm of offshore energy installations": {
+        "Hourly CPUE Ratio (Night\u202f/\u202fDay) within 5\u202fkm of offshore energy installations": {},
+        "Proportion of total fishing effort allocated to night\u2011time within 5\u202fkm of offshore energy installations": {},
+        "Average fishing\u2011trip duration during daylight versus darkness within 5\u202fkm of offshore energy installations": {},
+        "Mean start time of fishing activity (temporal shift in vessel arrival) within 5\u202fkm of offshore energy installations": {}
+      },
+      "CPUE during turbine operational periods versus scheduled maintenance periods within 5\u202fkm of offshore energy installations": {
+        "Seasonal CPUE variation between turbine operational and maintenance periods within\u202f5\u202fkm": {},
+        "Distance\u2011gradient CPUE (e.g., 0\u20112\u202fkm vs 2\u20115\u202fkm from turbines) during operational versus maintenance periods": {},
+        "Daily fishing effort intensity (hours fished per vessel) during turbine operational versus maintenance periods within\u202f5\u202fkm": {},
+        "CPUE response to turbine start\u2011up and shut\u2011down events (pre\u2011operational, active, post\u2011maintenance) within\u202f5\u202fkm": {}
+      },
+      "CPUE by vessel size class (e.g., <12\u202fm, 12\u201124\u202fm, >24\u202fm) within 5\u202fkm of offshore energy installations": {
+        "Seasonal variation in CPUE by vessel size class within 5\u202fkm of offshore energy installations": {},
+        "CPUE by vessel size class at incremental distance bands (0\u20111\u202fkm, 1\u20113\u202fkm, 3\u20115\u202fkm) from offshore energy installations": {},
+        "CPUE by vessel size class under different wind\u2011speed conditions near offshore energy installations": {},
+        "CPUE by vessel size class during distinct sea\u2011state categories (calm, moderate, rough) within 5\u202fkm of offshore energy installations": {}
       }
     },
-    "Catch Per Unit Effort": {
-      "Effort Allocation in Offshore Areas": {
-        "Vessel Density in Offshore Fishing Zones": {},
-        "Fishing Gear Deployment Offshore": {},
-        "Fishing Hours Spent in Offshore Regions": {},
-        "Seasonal Allocation Patterns in Offshore Fishing": {},
-        "Species Targeting Focus in Offshore Areas": {},
-        "Crew Size Utilization for Offshore Expeditions": {}
+    "Seasonal Fishing Effort Shift Index Relative to Offshore Energy Construction Phase": {
+      "Proportion of Seasonal Fishing Hours Within Construction Buffer Zones": {
+        "Seasonal Fishing Hours Logged Inside Construction Buffer Zones": {},
+        "Proportion of Active Fishing Vessels Present in Buffer Zones During Construction Season": {},
+        "Average Frequency of Fishing Set\u2011downs Occurring Within Buffer Zones per Season": {},
+        "Seasonal Ratio of Night\u2011time Fishing Hours to Total Fishing Hours Within Buffer Zones": {}
       },
-      "Catch Rates at Offshore Energy Sites": {
-        "Target Species Presence": {},
-        "Fishing Gear Efficiency": {},
-        "Seasonal Catch Variability": {},
-        "Bycatch Rates": {}
-      }
-    },
-    "Seasonal Fishing Activity": {
-      "Seasonal Shift in Fishing Grounds": {
-        "Duration of Fishing Operations": {},
-        "Concentration of Fishing Vessels": {},
-        "Distance Travelled to Fishing Grounds": {},
-        "Variety of Fishing Techniques Employed": {},
-        "Diversity of Targeted Species": {},
-        "Adaption of Fishing Equipment": {},
-        "Timing of Fishing Efforts": {},
-        "Allocation of Crew Resources": {}
+      "Average Seasonal Fishing Trip Length During Construction Phase": {
+        "Average Trip Duration (hours) per Seasonal Fishing Trip during Construction Phase": {},
+        "Average Distance Traveled per Seasonal Fishing Trip (kilometers) during Construction Phase": {},
+        "Average Number of Fishing Locations Visited per Seasonal Trip during Construction Phase": {},
+        "Average Non\u2011Fishing Travel Time per Seasonal Trip (hours) during Construction Phase": {}
       },
-      "Seasonal Allocation of Fishing Quotas": {
-        "Quota Distribution by Species": {},
-        "Fishing Hours Utilization": {},
-        "Temporal Quota Caps": {},
-        "Quota Exchange Volumes": {}
-      }
-    },
-    "Technological Advancements in Fishing Methods": {
-      "Sonar and Fish-Finding Technology": {
-        "Sonar Signal Precision": {},
-        "Detection Range Extension": {},
-        "Operator Skill in Sonar Utilization": {},
-        "Energy Consumption of Fish-Finding Devices": {}
+      "Seasonal Percentage of Fishers Switching Target Species Due to Construction Activities": {
+        "Seasonal Proportion of Fishers Adopting Alternative Gear Types During Construction": {},
+        "Seasonal Share of Fishing Vessels Changing Landing Sites Due to Construction": {},
+        "Seasonal Rate of Fishers Entering Non\u2011Target Species Markets Because of Construction": {},
+        "Seasonal Percentage of Fishers Reducing Trip Frequency While Switching Target Species": {}
       },
-      "Automated Fishing Equipment": {
-        "Robotic Fishing Gear Deployment": {},
-        "Automated Net Retrieval Systems": {},
-        "AI-Controlled Trawl Efficiency": {},
-        "Mechanized Line Setting": {},
-        "Automated Fish Sorting and Processing": {}
+      "Seasonal Rate of Temporary Fishing Area Relocations": {
+        "Count of Temporary Fishing Area Relocations per Season": {},
+        "Average Relocation Distance per Seasonal Move": {},
+        "Proportion of Active Fishers Relocating Seasonally": {},
+        "Median Duration of Relocated Fishing Periods per Season": {}
       },
-      "Advanced Navigation Systems": {
-        "Route Efficiency": {},
-        "Time at Sea": {},
-        "Fuel Consumption": {},
-        "Fishing Zone Precision": {}
-      },
-      "Remote Sensing for Fish Detection": {
-        "Satellite Imagery Analysis for Fish Presence": {},
-        "Thermal Mapping for Fish Aggregation Zones": {},
-        "Hydrological Data Integration for Fish Movement": {},
-        "Optical Sensor Calibration for Fish Detection": {},
-        "Remote Sensing Data Accuracy in Offshore Sites": {}
-      },
-      "Electric and Hybrid Propulsion Systems": {
-        "Range of Fishing Operations": {},
-        "Fuel Consumption Efficiency": {},
-        "Maintenance Requirements": {},
-        "Vessel Noise Levels": {},
-        "Operational Cost Dynamics": {}
-      },
-      "Drones for Monitoring and Survey": {
-        "Survey Coverage Area by Drones": {},
-        "Data Collection Frequency using Drones": {},
-        "Drone Operational Efficiency in Offshore Monitoring": {}
-      },
-      "Biometric Monitoring for Bycatch Reduction": {
-        "Bycatch Monitoring Technology Implementation": {},
-        "Data Collection Frequency": {},
-        "Observer Coverage Levels": {},
-        "Non-Target Species Identification Accuracy": {},
-        "Real-Time Data Processing Capacity": {}
+      "Seasonal Index of Fishing Effort Concentration Shift Relative to Construction Milestones": {
+        "Seasonal Index of Vessel Spatial Overlap with Construction Activity Zones": {},
+        "Seasonal Change in Average Fishing Depth Relative to Construction Milestones": {},
+        "Seasonal Variation in Frequency of Fishing Trips Initiated Within 48\u202fHours of Construction Vessel Passes": {},
+        "Seasonal Shift in Gear Deployment Intensity Near Turbine Foundations": {},
+        "Seasonal Ratio of Night\u2011time Fishing Effort to Day\u2011time Effort During Construction Phase": {},
+        "Seasonal Change in Number of Active Fishing Licenses Operating Within Construction Influence Radius": {},
+        "Seasonal Index of Fishing Effort Redistribution to Adjacent Management Areas Following Construction Milestones": {},
+        "Seasonal Fluctuation in Average Time Spent per Fishing Patch Within Construction Proximity": {}
       }
     }
   },
   "Governance Effectiveness & Stakeholder Engagement": {
-    "Stakeholder Representation in Decision-Making": {
-      "Inclusivity of Fishing Communities": {
-        "Community Representation in Decision-Making": {},
-        "Access to Consultation Platforms": {},
-        "Equitability of Resource Allocation": {},
-        "Support for Community Capacity Building": {}
+    "Stakeholder Consultation Frequency": {
+      "Annual number of formal consultation meetings with commercial fishers": {
+        "Count of formal consultation meetings that incorporate offshore energy impact assessments": {},
+        "Proportion of meeting agenda items dedicated to offshore energy impact discussions": {}
       },
-      "Participation of Indigenous Groups": {
-        "Representation in Policy-making Forums": {},
-        "Access to Consultation Processes": {},
-        "Involvement in Decision-making Structures": {}
+      "Quarterly multi\u2011stakeholder workshops on offshore energy site selection": {
+        "Stakeholder Attendance Rate at Quarterly Workshops": {},
+        "Number of Actionable Recommendations Produced per Workshop": {}
       },
-      "Diversity of Advisory Panels": {
-        "Representation of Marine Scientists": {},
-        "Inclusion of Energy Sector Experts": {},
-        "Cultural Diversity Among Panel Members": {},
-        "Representation of Local Government Officials": {},
-        "Participation of Environmental NGOs": {}
+      "Count of public hearing sessions on marine spatial planning per year": {
+        "Number of distinct stakeholder categories represented in public hearing sessions per year": {},
+        "Average number of public comments submitted per hearing session": {},
+        "Proportion of public hearing sessions that are publicly streamed or recorded": {}
+      },
+      "Frequency of advisory panel convenings that include local community representatives": {
+        "Annual count of advisory panel meetings that include local community representatives in offshore\u2011energy impact zones": {},
+        "Average number of local community representatives attending each advisory panel meeting": {},
+        "Percentage of advisory panel meetings that allocate dedicated agenda time to fisheries impact discussion": {},
+        "Number of follow\u2011up action items generated from advisory panel meetings with local community participation": {}
+      },
+      "Number of stakeholder feedback submissions received after each offshore project proposal": {
+        "Average length of stakeholder feedback submissions (words) per offshore project proposal": {},
+        "Proportion of feedback submissions that specifically address fisheries impact mitigation": {},
+        "Median time (days) between offshore project proposal release and receipt of stakeholder feedback": {}
+      },
+      "Average interval (in months) between successive stakeholder consultation cycles": {
+        "Mean interval (months) between successive offshore wind stakeholder consultation rounds": {},
+        "Average lag (months) between consecutive offshore oil and gas project public comment periods": {},
+        "Typical time span (months) separating successive multi\u2011stakeholder advisory board sessions on offshore energy\u2011fisheries interaction": {}
+      },
+      "Proportion of identified stakeholder groups that are invited to each consultation round": {
+        "Percentage of small\u2011scale fishers\u2019 associations invited to each consultation round": {},
+        "Share of indigenous community groups receiving invitations per consultation cycle": {},
+        "Proportion of environmental NGOs invited to each stakeholder consultation": {},
+        "Rate at which newly identified stakeholder groups are added to the invitation list per planning period": {}
       }
     },
-    "Transparency in Policy Implementation": {
-      "Access to Policy Documentation": {
-        "Availability of Offshore Energy Policy Records": {},
-        "Comprehensiveness of Fisheries Impact Assessments": {},
-        "Timeliness of Document Releases": {},
-        "Extent of Stakeholder Input in Policy Formation": {}
+    "Policy Implementation Compliance Rate": {
+      "Regulatory Enforcement Action Rate": {
+        "Offshore Energy Permit Inspection Frequency": {},
+        "Formal Enforcement Notice Issuance Rate": {},
+        "Average Enforcement Response Time": {},
+        "Stakeholder Conflict Resolution Rate": {}
       },
-      "Clarity in Communication of Objectives": {
-        "Consistency in Strategic Messaging": {},
-        "Specificity in Project Goals": {},
-        "Transparency in Decision-Making Rationales": {},
-        "Alignment of Stakeholder Priorities": {},
-        "Comprehensibility of Communication Channels": {}
+      "Permit Violation Penalty Collection Rate": {
+        "Average Permit Review Processing Time (days)": {},
+        "Stakeholder Consultation Participation Rate (%)": {},
+        "Number of Permit Violation Penalty Appeals": {},
+        "Revenue Collected from Permit Violation Penalties (USD)": {},
+        "Percentage of Collected Penalties Reinvested in Fisheries Mitigation Programs": {},
+        "Frequency of Compliance Monitoring Reports Submitted (reports per quarter)": {}
+      }
+    },
+    "Governance Transparency Index": {
+      "Public Disclosure Rate of Offshore Energy Licensing Decisions": {
+        "Stakeholder Participation Rate in Offshore Energy Licensing Hearings (%)": {},
+        "Number of Public Comment Submissions per Licensing Decision": {},
+        "Percentage of Licensing Decisions Published with Full Environmental Impact Summary (%)": {},
+        "Technical Jargon Density in Licensing Decision Documents (terms per\u202f1,000\u202fwords)": {},
+        "Frequency of Updates to Licensing Decision Status on Official Web Portal (updates per month)": {},
+        "Proportion of Licensing Decisions Accompanied by Independent Third\u2011Party Review Reports (%)": {},
+        "Number of Stakeholder Workshops Held During Licensing Process per Year": {}
       },
-      "Public Accessibility to Implementation Updates": {
-        "Transparency of Progress Timelines": {},
-        "Accessibility of Stakeholder Meeting Summaries": {},
-        "Availability of Project Milestones Updates": {},
-        "Public Participation in Update Dissemination": {},
-        "Reach of Communication Channels for Updates": {}
+      "Proportion of Offshore Energy Contracts Available Online": {
+        "Stakeholder Participation Rate in Offshore Energy Contract Draft Review": {},
+        "Number of Public Webinars on Offshore Energy Contract Terms": {},
+        "Frequency of Updated Contract Metadata Uploads to Government Portal": {},
+        "Proportion of Contractual Obligations Referencing Fisheries Mitigation Measures": {},
+        "Average Length of Contract Summaries Published Online (pages)": {},
+        "User Satisfaction Score with Online Contract Access Platform": {}
       },
-      "Audit Trail Availability": {
-        "Record Completeness": {},
-        "Timeliness of Entry": {},
-        "Access Permissions": {},
-        "Data Consistency": {},
-        "Integration with Decision-Making Processes": {}
+      "Average Time to Publish Offshore Energy Permit Outcomes (days)": {
+        "Number of Permit Review Staff (full\u2011time equivalents)": {},
+        "Average Number of Review Iterations per Permit": {},
+        "Digital Workflow Automation Level (% of permits processed electronically)": {},
+        "Stakeholder Consultation Period Length (days)": {},
+        "Regulatory Agency Workload Ratio (permits per reviewer)": {},
+        "Legal Review Processing Time (days)": {},
+        "Inter\u2011Agency Coordination Lag (days)": {},
+        "Permit Application Complexity Index (unitless)": {}
       },
-      "Reporting of Stakeholder Feedback": {
-        "Frequency of Stakeholder Surveys": {},
-        "Diversity in Stakeholder Representation": {},
-        "Stakeholder Feedback Data Collection Methods": {},
-        "Transparency in Reporting Processes": {},
-        "Stakeholder Satisfaction Ratings": {}
+      "Stakeholder Access Frequency to Real\u2011time Offshore Energy Monitoring Data": {
+        "Monthly Login Count by Fishing Industry Stakeholders": {},
+        "Average Data Refresh Interval for Stakeholder Monitoring Dashboard (minutes)": {},
+        "Proportion of Registered Fishery Stakeholders Receiving Real-time Alerts": {},
+        "Number of Stakeholder-Initiated Data Queries per Week": {},
+        "Average Latency of Real-time Data Delivery to Stakeholder Devices (seconds)": {},
+        "Diversity Index of Stakeholder Types Accessing Monitoring Data": {},
+        "Frequency of Stakeholder-Generated Feedback on Data Relevance (feedback events per month)": {},
+        "Stakeholder Satisfaction Score with Access Frequency (0\u2011100)": {}
       },
-      "Frequency of Progress Reports": {
-        "Report Delivery Timeliness": {},
-        "Frequency of Stakeholder Meetings for Report Review": {},
-        "Report Format Consistency": {}
+      "Number of Transparency Audits Conducted on Offshore Energy Projects per Year": {
+        "Percentage of Offshore Energy Project Phases Covered by Transparency Audits": {},
+        "Stakeholder Participation Rate in Transparency Audits (%)": {},
+        "Number of Public Audit Findings Released per Year": {},
+        "Implementation Rate of Transparency Audit Recommendations within 12 Months (%)": {},
+        "Average Interval Between Consecutive Transparency Audits (days)": {}
       },
-      "Detail Levels in Policy Briefings": {
-        "Specificity in Regulatory Guidelines": {},
-        "Granularity of Impact Assessments": {}
+      "Clarity Score of Offshore Energy Regulatory Documents (0\u2011100)": {
+        "Regulatory Terminology Consistency Index (0\u2011100)": {},
+        "Stakeholder Comprehension Score of Offshore Energy Summaries (0\u2011100)": {},
+        "Regulatory Document Revision Frequency (times per year)": {},
+        "Plain\u2011Language Accessibility Score of Offshore Energy Regulations (0\u2011100)": {},
+        "Alignment Score between Offshore Energy Requirements and Fisheries Management Plans (0\u2011100)": {},
+        "Cross\u2011Agency Coordination Index for Offshore Energy Governance (0\u2011100)": {},
+        "Stakeholder Participation Index in Regulatory Drafting (0\u2011100)": {}
+      },
+      "Public Complaint Resolution Rate for Offshore Energy Activities (%)": {
+        "Average Time to Resolve Offshore Energy Complaints (days)": {},
+        "Percentage of Offshore Energy Complaints Escalated to Formal Enforcement Action (%)": {},
+        "Stakeholder Satisfaction Score with Offshore Energy Complaint Handling (0\u2011100)": {},
+        "Number of Dedicated Complaint Management Staff Assigned per Offshore Energy Project": {}
+      }
+    },
+    "Benefit\u2011Sharing Agreement Coverage": {
+      "Signed Benefit\u2011Sharing Agreement Rate for Offshore Energy Projects": {
+        "Frequency of Formal Stakeholder Consultation Meetings for Benefit\u2011Sharing Negotiations": {},
+        "Average Duration of Benefit\u2011Sharing Agreement Negotiation Process (days)": {}
+      },
+      "Fisherfolk Beneficiary Enrollment Count in Offshore Energy Benefit\u2011Sharing Schemes": {
+        "Active Fisherfolk Beneficiary Count in Offshore Energy Benefit\u2011Sharing Scheme": {},
+        "Number of Stakeholder Consultation Meetings on Benefit\u2011Sharing per Year": {},
+        "Average Processing Time (days) for Fisherfolk Benefit Enrollment Applications": {}
       }
     }
   },
   "Offshore Energy Infrastructure Development": {
-    "Wind Turbine Installation": {
-      "Spatial Footprint": {
-        "Seafloor Area Utilized": {},
-        "Surface Area Occupied": {},
-        "Connected Infrastructure Footprint": {},
-        "Cable and Pipeline Extent": {},
-        "Anchor and Mooring Spread": {},
-        "Exclusion Zone Coverage": {}
+    "Installation Vessel Activity Intensity": {
+      "Installation Vessel Daily Operating Hours": {
+        "Installation Vessel Daily Operating Hours Conducted During Daylight Periods": {},
+        "Installation Vessel Daily Operating Hours Aligned with High Tidal Flow Conditions": {},
+        "Installation Vessel Daily Operating Hours Within Proximity Radius of Known Fish Aggregation Sites": {}
       },
-      "Acoustic Emissions": {
-        "Sound Pressure Levels": {},
-        "Frequency Range": {},
-        "Propagation Distance": {}
+      "Installation Vessel Passes per Square Nautical Mile": {
+        "Turbine Installation Site Density (turbines\u202fper\u202fsquare\u202fnautical\u202fmile)": {},
+        "Installation Vessel Scheduling Frequency (planned vessel deployments\u202fper\u202fweek\u202fper\u202fsquare\u202fnautical\u202fmile)": {},
+        "Weather Window Availability Index (average suitable weather days\u202fper\u202fmonth\u202fper\u202fsquare\u202fnautical\u202fmile)": {},
+        "Regulatory Clearance Lead Time (days from application to permit\u202fper\u202fproject\u202farea)": {},
+        "Proximity of Installation Sites to Major Shipping Lanes (percentage of vessel passes occurring within\u202f0.5\u202fNM of established lanes)": {}
       },
-      "Sediment Disturbance": {
-        "Sediment Resuspension": {},
-        "Sediment Deposition Rates": {},
-        "Turbidity Levels": {},
-        "Grain Size Distribution": {},
-        "Benthic Habitat Coverage": {},
-        "Sediment Transport Patterns": {}
+      "Average Installation Vessel Speed During Operations (knots)": {
+        "Installation Vessel Acoustic Noise Level (dB re 1\u202f\u00b5Pa)": {},
+        "Installation Vessel Wake Turbulence Kinetic Energy (kJ\u202f\u00b7\u202fm\u207b\u00b3)": {},
+        "Installation Vessel Propulsion Power Utilization Ratio (unitless)": {},
+        "Installation Vessel Fuel Consumption Rate (kg\u202f\u00b7\u202fh\u207b\u00b9)": {},
+        "Installation Vessel Emission Rate of Particulate Matter (g\u202f\u00b7\u202fh\u207b\u00b9)": {},
+        "Installation Vessel Deck Load Mass (metric tons)": {},
+        "Installation Vessel Navigation Accuracy Deviation (meters)": {},
+        "Installation Vessel Weather\u2011Adjusted Speed Factor (unitless)": {}
       },
-      "Habitat Alteration": {
-        "Seafloor Habitat Coverage": {},
-        "Artificial Reef Creation": {},
-        "Benthic Organism Distribution": {},
-        "Water Column Structure Alteration": {},
-        "Underwater Vegetation Growth": {}
+      "Installation Vessel Mooring Duration per Turbine (hours)": {
+        "Mooring Line Tension Peak (kN)": {},
+        "Number of Mooring Adjustments Required per Turbine": {},
+        "Anchor Penetration Depth (m) during Mooring": {},
+        "Time Spent on Mooring Cable Deployment per Turbine (h)": {},
+        "Mooring Chain Length Utilized per Turbine (m)": {},
+        "Crew Hours Dedicated to Mooring Operations per Turbine (h)": {}
       },
-      "Navigational Impact": {
-        "Navigation Route Alteration": {},
-        "Vessel Traffic Density": {},
-        "Navigational Hazard Creation": {},
-        "Navigation Safety Protocol Changes": {},
-        "Maritime Traffic Congestion": {},
-        "Operational Range of Navigation Aids": {}
+      "Cumulative Installation Vessel Fuel Use per Project (metric tons)": {
+        "Fuel Consumption per Turbine Installed (metric tons per turbine)": {},
+        "Fuel Consumption per Project Distance Traveled from Port to Site (metric tons per nautical mile)": {},
+        "Fuel Consumption by Vessel Class (metric tons per vessel type)": {},
+        "Fuel Consumption Adjusted for Weather\u2011Related Delays (metric tons per adverse\u2011weather day)": {},
+        "Fuel Consumption for Ancillary Support Operations (metric tons per support activity)": {},
+        "Fuel Consumption per Installed Turbine Capacity (metric tons per MW)": {},
+        "Fuel Consumption for On\u2011site Fuel Transfer Operations (metric tons per transfer event)": {}
       }
     },
-    "Offshore Drilling Platforms": {
-      "Seabed Habitat Disturbance": {
-        "Seabed Sediment Displacement": {},
-        "Benthic Fauna Habitat Alteration": {},
-        "Substrate Composition Change": {}
+    "Subsea Cable Length Deployed": {
+      "Cumulative Cable Length Within Commercial Fishing Zones (km)": {
+        "Annual New Cable Installation Length in Commercial Fishing Zones (km)": {},
+        "Cable Maintenance Activity Length in Commercial Fishing Zones (km per year)": {},
+        "Decommissioned Cable Length Removed from Commercial Fishing Zones (km)": {},
+        "Cable Overlap Density within Commercial Fishing Zones (km of cable per km\u00b2 of fishing area)": {},
+        "Average Burial Depth of Cables in Commercial Fishing Zones (meters)": {},
+        "Cumulative Cable Length intersecting Bottom\u2011Trawl Fishing Zones (km)": {}
       },
-      "Oil Spill Occurrence": {
-        "Volume of Oil Released": {},
-        "Frequency of Oil Spill Incidents": {},
-        "Area of Marine Impact": {},
-        "Duration of Containment and Cleanup": {},
-        "Amount of Oil Transported via Offshore Infrastructure": {}
+      "Cable Length Traversing Marine Protected Areas (km)": {
+        "Length of cable passing through No\u2011Take (fully protected) zones (km)": {},
+        "Length of cable intersecting designated critical habitat areas for protected species (km)": {},
+        "Length of cable within MPA buffer zones (e.g., 1\u2011km perimeter) (km)": {},
+        "Length of cable crossing MPAs that contain high\u2011density coral reef habitats (km)": {},
+        "Length of cable overlapping MPAs identified as marine mammal migration pathways (km)": {},
+        "Length of cable located in MPAs with seasonal access restrictions (km)": {},
+        "Length of cable within MPAs classified as biodiversity hotspots (km)": {},
+        "Length of cable in MPAs subject to mandatory environmental monitoring programs (km)": {}
+      },
+      "Cable Length Intersecting Seasonal Fishing Grounds (km)": {
+        "Cable Length Overlapping Seasonal Pelagic Fishing Grounds (km)": {},
+        "Cable Length Overlapping Seasonal Demersal Fishing Grounds (km)": {},
+        "Cable Length Overlapping Seasonal Artisanal Fishing Grounds (km)": {}
       }
     },
-    "Underwater Cabling Networks": {
-      "Cable Length and Coverage": {
-        "Distance of Cable Routes": {},
-        "Area of Seabed Impacted": {},
-        "Number of Habitats Spanned": {},
-        "Extent of Fish Migration Corridors Traversed": {}
+    "Turbine Foundation Footprint Area": {
+      "Cumulative Foundation Footprint Ratio within Fishing Zones": {
+        "Total Turbine Foundation Surface Area within Fishing Zones (hectares)": {},
+        "Number of Foundations per 10\u202fkm\u00b2 of Fishing Zone": {},
+        "Proportion of Fishing Zone Area Covered by Foundation Footprints (%)": {},
+        "Average Foundation Base Radius in Fishing Zones (meters)": {},
+        "Cumulative Foundation Footprint Growth Rate (percent per year)": {}
       },
-      "Cable Burial Depth": {
-        "Sediment Displacement Volume": {},
-        "Seafloor Disturbance Area": {},
-        "Marine Habitat Coverage": {},
-        "Substrate Stability": {},
-        "Burial Depth Consistency": {}
-      },
-      "Interconnection Points Quantity": {
-        "Turbine Grid Connectivity": {},
-        "Substation Capacity": {},
-        "Cross-border Link Points": {},
-        "Load Distribution Nodes": {}
-      },
-      "Cable Structural Integrity": {
-        "Cable Material Durability": {},
-        "Seabed Stability Impact": {},
-        "Corrosion Resistance": {}
-      },
-      "Electric Current Capacity": {
-        "Energy Transmission Efficiency": {},
-        "Current Load Handling": {},
-        "Voltage Regulation": {},
-        "Reactive Power Management": {},
-        "Thermal Dissipation Rate": {},
-        "Conductor Material Conductivity": {},
-        "Operational Voltage Range": {}
-      },
-      "Network Redundancy": {
-        "Redundant Power Supply Lines": {},
-        "Backup Generation Systems": {},
-        "Alternative Data Communication Channels": {}
-      },
-      "Cable Maintenance Frequency": {
-        "Inspection Schedule Variability": {},
-        "Repair Interval Duration": {},
-        "Component Replacement Rate": {},
-        "Preventative Maintenance Activities": {}
+      "Seabed Compaction Depth beneath Turbine Foundations": {
+        "Mean Compaction Thickness under Turbine Piles": {},
+        "Maximum Compaction Depth beneath Turbine Foundations": {},
+        "Soil Bulk Density  due to Pile Driving": {},
+        "Penetration Resistance at Pile Tip": {},
+        "Compaction Recovery Rate (cm per year)": {}
       }
     },
-    "Tidal Energy Facilities": {
-      "Turbine Installation Density": {
-        "Number of Turbines per Square Kilometer": {},
-        "Spacing Between Turbines": {},
-        "Cluster Formation Patterns": {},
-        "Height Variety Among Turbines": {},
-        "Foundation Structure Types": {},
-        "Array Layout Designs": {}
+    "Construction Phase Acoustic Emission Level": {
+      "Pile\u2011Driving Hammer Pulse Frequency": {
+        "Dominant Hammer Pulse Frequency (Hz)": {},
+        "Pulse Frequency Variability (Coefficient of Variation)": {}
       },
-      "Seafloor Footprint": {
-        "Footprint Area of Foundations": {},
-        "Extent of Seafloor Cables": {},
-        "Seafloor Habitat Alteration": {},
-        "Sediment Redistribution": {},
-        "Seafloor Infrastructure Density": {}
+      "Seismic Air\u2011Gun Sound Pressure Level": {
+        "Peak Air\u2011Gun Source Pressure Level (dB re 1\u202f\u00b5Pa @ 1\u202fm)": {},
+        "Dominant Frequency Band Center Frequency of Air\u2011Gun Pulse (Hz)": {},
+        "Source\u2011to\u2011Receiver Transmission Loss Rate (dB per km)": {},
+        "Air\u2011Gun Shot Interval (seconds)": {},
+        "Air\u2011Gun Array Depth (meters below sea surface)": {},
+        "Beam Pattern Directivity Index (dB)": {},
+        "Ambient Ocean Background Noise Level at Survey Frequency (dB re 1\u202f\u00b5Pa)": {},
+        "Cumulative Air\u2011Gun Energy Emitted per Survey (MJ)": {}
       },
-      "Marine Navigation Obstructions": {
-        "Presence of Underwater Cables": {},
-        "Navigation Markers and Buoys": {},
-        "Visibility of Surface Structures": {},
-        "Influence on Navigational Routes": {}
+      "Underwater Noise Duration per Construction Activity": {
+        "Pile\u2011driving noise duration per turbine foundation installation": {},
+        "Cable burial acoustic disturbance duration per kilometre of subsea cable": {},
+        "Pre\u2011commissioning blow\u2011out preventer test noise duration per platform": {},
+        "Construction pause interval duration between noise\u2011generating activities": {},
+        "Total scheduled underwater noise duration per offshore wind farm project": {}
       },
-      "Operational Noise Levels": {
-        "Sound Intensity of Turbine Operation": {},
-        "Frequency Range Emission": {},
-        "Noise Propagation Distance": {},
-        "Intermittency of Acoustic Output": {}
-      },
-      "Tidal Range Alteration": {
-        "Coastal Erosion Rates": {},
-        "Habitat Area Changes": {}
+      "Cumulative Sound Exposure Level at Fishing Grounds": {
+        "Installation\u2011Phase Cumulative Sound Energy (J\u202fm\u207b\u00b2) at Fishing Grounds": {},
+        "Operational\u2011Phase Integrated Noise Level (dB re\u202f1\u202f\u00b5Pa) over Time at Fishing Grounds": {},
+        "Maintenance\u2011Phase Acoustic Pulse Density (pulses\u202fh\u207b\u00b9) within Fishing Grounds": {},
+        "Frequency\u2011Weighted Cumulative Exposure Index (dB\u00b7h) for Target Fish Species at Fishing Grounds": {},
+        "Spatial Overlap Ratio of High\u2011Noise Zones (>120\u202fdB) with Active Fishing Areas (%)": {}
       }
     },
-    "Wave Power Structures": {
-      "Device Deployment Density": {
-        "Turbine Array Compactness": {},
-        "Spacing Between Devices": {},
-        "Deployment Layer Concentration": {},
-        "Device Cluster Distribution": {},
-        "Grid Pattern Complexity": {}
+    "Decommissioning Timeline Duration": {
+      "Regulatory Permit Approval Time for Decommissioning (days)": {
+        "Number of Distinct Regulatory Agencies Involved in Decommissioning Review": {},
+        "Average Length of Permit Application Documentation (pages)": {},
+        "Regulatory Review Staff Hours Allocated per Application (person\u2011hours)": {},
+        "Frequency of Permit Revision Requests per Application (count)": {}
       },
-      "Sea Floor Footprint Size": {
-        "Foundation Area Coverage": {},
-        "Cable Trenching Extent": {},
-        "Scour Protection Zone": {},
-        "Equipment Anchoring Size": {}
+      "Decommissioning Contractor Workforce Availability (person\u2011days per month)": {
+        "Certified Decommissioning Diver Workforce Availability (person\u2011days per month)": {},
+        "Heavy\u2011Lift Vessel Crew Availability (person\u2011days per month)": {},
+        "Onshore Project Management Staff Availability (person\u2011days per month)": {},
+        "Seasonal Weather\u2011Adjusted Workforce Capacity (person\u2011days per month)": {},
+        "Logistics and Mobilization Support Personnel Availability (person\u2011days per month)": {}
       },
-      "Power Generation Capacity": {
-        "Turbine Power Output": {},
-        "Renewable Energy Integration": {},
-        "Energy Storage Capability": {},
-        "Grid Connection Capacity": {},
-        "Transmission Efficiency": {}
+      "Subsea Equipment Retrieval Complexity Index (unitless)": {
+        "Mean Retrieval Depth (meters)": {},
+        "Subsea Retrieval Vessel Manoeuvrability Index (unitless)": {},
+        "Equipment Attachment Complexity Score (unitless)": {}
       },
-      "Material Usage Volume": {
-        "Steel Consumption": {},
-        "Concrete Utilization": {},
-        "Plastic Components Usage": {}
+      "Environmental Impact Assessment Review Duration for Decommissioning (days)": {
+        "Number of Required Baseline Environmental Surveys (count)": {},
+        "Complexity Rating of Habitat Restoration Plan (unitless index)": {},
+        "Stakeholder Comment Submission Volume (comments per review)": {},
+        "Regulatory Agency Review Staffing Level (reviewer\u2011person\u2011days allocated)": {},
+        "Data Gap Count in Species Impact Assessment (missing data points)": {},
+        "Inter\u2011Agency Coordination Meeting Count (meetings per review)": {},
+        "Legal Objection Incidence Rate (objections per review)": {}
       },
-      "Marine Habitat Encroachment": {
-        "Sediment Displacement": {},
-        "Marine Mammal Movement Interruption": {}
-      },
-      "Shoreline Distance": {
-        "Turbine Distance to Shore": {},
-        "Cable Length to Grid Connection": {},
-        "Visual Impact Radius from Shore": {},
-        "Proximity to Shipping Lanes": {},
-        "Shoreline Access for Construction": {},
-        "Distance to Marine Protected Areas": {}
-      },
-      "Maintenance Frequency": {
-        "Inspection Cycles": {},
-        "Component Replacement Intervals": {},
-        "Corrosion Monitoring Frequency": {},
-        "Lubrication Schedule Frequency": {},
-        "Equipment Testing Frequency": {},
-        "Structural Integrity Assessments": {},
-        "Operational Downtime for Maintenance": {}
+      "Funding Allocation Release Schedule for Decommissioning Projects (months)": {
+        "Decommissioning Budget Allocation Fraction per Fiscal Quarter (%)": {},
+        "Average Delay of Funding Release Relative to Planned Schedule (months)": {},
+        "Number of Funding Disbursement Milestones Completed (count)": {},
+        "Funding Release Volatility Index (standard deviation of monthly disbursements)": {},
+        "Share of Private\u2011Sector Funding in Decommissioning Releases (%)": {},
+        "Unspent Decommissioning Funds Carried Over to Subsequent Period (months of funding value)": {},
+        "Currency Exchange Adjustment Factor Applied to Funding Releases (unitless)": {}
       }
     }
   },
   "Marine Environmental Quality": {
-    "Water Column Turbidity": {
-      "Suspended Sediment Concentration": {
-        "Sediment Load from Offshore Construction": {}
+    "Underwater Acoustic Noise Level (dB re 1\u202f\u00b5Pa)": {
+      "Low\u2011Frequency Operational Noise from Offshore Wind Turbines (dB re\u202f1\u202f\u00b5Pa, 10\u2013200\u202fHz)": {
+        "Average Continuous Low\u2011Frequency Operational Sound Pressure Level at 1\u202fkm Distance (dB\u202fre\u202f1\u202f\u00b5Pa, 10\u2013200\u202fHz)": {},
+        "Low\u2011Frequency Operational Noise Frequency\u2011Band Energy Distribution (% of total operational noise energy in 10\u201350\u202fHz, 50\u2013100\u202fHz, 100\u2013200\u202fHz)": {}
       },
-      "Algal Blooms Density": {
-        "Nutrient Concentration": {},
-        "Water Temperature": {},
-        "Salinity Levels": {},
-        "Light Availability": {},
-        "Ocean Current Patterns": {}
+      "High\u2011Frequency Construction Pile\u2011Driving Noise (dB re\u202f1\u202f\u00b5Pa, 1\u201310\u202fkHz)": {
+        "Maximum Sound Pressure Level of Individual Pile\u2011Driving Impacts (dB re\u202f1\u202f\u00b5Pa, 1\u201310\u202fkHz)": {},
+        "Cumulative High\u2011Frequency Acoustic Energy per Installation (dB\u00b7s re\u202f1\u202f\u00b5Pa, 1\u201310\u202fkHz)": {},
+        "Radius of High\u2011Frequency Noise Contour (>120\u202fdB re\u202f1\u202f\u00b5Pa, 1\u201310\u202fkHz) (km)": {},
+        "Total Duration of High\u2011Frequency Noise Exceedance (>115\u202fdB re\u202f1\u202f\u00b5Pa, 1\u201310\u202fkHz) per Day (hours)": {}
       },
-      "Particulate Matter Content": {
-        "Microplastic Concentration": {},
-        "Organic Particulate Levels": {},
-        "Inorganic Particulate Composition": {},
-        "Biogenic Particulate Material": {}
+      "Cumulative Seasonal Acoustic Exposure Index (dB\u00b7day re\u202f1\u202f\u00b5Pa)": {
+        "Cumulative Seasonal Acoustic Exposure from Offshore Wind Turbine Operational Noise (dB\u00b7day\u202fre\u202f1\u202f\u00b5Pa)": {},
+        "Cumulative Seasonal Acoustic Exposure from Vessel Traffic Associated with Offshore Energy Projects (dB\u00b7day\u202fre\u202f1\u202f\u00b5Pa)": {},
+        "Cumulative Seasonal Acoustic Exposure from Offshore Oil & Gas Platform Routine Operations (dB\u00b7day\u202fre\u202f1\u202f\u00b5Pa)": {},
+        "Cumulative Seasonal Acoustic Exposure in Designated Marine Protected Areas (dB\u00b7day\u202fre\u202f1\u202f\u00b5Pa)": {},
+        "Seasonal Integrated Sound Pressure Level across 10\u2013200\u202fHz (dB\u00b7day\u202fre\u202f1\u202f\u00b5Pa)": {},
+        "Seasonal Integrated Sound Pressure Level across 1\u201310\u202fkHz (dB\u00b7day\u202fre\u202f1\u202f\u00b5Pa)": {},
+        "Cumulative Seasonal Acoustic Exposure from Sub\u2011Sea Cable Laying Activities (dB\u00b7day\u202fre\u202f1\u202f\u00b5Pa)": {}
+      },
+      "Spatial Decay Gradient of Received Noise at Adjacent Fishing Zones (dB\u202fper\u202fkm)": {
+        "Water\u2011Temperature Gradient (\u00b0C per km)": {},
+        "Bottom\u2011Substrate Acoustic Attenuation Coefficient (dB per km)": {},
+        "Surface\u2011Wave Height Variability Index (m per km)": {},
+        "Distance\u2011Weighted Offshore Turbine Operational Sound Power Level (dB re\u202f1\u202f\u00b5Pa at 1\u202fm)": {},
+        "Seasonal Ambient Biological Noise Level (dB re\u202f1\u202f\u00b5Pa)": {},
+        "Bathymetric Slope Steepness (\u00b0 per km)": {},
+        "Salinity Gradient (PSU per km)": {}
+      },
+      "Temporal Noise Spike Magnitude During Maintenance Events (peak dB re\u202f1\u202f\u00b5Pa)": {
+        "Peak Noise Spike Duration During Maintenance Events (seconds)": {},
+        "Mid\u2011Frequency Maintenance Noise Spike Magnitude (dB re\u202f1\u202f\u00b5Pa, 500\u202fHz\u20135\u202fkHz)": {},
+        "Percentage of Maintenance Noise Spikes Exceeding Legal Threshold (dB re\u202f1\u202f\u00b5Pa)": {},
+        "Temporal Overlap of Maintenance Noise Spikes with Species Spawning Periods (percentage of spikes)": {},
+        "Maximum Received Noise Spike Level at Designated Sensitive Habitat Sites (dB re\u202f1\u202f\u00b5Pa)": {}
       }
     },
-    "Noise Pollution Levels": {
-      "Underwater Acoustic Levels": {
-        "Ambient Underwater Noise Levels": {},
-        "Hydroacoustic Pressure Variations": {},
-        "Underwater Acoustic Propagation Range": {},
-        "Sound Frequency Distribution": {},
-        "Noise Impact on Sedimentation Rates": {},
-        "Sound Transmission Loss Factors": {}
+    "Seabed Sediment Turbidity (NTU)": {
+      "Bottom Sediment Resuspension Rate (kg\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {
+        "Near\u2011field Bottom Shear Stress (Pa) around Offshore Turbine Foundations": {},
+        "Maximum Bottom Current Velocity (m\u202fs\u207b\u00b9) at Turbine Array Site": {},
+        "Seafloor Roughness Index (unitless) of Turbine\u2011Induced Scour Pits": {},
+        "Sediment Grain\u2011Size Median (D50, \u00b5m) Shift due to Turbine Wake": {},
+        "Resuspended Sediment Flux of Phosphorus (kg\u202fP\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Suspended Sediment Concentration at 1\u202fm above Seabed (mg\u202fL\u207b\u00b9) during Operational Period": {}
       },
-      "Ship Traffic Noise Intensity": {
-        "Propeller Noise Levels": {},
-        "Engine Sound Emission": {},
-        "Hull Vibration Acoustic Output": {},
-        "Anchor Deployment Noise": {},
-        "Ballast Water Discharge Sounds": {},
-        "Navigational Signal Acoustic Emission": {}
+      "Fine\u2011Particle Fraction Percentage in Surface Sediment (%)": {
+        "Fine Sediment Deposition Rate Near Turbine Foundations (kg\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Sediment Grain\u2011Size Skewness Index (unitless)": {},
+        "Hydrodynamic Shear Stress Adjacent to Offshore Structure Foundations (Pa)": {},
+        "Substrate Compaction Percentage (% volumetric density)": {},
+        "Cable Burial Depth Variability (m)": {}
       },
-      "Seismic Survey Sound Emissions": {
-        "Marine Mammal Stress Levels": {},
-        "Seafloor Habitat Disruption": {}
+      "Sediment Organic Carbon Concentration (mg\u202fC\u202fkg\u207b\u00b9)": {
+        "Sediment Organic Carbon Burial Flux (g\u202fC\u202fm\u207b\u00b2\u202fyr\u207b\u00b9)": {},
+        "Vertical Gradient of Sediment Organic Carbon Concentration (mg\u202fC\u202fkg\u207b\u00b9 per cm depth)": {},
+        "Spatial Difference in Sediment Organic Carbon Concentration between Proximity Zones of Offshore Structures (mg\u202fC\u202fkg\u207b\u00b9)": {},
+        "Seasonal Variation in Surface Sediment Organic Carbon Concentration (mg\u202fC\u202fkg\u207b\u00b9)": {},
+        "Sediment Organic Carbon to Nitrogen Ratio (C:N molar ratio)": {}
       },
-      "Marine Construction Noise Emission": {
-        "Frequency Range of Emitted Sounds": {},
-        "Intensity Levels at Construction Sites": {},
-        "Temporal Duration of Construction Noise": {},
-        "Impact Radius on Marine Mammals Behavior": {}
-      },
-      "Acoustic Disturbance from Wind Farms": {
-        "Noise Transmission Distance": {},
-        "Sound Frequency Variation": {},
-        "Disturbance Duration": {}
-      },
-      "Subsea Drilling Noise Complexity": {
-        "Noise Frequency Spectrum Variation": {},
-        "Sound Propagation Distance": {},
-        "Acoustic Impact on Sediment Layers": {},
-        "Vibration Transmission Through Substrate": {},
-        "Interaction with Marine Mammal Communication": {},
-        "Residual Noise Post-Drilling": {},
-        "Cumulative Noise Effects in Multi-Operation Sites": {}
-      },
-      "Artificial Noise in Coral Reef Areas": {
-        "Noise Pollution Levels in Coral Reefs": {},
-        "Anthropogenic Soundscape Variability": {},
-        "Impact on Coral Reef Organism Communication": {},
-        "Sound Masking Effects on Coral Reefs": {},
-        "Acoustic Habitat Alteration": {},
-        "Underwater Sound Propagation Disturbance": {}
+      "Turbidity Event Frequency (events\u202fper\u202fweek)": {
+        "Offshore wind turbine wake\u2011induced turbidity spikes (events\u202fper\u202fweek)": {},
+        "Seabed construction vibration\u2011triggered turbidity events (events\u202fper\u202fweek)": {},
+        "Routine maintenance dredging turbidity occurrences (events\u202fper\u202fweek)": {},
+        "Subsea cable installation disturbance turbidity frequency (events\u202fper\u202fweek)": {}
       }
     },
-    "Chemical Contamination": {
-      "Heavy Metal Concentrations": {
-        "Mercury Levels in Marine Sediments": {},
-        "Lead Concentration in Coastal Waters": {},
-        "Cadmium Content in Marine Organisms": {},
-        "Arsenic Presence in Oceanic Currents": {},
-        "Copper Accumulation on Seafloor": {},
-        "Nickel Levels in Marine Food Chains": {}
+    "Hydrocarbon Concentration in Surface Water (\u00b5g\u202fL\u207b\u00b9)": {
+      "Hydrocarbon Concentration Adjacent to Offshore Platform Discharge Points (\u00b5g\u202fL\u207b\u00b9)": {
+        "Aliphatic Hydrocarbon Concentration Adjacent to Discharge Points (\u00b5g\u202fL\u207b\u00b9)": {},
+        "Polycyclic Aromatic Hydrocarbon (PAH) Concentration Adjacent to Discharge Points (\u00b5g\u202fL\u207b\u00b9)": {},
+        "Hydrocarbon Concentration Gradient with Distance from Discharge Point (\u00b5g\u202fL\u207b\u00b9 per 100\u202fm)": {},
+        "Temporal Fluctuation Amplitude of Hydrocarbon Concentration (\u00b5g\u202fL\u207b\u00b9) over 24\u2011hour Cycle": {},
+        "Hydrocarbon Concentration in Bottom Water Layer Adjacent to Discharge Points (\u00b5g\u202fL\u207b\u00b9)": {}
       },
-      "Persistent Organic Pollutant Levels": {
-        "PCB Concentrations": {},
-        "Dioxin Levels": {},
-        "PAH Accumulation": {},
-        "Pesticide Residues": {}
+      "Hydrocarbon Concentration in Surface Water Along Offshore Wind Farm Access Routes (\u00b5g\u202fL\u207b\u00b9)": {
+        "Average Hydrocarbon Concentration in Surface Water at Access Route Entry Points (\u00b5g\u202fL\u207b\u00b9)": {},
+        "Peak Hydrocarbon Concentration during Vessel Transit Periods (\u00b5g\u202fL\u207b\u00b9)": {},
+        "Temporal Variability of Surface Hydrocarbon Levels along Access Routes (\u00b5g\u202fL\u207b\u00b9 per month)": {},
+        "Hydrocarbon Concentration Gradient between Access Route Centerline and Adjacent Reference Waters (\u00b5g\u202fL\u207b\u00b9)": {},
+        "Proportion of Water Samples Exceeding Regulatory Threshold along Access Routes (%)": {},
+        "Seasonal Change in Surface Hydrocarbon Concentration on Access Routes (\u00b5g\u202fL\u207b\u00b9)": {}
+      }
+    },
+    "Light Pollution Intensity at 10\u202fm Depth (lux)": {
+      "Subsurface Illumination from Offshore Wind Turbine Foundations (lux)": {
+        "Measured Subsurface Illumination Directly Adjacent to Wind Turbine Foundations (lux)": {},
+        "Temporal Fluctuation Range of Subsurface Light Near Foundations (lux)": {},
+        "Depth\u2011Integrated Subsurface Light Exposure Around Wind Turbine Foundations (lux\u00b7hour\u202fper\u202fday)": {}
       },
-      "Nutrient Enrichment": {
-        "Algal Bloom Intensity": {},
-        "Dissolved Oxygen Concentration": {},
-        "Nitrate Levels": {},
-        "Phosphate Levels": {},
-        "Water Turbidity": {}
+      "Nighttime Light Spillover from Offshore Oil Platform Support Structures (lux)": {
+        "Surface Illuminance of Platform Support Structures (lux)": {},
+        "Vertical Light Attenuation Coefficient in Adjacent Water Column (m\u207b\u00b9)": {},
+        "Radial Distance of Detectable Light Spillover from Platform (meters)": {},
+        "Spectral Blue\u2011Light Fraction of Platform Emissions (%)": {},
+        "Nighttime Illumination Duration per Platform (hours per night)": {},
+        "Seasonal Variation Index of Platform Light Output (unitless)": {},
+        "Compliance Ratio to Regulatory Lux Thresholds (%)": {}
       },
-      "pH Changes from Chemical Discharges": {
-        "Acidity Levels in Coastal Waters": {},
-        "Alkalinity Shifts in Marine Ecosystems": {},
-        "Buffer Capacity of Seawater": {},
-        "Carbonate Ion Concentration": {},
-        "Calcification Rates in Marine Organisms": {},
-        "Dissolution Rates of Calcium Carbonate Structures": {}
+      "Cumulative Light Dose from Co\u2011located Offshore Energy Installations at 10\u202fm Depth (lux\u00b7hour\u202fper\u202fday)": {
+        "Average Daily Light Intensity at 10\u202fm Depth (lux)": {},
+        "Seasonal Variation in Cumulative Light Dose at 10\u202fm (lux\u00b7hour\u202fper\u202fday)": {},
+        "Spectral Composition\u2011Weighted Light Dose at 10\u202fm (lux\u00b7hour\u202fper\u202fday)": {},
+        "Water\u2011Column Light Attenuation Coefficient Influencing Dose at 10\u202fm (m\u207b\u00b9)": {},
+        "Proportion of Nighttime Hours Exceeding Ecological Light Threshold at 10\u202fm (%)": {}
+      }
+    },
+    "Dissolved Oxygen Concentration (mg\u202fL\u207b\u00b9)": {
+      "Near\u2011field Turbine Wake Mixed Layer Depth (m)": {
+        "Turbine Wake Turbulence Kinetic Energy (m\u00b2\u202fs\u207b\u00b2)": {},
+        "Near\u2011field Wake Mixed Layer Depth Temporal Change Rate (m\u202fday\u207b\u00b9)": {},
+        "Wake\u2011Induced Surface Salinity Anomaly (psu)": {},
+        "Wake\u2011Driven Light Attenuation Coefficient Shift (m\u207b\u00b9)": {},
+        "Wake\u2011Associated Dissolved Oxygen Gradient Across Mixed Layer (mg\u202fL\u207b\u00b9\u202fm\u207b\u00b9)": {},
+        "Wake\u2011Generated Phytoplankton Chlorophyll\u2011a Concentration Change (\u00b5g\u202fm\u207b\u00b3)": {}
       },
-      "Hydrocarbon Residues": {
-        "Sediment Contamination Levels": {},
-        "Water Column Hydrocarbon Concentrations": {},
-        "Dissolved Hydrocarbon Content": {},
-        "Marine Organism Tissue Residues": {},
-        "Oil Slick Formation Extent": {}
+      "Subsurface Water Temperature Anomaly (\u00b0C)": {
+        "Thermal Plume Magnitude at Turbine Hub Depth (\u00b0C)": {},
+        "Depth of Maximum Subsurface Temperature Anomaly (m)": {},
+        "Temporal Persistence of Subsurface Temperature Anomaly (days)": {},
+        "Spatial Standard Deviation of Subsurface Temperature Anomaly within Lease Area (\u00b0C)": {},
+        "Seasonal Shift in Subsurface Temperature Anomaly Timing (months)": {}
       },
-      "Synthetic Microfiber Presence": {
-        "Water Column Concentration of Microfibers": {},
-        "Microfiber Accumulation in Marine Sediments": {},
-        "Microfiber Ingestion by Marine Organisms": {},
-        "Fiber Presence in Coastal Waters": {},
-        "Microfiber Transport in Ocean Currents": {},
-        "Microfiber Concentration in Marine Snow": {}
+      "Nutrient Enrichment Rate (\u00b5mol\u202fN\u202fL\u207b\u00b9\u202fday\u207b\u00b9)": {
+        "Platform Wastewater Nitrogen Concentration (\u00b5mol\u202fN\u202fL\u207b\u00b9)": {},
+        "Turbine\u2011Foundation Sediment Nitrogen Release Rate (\u00b5mol\u202fN\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Offshore\u2011Wind\u2011Farm\u2011Induced Vertical Nutrient Transport Rate (\u00b5mol\u202fN\u202fL\u207b\u00b9\u202fday\u207b\u00b9)": {},
+        "Subsea\u2011Cable\u2011Burial Disturbance Nutrient Leaching Rate (\u00b5mol\u202fN\u202fL\u207b\u00b9\u202fday\u207b\u00b9)": {},
+        "Antifouling\u2011Paint Leachate Nitrogen Load (\u00b5mol\u202fN\u202fL\u207b\u00b9)": {}
+      },
+      "Benthic Organic Matter Deposition Rate (g\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {
+        "Turbine\u2011foundation induced sediment resuspension rate (kg\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Organic matter release rate from subsea\u2011cable burial disturbance (g\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Lubricant and hydraulic\u2011fluid residue deposition rate on the seabed (g\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Artificial\u2011reef structure organic matter accretion rate (g\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Heat\u2011emission\u2011driven organic matter mineralization rate beneath subsea cables (g\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Maintenance\u2011activity sediment plume organic load deposition rate (g\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {}
+      },
+      "Coastal Upwelling Intensity Index (unitless)": {
+        "Upwelling Wind Stress Magnitude (N\u00b7m\u207b\u00b2)": {},
+        "Upwelling\u2011Induced Surface Chlorophyll\u2011a Concentration (\u00b5g\u202fL\u207b\u00b9)": {},
+        "Upwelling\u2011Driven Coastal Nutrient Flux (mmol\u202fN\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Upwelling\u2011Associated Thermocline Depth (m)": {}
+      },
+      "Dissolved Oxygen Saturation Variability (percentage points)": {
+        "Turbine\u2011Generated Turbulence Kinetic Energy (J\u202fkg\u207b\u00b9)": {},
+        "Subsea Cable Electromagnetic Emission Intensity (\u00b5T)": {},
+        "Installation\u2011Related Sediment Resuspension Event Rate (events\u202fper\u202fmonth)": {}
+      },
+      "Seafloor Sediment Oxygen Demand (mmol\u202fO\u2082\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {
+        "Turbine\u2011Foundation Induced Sediment Respiration Rate (mmol\u202fO\u2082\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Cable\u2011Burial Zone Porewater Oxygen Depletion Gradient (mmol\u202fO\u2082\u202fm\u207b\u00b3)": {},
+        "Hydrodynamic Shear\u2011Stress Effect on Benthic Oxygen Consumption (mmol\u202fO\u2082\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Substrate\u2011Associated Sulfide Oxidation Rate (mmol\u202fO\u2082\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Temporal Variation in Sediment Oxygen Demand During Turbine Maintenance Cycles (mmol\u202fO\u2082\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {}
+      },
+      "Offshore Platform Biofouling Biomass (kg\u202fwet\u202fm\u207b\u00b2)": {
+        "Macroalgal Fouling Cover (%)": {},
+        "Sessile Invertebrate Wet Biomass (kg\u202fwet\u202fm\u207b\u00b2)": {},
+        "Biofilm Chlorophyll\u2011a Concentration (\u00b5g\u202fL\u207b\u00b9)": {},
+        "Antifouling Paint Degradation Rate (mm\u202fyear\u207b\u00b9)": {},
+        "Surface Roughness Coefficient of Platform Structures (unitless)": {}
+      }
+    },
+    "Benthic Habitat Structural Integrity Index (unitless)": {
+      "Benthic Substrate Compaction (kPa)": {
+        "Surface Penetration Resistance (kPa)": {},
+        "Subsurface Shear Strength at 30\u202fcm Depth (kPa)": {},
+        "Compaction Gradient Adjacent to Offshore Turbine Foundations (kPa\u202fper\u202fmeter)": {},
+        "Temporal Recovery Rate of Substrate Compaction (kPa\u202fper\u202fmonth)": {},
+        "Sediment Bulk Density (g\u202fcm\u207b\u00b3)": {},
+        "Sediment Porosity (%)": {},
+        "Organic Matter Fraction in Compacted Sediment (%)": {},
+        "Median Grain Size of Compacted Benthic Sediment (mm)": {}
+      },
+      "Seafloor Structural Complexity Ratio (unitless)": {
+        "Turbine\u2011Induced Bottom Scour Depth (cm)": {},
+        "Artificial Reef Surface Area Contribution (m\u00b2\u202fper\u202fkm\u00b2)": {}
+      },
+      "Foundation\u2011Induced Sediment Shear Stress (Pa)": {
+        "Maximum Instantaneous Foundation\u2011Induced Shear Stress (Pa)": {},
+        "Average Daily Foundation\u2011Induced Shear Stress (Pa)": {},
+        "Cumulative Hours Exceeding Critical Shear Stress Threshold (hours)": {}
+      },
+      "Macrofaunal Habitat Utilization Score (unitless)": {
+        "Macrofaunal Species Diversity Index (unitless)": {},
+        "Macrofaunal Burrow Density (burrows\u202fper\u202fm\u00b2)": {},
+        "Macrofaunal Habitat Patch Connectivity Score (unitless)": {},
+        "Macrofaunal Sediment Organic Matter Match Index (unitless)": {},
+        "Macrofaunal Seasonal Utilization Frequency (%)": {},
+        "Macrofaunal Functional Group Representation Ratio (unitless)": {}
       }
     }
   },
   "Fisheries Economic Performance": {
-    "Revenue from Fish Sales": {
-      "Fish Harvest Quantity": {
-        "Catch Volume Consistency": {},
-        "Aggregate Species Harvest": {},
-        "Fishing Trip Yield": {},
-        "Regional Fish Catch Distribution": {},
-        "Offshore Area-Specific Harvest Levels": {}
+    "Net Profit of Fisheries Adjacent to Offshore Energy Installations": {
+      "Revenue Premium for Fish Caught Adjacent to Offshore Installations": {
+        "Price Premium per Kilogram for Fish Harvested Near Offshore Installations": {},
+        "Consumer Willingness\u2011to\u2011Pay Differential for Renewable\u2011Energy\u2011Associated Seafood": {},
+        "Market Demand Index for Catches Adjacent to Offshore Energy Structures": {},
+        "Brand Value Premium for Fish Certified as Originating Near Offshore Installations": {},
+        "Supply\u2011Chain Traceability Premium for Energy\u2011Adjacent Fish Products": {},
+        "Export Price Differential for Species Caught in Proximity to Offshore Installations": {}
       },
-      "Species-Specific Market Share": {
-        "Regional Species Preference": {},
-        "Market Price Variability by Species": {}
+      "Lease or Access Fee Income from Energy Operators": {
+        "Total Annual Lease Fee Revenue from Energy Operators": {},
+        "Number of Active Lease Agreements with Energy Companies": {},
+        "Average Lease Fee per Square Kilometer of Fishing Grounds": {},
+        "Revenue Share Ratio Allocated to Fishing Communities": {},
+        "Frequency of Lease Payment Collections": {},
+        "Geographic Concentration Index of Lease Income": {},
+        "Administrative Overhead Cost of Lease Management": {},
+        "Duration\u2011Weighted Lease Fee Income": {}
       },
-      "Seasonal Catch Volume": {
-        "Catch Timing Variability": {},
-        "Regional Catch Distribution": {},
-        "Catch Composition Diversity": {},
-        "Season-Specific Catch Reliance": {}
+      "Ancillary Income from Tourism or Service Activities Linked to Offshore Installations": {
+        "Charter boat sightseeing revenue from offshore installation tours": {},
+        "On\u2011site hospitality service income (e.g., caf\u00e9s, lodging) near offshore platforms": {},
+        "Educational tour fees for offshore installation visits": {},
+        "Equipment rental income for recreational activities around installations (e.g., kayaks, snorkel gear)": {},
+        "Sponsorship and branding income from tourism partnerships with energy operators": {},
+        "Ticket sales for marine wildlife observation events adjacent to installations": {},
+        "Revenue from photography workshops focused on offshore structures": {},
+        "Income from local vendor stalls at installation\u2011related visitor centers": {}
+      },
+      "Seasonal Variation in Market Prices for Energy\u2011Adjacent Catches": {
+        "Average Wholesale Price per Kilogram for Energy\u2011Adjacent Catches (Seasonal)": {},
+        "Seasonal Price Volatility Index for Energy\u2011Adjacent Catches": {},
+        "Seasonal Consumer Demand Elasticity for Energy\u2011Adjacent Species": {},
+        "Market Share Percentage of Energy\u2011Adjacent Catches in Local Fish Markets (Seasonal)": {},
+        "Seasonal Transport and Handling Cost per Kilogram for Energy\u2011Adjacent Catches": {}
       }
     },
-    "Cost of Operations": {
-      "Fuel Costs": {
-        "Fuel Price Volatility": {},
-        "Fuel Supply Chain Dynamics": {},
-        "Refueling Frequency": {},
-        "Energy Source Diversification": {}
+    "Operational Cost Variation for Fishing Vessels due to Offshore Energy Activity": {
+      "Fuel Consumption Variation from Route Alterations": {
+        "Average fuel consumption per fishing trip (liters)": {},
+        "Fuel consumption per nautical mile traveled (liters per NM)": {},
+        "Fuel usage attributable to speed adjustments in turbine wake zones (liters per hour)": {},
+        "Fuel cost per metric ton of landed catch (USD per tonne)": {},
+        "Fuel consumption per gear deployment type near offshore installations (liters per deployment)": {},
+        "Seasonal variation in fuel consumption linked to offshore energy construction activity (liters)": {},
+        "Cumulative annual fuel consumption  from repeated route deviations around offshore structures (liters)": {}
       },
-      "Equipment Maintenance Costs": {
-        "Replacement Parts Availability": {},
-        "Repair Frequency": {},
-        "Technology Adaptation in Equipment": {}
+      "Vessel Maintenance Cost Changes Attributable to Turbine\u2011Induced Corrosion": {
+        "Hull Plate Corrosion Repair Expenditure": {},
+        "Propulsion System Component Replacement Cost": {},
+        "Anti\u2011Corrosion Coating Application Frequency": {},
+        "Corrosion Inspection and Downtime Cost": {}
       },
-      "Labor Expenses": {
-        "Wage Levels": {},
-        "Crew Size": {},
-        "Training and Skill Development Costs": {},
-        "Safety Equipment and Compliance Costs": {}
+      "Insurance Premium Adjustments Due to Proximity Risks with Offshore Energy Installations": {
+        "Historical Vessel\u2011Collision Claim Frequency Near Offshore Installations": {},
+        "Risk\u2011Weighted Hull\u2011Damage Premium Component for Proximity to Energy Platforms": {},
+        "Proximity\u2011Zone Classification Premium Adjustment Factor": {},
+        "Liability\u2011Coverage Premium for Environmental Damage Adjacent to Offshore Structures": {},
+        "Deductible Level Modification Based on Distance to Offshore Energy Installations": {},
+        "Coverage\u2011Limit Parameter for Gear Loss Attributable to Platform\u2011Induced Currents": {},
+        "Weather\u2011Amplified Damage Surcharge Index for Vessels Operating Near Offshore Facilities": {},
+        "Reinsurance Cost Share Percentage for Aggregate Proximity Risk to Offshore Energy Installations": {}
       },
-      "Insurance Premiums": {
-        "Natural Hazard Coverage": {},
-        "Risk Assessment Adjustments": {}
+      "Waiting Time Costs from Traffic Management and Access Permits": {
+        "Average Vessel Queue Duration at Access Checkpoints": {},
+        "Permit Processing Delay Time for Fishing Vessels": {}
       },
-      "Vessel Lease Costs": {
-        "Availability of Leasing Opportunities": {},
-        "Demand for Specialized Vessels": {}
-      }
-    },
-    "Fish Market Prices": {
-      "Local Fish Availability": {
-        "Energy Project Proximity to Fishing Zones": {},
-        "Fish Distribution over Fishable Areas": {},
-        "Spawning Ground Access": {},
-        "Operational Zone Reductions": {}
+      "Gear Wear and Replacement Expenses Caused by Turbine Wake Turbulence": {
+        "Average Annual Gear Repair Cost Attributed to Turbine Wake Turbulence": {},
+        "Frequency of Gear Failure Incidents Linked to Turbine Wake Turbulence": {},
+        "Mean Replacement Interval for Netting Materials in Turbine\u2011Affected Areas": {},
+        "Proportion of Vessel Operating Days Lost to Gear Failure from Wake Turbulence": {},
+        "Depreciation Rate of Fishing Gear in High\u2011Wake Zones": {},
+        "Budget Share for Gear Maintenance in Turbine\u2011Proximity Fishing Zones": {}
       },
-      "Transportation Costs to Market": {
-        "Fuel Expenditures": {},
-        "Distance to Market": {},
-        "Vessel Maintenance Costs": {},
-        "Port Fees": {},
-        "Crew Labor Costs": {}
+      "Navigation and Detection System Upgrade Expenditures for Offshore Structures": {
+        "Capital Expenditure on Vessel Navigation Hardware for Offshore Fishing Zones": {},
+        "Annual Budget Allocation for Satellite AIS Enhancement for the Fishing Fleet": {},
+        "Spending on Real\u2011Time Detection Software for Offshore Structure Proximity Alerts": {},
+        "Cost of Upgrading Sonar Systems to Prevent Collisions with Offshore Installations": {},
+        "Expenditure on Training Programs for Navigational Safety Around Offshore Energy Platforms": {},
+        "Depreciation Expense of Upgraded Navigation Equipment Used in Offshore Fisheries": {},
+        "Funding for Integrated Vessel\u2011to\u2011Structure Communication Systems": {},
+        "Operational Spend on Maintenance of Upgraded Detection Sensors on Fishing Vessels": {}
       },
-      "Seasonal Fishing Yields": {
-        "Seasonal Species Catch Volume": {},
-        "Regional Market Prices During Season": {},
-        "Sea Condition Variability Impact on Harvest": {},
-        "Seasonal Workforce Availability": {},
-        "Technological Adaptation for Seasonal Conditions": {},
-        "Access to Seasonal Fishing Grounds": {},
-        "Timing of Seasonal Openings and Closures": {},
-        "Investment in Seasonal Fishing Gear": {}
-      },
-      "Offshore Energy Policy Impacts": {
-        "Fishing Revenue from Energy Lease Areas": {},
-        "Fleet Operation Costs due to Energy Regulations": {},
-        "Access to Fishing Grounds Affected by Energy Development": {}
-      },
-      "Market Competition from Energy Sector": {
-        "Fishery Product Pricing Pressure": {},
-        "Access to Fishing Grounds": {},
-        "Labor Allocation between Sectors": {},
-        "Energy Market Influence on Fishery Exports": {},
-        "Investment in Fishery Technology": {},
-        "Fishery Sector Revenue Variability": {}
-      }
-    },
-    "Investment in Processing Facilities": {
-      "Processing Facility Capacity": {
-        "Storage Capacity for Processed Fish": {},
-        "Facility Throughput Rate": {}
-      },
-      "Technology Integration in Processing": {
-        "Automation Level in Processing Equipment": {},
-        "Adoption of Smart Sensors for Quality Control": {},
-        "Utilization of Data Analytics for Processing Optimization": {},
-        "Implementation of Blockchain for Traceability": {},
-        "Usage of Advanced Refrigeration Technologies": {},
-        "Integration of AI-driven Sorting Systems": {}
-      },
-      "Workforce Size in Processing Facilities": {
-        "Number of Skilled Laborers": {},
-        "Seasonal Worker Utilization": {},
-        "Geographic Distribution of Workers": {},
-        "Availability of Specialized Training Programs": {}
-      },
-      "Supply Chain Efficiency in Processing": {
-        "Logistics Coordination in Fish Processing": {},
-        "Processing Throughput Times": {},
-        "Cold Storage Utilization Rates": {},
-        "Transportation Network Integration": {},
-        "Product Quality Maintenance in Supply Chain": {},
-        "Inventory Accuracy in Fish Processing": {},
-        "Supplier Reliability in Processing": {}
-      },
-      "Energy Consumption in Processing Facilities": {
-        "Energy Efficiency of Machinery": {},
-        "Renewable Energy Usage": {},
-        "Fuel Dependency Levels": {}
-      }
-    },
-    "Consumer Demand for Fish Products": {
-      "Consumer Preferences for Fish Types": {
-        "Demand for Local Fish Varieties": {},
-        "Popularity of Exotic Fish Species": {},
-        "Preference for Sustainably Sourced Fish": {},
-        "Interest in Fish with Health Benefits": {}
-      },
-      "Retail Availability of Fish Products": {
-        "Variety of Fish Species Offered": {},
-        "Quantity of Fish Stock in Stores": {},
-        "Frequency of Restocking Fish Products": {}
-      },
-      "Awareness of Sustainable Fishing Practices": {
-        "Educational Campaign Reach on Sustainable Practices": {},
-        "Adoption Rate of Sustainable Fishing Certification": {},
-        "Investment in Sustainable Fishing Technologies": {}
-      },
-      "Perception of Fish Product Safety": {
-        "Contaminant Levels in Fish Products": {},
-        "Traceability and Certification Systems": {},
-        "Incidence of Foodborne Illnesses from Fish Consumption": {},
-        "Awareness of Chemical Runoff into Aquatic Ecosystems": {},
-        "Availability of Information on Fish Handling Practices": {}
-      },
-      "Influence of Cultural Trends on Fish Consumption": {
-        "Demand for Locally Sourced Fish": {},
-        "Interest in Exotic Fish Varieties": {},
-        "Popularity of Fish in Culinary Trends": {},
-        "Cultural Significance of Seafood in Dietary Habits": {},
-        "Seasonal Variations in Fish-Based Dishes": {},
-        "Consumption of Fish in Festive Occasions": {}
-      }
-    },
-    "Export Volume of Fish": {
-      "International Demand for Export": {
-        "Global Consumer Preferences for Fish Products": {},
-        "Market Access for Sustainable-Certified Fisheries": {}
-      },
-      "Transportation and Logistics Capacity": {
-        "Port Handling Efficiency": {},
-        "Cold Storage Capacity at Docks": {},
-        "Vessel Turnaround Time": {},
-        "Shipping Route Availability": {},
-        "Fuel Supply Logistics": {},
-        "Crew Transportation Infrastructure": {}
-      },
-      "International Trade Agreements": {
-        "Tariff Structures on Fish Products": {},
-        "Market Access Provisions": {},
-        "Non-Tariff Barriers": {},
-        "Fisheries Subsidy Regulations": {},
-        "Trade Dispute Resolution Mechanisms": {}
-      },
-      "Export Quality Standards Compliance": {
-        "Certification Achievement Levels": {},
-        "Product Quality Testing Frequency": {},
-        "Packaging and Labeling Adherence": {}
+      "Crew Overtime and Labor Cost Fluctuations Linked to Schedule Disruptions": {
+        "Average Daily Overtime Hours per Vessel Crew": {},
+        "Crew Wage Rate Variability Due to Schedule Delays": {},
+        "Frequency of Shift Swaps Triggered by Offshore Energy Permit Queues": {}
       }
     }
   }
