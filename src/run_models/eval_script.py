@@ -420,7 +420,7 @@ def safe_run_and_append(params, file_path, lock_path):
 
 # Run parallel jobs and append results as they finish
 with tqdm_joblib(tqdm(desc="Processing", total=len(param_list))):
-    with Parallel(n_jobs=1, backend="loky") as parallel:
+    with Parallel(n_jobs=-4, backend="loky") as parallel:
         all_results = parallel(delayed(safe_run_and_append)(
             params,
             file_path=bertopic_file,
