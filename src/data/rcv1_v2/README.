@@ -1,0 +1,13 @@
+## RCV1-v2 Dataset
+
+RCV1-v2 (Reuters Corpus Volume 1, Version 2) is a standard benchmark for
+hierarchical, multi-label text classification.
+
+Official distribution (LDC):
+https://catalog.ldc.upenn.edu/LDC2005T04
+
+Due to licensing restrictions, the raw dataset is not stored in this repository.
+Team members with institutional access should download the data locally and
+place it in this directory for experimentation in later phases.
+
+
