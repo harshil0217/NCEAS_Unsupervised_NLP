@@ -7,7 +7,7 @@ from sentence_transformers import SentenceTransformer
 # ----------------------------
 # Load Data
 # ----------------------------
-df = pd.read_csv("arxiv_30k.csv")   # make sure this file is in same directory
+df = pd.read_csv("amz_data.csv")
 texts = df["topic"].tolist()
 
 # ----------------------------
@@ -36,7 +36,7 @@ print("Embedding shape:", embedding_array.shape)
 # ----------------------------
 # Save
 # ----------------------------
-np.save("arxiv_qwen_embeddings.npy", embedding_array)
-df.to_csv("arxiv_30k_metadata.csv", index=False)
+np.save("amazon_qwen_embeddings.npy", embedding_array)
+df.to_csv("amazon_metadata.csv", index=False)
 
-print("ArXiv embeddings saved successfully.")
+print("Amazon embeddings saved successfully.")
