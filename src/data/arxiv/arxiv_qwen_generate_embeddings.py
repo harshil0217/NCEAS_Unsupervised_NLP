@@ -1,14 +1,27 @@
+import os
 import torch
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
 from sentence_transformers import SentenceTransformer
+
+# ----------------------------
+# Check files
+# ----------------------------
+print("Current directory:", os.getcwd())
+print("Files in directory:", os.listdir())
 
 # ----------------------------
 # Load Data
 # ----------------------------
-df = pd.read_csv("arxiv_30k.csv")   # make sure this file is in same directory
-texts = df["topic"].tolist()
+csv_file = "arxiv_30k_clean.csv"
+
+if not os.path.exists(csv_file):
+    raise FileNotFoundError(f"{csv_file} not found in current directory.")
+
+df = pd.read_csv(csv_file)
+texts = df["text"].astype(str).tolist()
+
+print("Loaded documents:", len(texts))
 
 # ----------------------------
 # Load Qwen Model
@@ -39,4 +52,4 @@ print("Embedding shape:", embedding_array.shape)
 np.save("arxiv_qwen_embeddings.npy", embedding_array)
 df.to_csv("arxiv_30k_metadata.csv", index=False)
 
-print("ArXiv embeddings saved successfully.")
+print("ArXiv Qwen embeddings saved successfully.")
