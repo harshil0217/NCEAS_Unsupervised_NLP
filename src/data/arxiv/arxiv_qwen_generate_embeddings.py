@@ -38,7 +38,7 @@ model = SentenceTransformer(model_name, device=device)
 # ----------------------------
 embedding_array = model.encode(
     texts,
-    batch_size=64,
+    batch_size=24,
     show_progress_bar=True,
     convert_to_numpy=True,
     normalize_embeddings=True

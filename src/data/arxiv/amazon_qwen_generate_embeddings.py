@@ -1,14 +1,16 @@
 import torch
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
 from sentence_transformers import SentenceTransformer
 
 # ----------------------------
 # Load Data
 # ----------------------------
-df = pd.read_csv("amz_data.csv")
+csv_file = "arxiv_30k_clean.csv"
+df = pd.read_csv(csv_file)
+
 texts = df["topic"].tolist()
+print("Total texts:", len(texts))
 
 # ----------------------------
 # Load Qwen Model
@@ -25,7 +27,7 @@ model = SentenceTransformer(model_name, device=device)
 # ----------------------------
 embedding_array = model.encode(
     texts,
-    batch_size=64,
+    batch_size=24,
     show_progress_bar=True,
     convert_to_numpy=True,
     normalize_embeddings=True
@@ -36,7 +38,7 @@ print("Embedding shape:", embedding_array.shape)
 # ----------------------------
 # Save
 # ----------------------------
-np.save("amazon_qwen_embeddings.npy", embedding_array)
-df.to_csv("amazon_metadata.csv", index=False)
+np.save("arxiv_qwen_embeddings.npy", embedding_array)
+df.to_csv("arxiv_metadata.csv", index=False)
 
-print("Amazon embeddings saved successfully.")
+print("arXiv embeddings saved successfully.")
