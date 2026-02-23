@@ -1,0 +1,19 @@
+name: nceas-nlp-project
+
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.10
+  - numpy
+  - pandas
+  - matplotlib
+  - scipy
+  - scikit-learn
+  - jupyter
+  - pip
+  - pip:
+      - phate
+      - umap-learn
+      - hdbscan
