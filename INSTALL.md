@@ -38,10 +38,10 @@ conda activate ./envs
 This repository does **NOT** include community partner data.
 
 For testing:
+
 - Use the example dataset located in the `data/` directory.
 - All paths must remain relative (no absolute paths).
-
-If adding new data, place it inside the `data/` folder.
+- If adding new data, place it inside the `data/` folder.
 
 ---
 
@@ -71,7 +71,14 @@ If installation was successful, the notebook will:
 
 ---
 
-## 6. Troubleshooting
+## 6. Verify Installation
+
+If the demo runs without errors and produces a visualization,
+the installation was successful.
+
+---
+
+## 7. Troubleshooting
 
 If environment creation fails:
 
