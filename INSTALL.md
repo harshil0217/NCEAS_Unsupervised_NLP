@@ -1,6 +1,8 @@
 # Installation Instructions  
 NCEAS Unsupervised NLP – PHATE Benchmark Pipeline
 
+These instructions allow instructors, classmates, and community partners to reproduce the project environment and run a working demo.
+
 ---
 
 ## 1. Clone the Repository
@@ -14,15 +16,17 @@ cd NCEAS_Unsupervised_NLP
 
 ## 2. Install Conda (If Not Installed)
 
-Download and install Miniconda:
+Download and install **Miniconda** for your operating system:
 
 https://docs.conda.io/en/latest/miniconda.html
 
-Follow the default installation instructions for your operating system.
+Follow the default installation instructions.
+
+After installation, open a new terminal.
 
 ---
 
-## 3. Create Project Environment
+## 3. Create the Project Environment
 
 From the root project directory:
 
@@ -31,17 +35,21 @@ conda env create --prefix ./envs --file environment.yml
 conda activate ./envs
 ```
 
+This creates a fully reproducible environment using the provided `environment.yml` file.
+
 ---
 
 ## 4. Data Instructions
 
-This repository does **NOT** include community partner data.
+This repository does **NOT** include community partner data due to privacy and NDA constraints.
 
-For testing:
+For testing purposes:
 
-- Use the example dataset located in the `data/` directory.
-- All paths must remain relative (no absolute paths).
-- If adding new data, place it inside the `data/` folder.
+- Example data is provided in the `data/` directory.
+- All file paths must remain **relative**.
+- If adding new datasets, place them inside the `data/` folder.
+
+Do **not** use absolute paths.
 
 ---
 
@@ -59,22 +67,25 @@ Open:
 notebooks/demo.ipynb
 ```
 
-Run all cells.
+Run all cells from top to bottom.
 
-If installation was successful, the notebook will:
+The demo notebook will:
 
 - Load example data  
 - Generate embeddings  
-- Run dimensionality reduction (PHATE, PCA, UMAP)  
-- Perform clustering  
+- Perform dimensionality reduction (PHATE, PCA, UMAP)  
+- Apply clustering  
 - Display a visualization figure  
 
 ---
 
 ## 6. Verify Installation
 
-If the demo runs without errors and produces a visualization,
-the installation was successful.
+The installation is successful if:
+
+- The notebook runs without errors  
+- A clustering visualization is generated  
+- No missing package errors occur  
 
 ---
 
@@ -87,3 +98,5 @@ conda deactivate
 rm -rf ./envs
 conda env create --prefix ./envs --file environment.yml
 ```
+
+If issues persist, ensure Conda is installed correctly and that you are running the commands from the project root directory.
