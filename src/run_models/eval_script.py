@@ -7,7 +7,7 @@ import os
 import sys
 
 # Set the target folder name you want to reach
-target_folder = "phate-for-text"
+target_folder = "src"
 
 # Get the current working directory
 current_dir = os.getcwd()
@@ -287,6 +287,7 @@ def noise_range(value):
     if f < 0 or f > 1:
         raise argparse.ArgumentTypeError("add_noise must be a float between 0 and 1.")
     return f
+
 from openai import OpenAI
 key = os.getenv('GPT_API_KEY')
 

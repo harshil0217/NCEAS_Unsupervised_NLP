@@ -14,7 +14,7 @@ themes=("Energy, Ecosystems, and Humans" "Offshore energy impacts on fisheries")
 # )
 parameter_sets=(
   '{"t": 1.0, "max_sub": 5, "depth": 3, "synonyms": 0, "branching": "random","add_noise":0}'
-  # '{"t": 1.0, "max_sub": 3, "depth": 5, "synonyms": 0, "branching": "random","add_noise":0}'
+  '{"t": 1.0, "max_sub": 3, "depth": 5, "synonyms": 0, "branching": "random","add_noise":0}'
 )
 # re run noise??? make sure no extra set is generated. delete old maybe?
 
