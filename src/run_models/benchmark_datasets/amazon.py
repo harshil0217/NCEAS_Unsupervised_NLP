@@ -217,18 +217,18 @@ for embed_name, embed_data in tqdm(embedding_methods.items()):
     print(f"Embedding shape: {embed_data.shape}")
     print(f"{'='*60}")
     
-    for cluster_method in ["Agglomerative", "HDBSCAN","DC", "HERCULES-DIRECT"]:
-        print(f"\n  Clustering Method: {cluster_method}")
+    for cluster_method in ["HERCULES-DIRECT", "Agglomerative", "HDBSCAN","DC"]:
+        print(f"\n Clustering Method: {cluster_method}")
         
         for level in cluster_levels:
-            print(f"    Testing cluster level: {level}")
+            print(f"Testing cluster level: {level}")
             
             # Clustering
             if cluster_method == "Agglomerative":
                 model = AgglomerativeClustering(n_clusters=level)
                 model.fit(embed_data)
                 labels = model.labels_
-                print(f"      Agglomerative clustering complete. Unique labels: {len(np.unique(labels))}")
+                print(f"Agglomerative clustering complete. Unique labels: {len(np.unique(labels))}")
                 
             elif cluster_method == "HDBSCAN":
                 model = HDBSCAN(min_cluster_size=level)
@@ -237,17 +237,16 @@ for embed_name, embed_data in tqdm(embedding_methods.items()):
                 Z = model.single_linkage_tree_.to_numpy()
                 labels = fcluster(Z, i, criterion='maxclust')
                 labels[labels == -1] = labels.max() + 1
-                print(f"      H
-                      DBSCAN clustering complete. Unique labels: {len(np.unique(labels))}")
+                print(f"HDBSCAN clustering complete. Unique labels: {len(np.unique(labels))}")
                 
             elif cluster_method=="DC":
                 model = dc(min_clusters=level, max_iterations=5000,k=10,alpha=3)
                 model.fit(embed_data)
                 labels =model.labels_
-                print(f"      DC clustering complete. Unique labels: {len(np.unique(labels))}")
+                print(f"DC clustering complete. Unique labels: {len(np.unique(labels))}")
                 
             elif cluster_method=='HERCULES-DIRECT':
-                print(f"      Running HERCULES-DIRECT...")
+                print(f"Running HERCULES-DIRECT...")
                 hercules = Hercules(
                     level_cluster_counts=[level],
                     representation_mode="direct",
@@ -256,7 +255,6 @@ for embed_name, embed_data in tqdm(embedding_methods.items()):
                     verbose=1,
                     existing_embeddings_path=f'{embedding_model}_reduced_embeddings/HERCULES_DIRECT_amz_embed.npy',
                     use_existing_embeddings=True,
-                    reduction_methods= None
                 )
                 
                 top_clusters = hercules.cluster(embed_data, topic_seed="Amazon product reviews")
