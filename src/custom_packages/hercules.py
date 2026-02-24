@@ -2101,6 +2101,7 @@ IMPORTANT: Ensure the entire output is valid JSON. Do NOT include markdown fence
                     if llm_output is not None and llm_error_str is None:
                         self._log(f"      Parsing response for prompt {prompt_id} (attempt {attempt+1})...", level=3)
                         parsed_data = _parse_llm_response(llm_output, expected_ids=included_ids_original_type)
+                        print(f"parsed_data: {parsed_data}")
 
                         if parsed_data is not None:
                             parsed_count = len(parsed_data)
