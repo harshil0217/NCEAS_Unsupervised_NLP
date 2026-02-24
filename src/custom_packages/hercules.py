@@ -1042,7 +1042,7 @@ class Hercules:
         if text_embedding_client is None:
             self.text_embedding_client = _dummy_text_embedding_function
             using_dummy_text_embed = True
-        elif not callable(text_embedding_client):
+        elif not callable(text_embedding_client) and self.use_existing_embeddings == False:
             raise TypeError("If provided, `text_embedding_client` must be callable.")
         else:
             self.text_embedding_client = text_embedding_client
