@@ -84,38 +84,38 @@ key = os.getenv('GROQ_API_KEY')
 llm_client = Groq(api_key=key)
 
 def groq_caller(prompt: str) -> str:
-    # We use a try-except block to mirror your local function's error handling
+    """
+    Generates text using remote Groq/OpenAI client.
+    Returns a raw string (potentially containing JSON/markdown) 
+    to be processed by _parse_llm_response later.
+    """
+    # 1. Mirrored System/User structure from your local Gemma function
+    messages = [
+        {"role": "system", "content": "You are a helpful assistant providing concise summaries."},
+        {"role": "user", "content": prompt}
+    ]
+
     try:
-        # Remote APIs handle the 'processor' and 'device' logic server-side
+        # 2. Remote API Call
+        # We don't use response_format="json_object" here because your 
+        # parser function expects to handle the raw string/markdown itself.
         response = llm_client.chat.completions.create(
             model="openai/gpt-oss-20b", 
-            # Forces the model to output valid JSON
-            response_format={"type": "json_object"},
-            messages=[
-                {
-                    "role": "system", 
-                    "content": "You are a helpful assistant providing concise summaries. Respond only in valid JSON."
-                },
-                {
-                    "role": "user", 
-                    "content": prompt
-                }
-            ],
-            # Mirroring 'do_sample=False' from your local code
-            temperature=0.0, 
+            messages=messages,
+            temperature=0.0,  # Mirroring do_sample=False
             max_tokens=16384
         )
 
-        # Accessing the content string from the response object
-        raw_content = response.choices[0].message.content.strip()
+        # 3. Accessing the text content
+        # Note: Groq/OpenAI use .choices[0].message.content
+        decoded_content = response.choices[0].message.content
         
-        # Parse and return as a dictionary (JSON)
-        return json.loads(raw_content)
+        return decoded_content.strip()
 
     except Exception as e:
+        # 4. Mirrored error handling from your local logic
         print(f"Error during remote Groq generation: {e}")
-        # Return an empty dict or a dummy response to match your local error behavior
-        return {}
+        return ""
 
 amz_40 = pd.read_csv("data/amazon/train_40k.csv")
 amz_10 = pd.read_csv("data/amazon/val_10k.csv")
