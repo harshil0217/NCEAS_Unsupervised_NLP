@@ -910,7 +910,7 @@ class Hercules:
     DEFAULT_AUTO_K_MAX = 15
     DEFAULT_AUTO_K_METRIC_PARAMS = {}
     DEFAULT_N_REDUCTION_COMPONENTS = 2
-    DEFAULT_REDUCTION_METHODS = ["pca"]
+    DEFAULT_REDUCTION_METHODS = None
     DEFAULT_MAX_PROMPT_TOKENS = 1048576
     DEFAULT_MAX_PROMPT_TOKEN_BUFFER = 1.2
     DEFAULT_LLM_INITIAL_BATCH_SIZE = 32
@@ -955,7 +955,7 @@ class Hercules:
                  auto_k_max: int = DEFAULT_AUTO_K_MAX,
                  auto_k_metric_params: dict = DEFAULT_AUTO_K_METRIC_PARAMS,
                  n_reduction_components: int = DEFAULT_N_REDUCTION_COMPONENTS,
-                 reduction_methods: list[str] | str = DEFAULT_REDUCTION_METHODS,
+                 reduction_methods: list[str] | str | None = DEFAULT_REDUCTION_METHODS,
                  prompt_l0_sample_size: int = DEFAULT_PROMPT_L0_SAMPLE_SIZE,
                  prompt_l0_sample_strategy: str = DEFAULT_PROMPT_L0_SAMPLE_STRATEGY,
                  prompt_l0_sample_trunc_len: int = DEFAULT_PROMPT_L0_SAMPLE_TRUNC_LEN,
