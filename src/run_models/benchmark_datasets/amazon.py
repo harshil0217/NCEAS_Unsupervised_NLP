@@ -87,7 +87,10 @@ def groq_caller(prompt: str) -> str:
         model="openai/gpt-oss-20b", 
         messages=[{"role": "system", "content": "You are a helpful assistant Generating Summaries."}, {"role": "user", "content": prompt}]
     )
-    return response
+    raw_content = response.choices[0].message.content
+    
+    # 3. Parse the string into a Python dictionary
+    return json.loads(raw_content)
 
 
 amz_40 = pd.read_csv("data/amazon/train_40k.csv")
