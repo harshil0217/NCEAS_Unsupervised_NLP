@@ -211,3 +211,4 @@ __marimo__/
 *.npy
 
 
+src/data/arxiv/data/embeddings/
