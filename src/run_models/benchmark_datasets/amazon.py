@@ -253,7 +253,7 @@ for embed_name, embed_data in tqdm(embedding_methods.items()):
                     text_embedding_client= client,
                     llm_client= groq_caller,
                     verbose=1,
-                    existing_embeddings_path=f'{embedding_model}_reduced_embeddings/HERCULES_DIRECT_amz_embed.npy',
+                    existing_embeddings = embed_data,
                     use_existing_embeddings=True,
                 )
                 
