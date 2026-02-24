@@ -1117,7 +1117,7 @@ class Hercules:
 
         self.n_reduction_components = max(1, n_reduction_components)
         if isinstance(reduction_methods, str): reduction_methods = [reduction_methods]
-        if not isinstance(reduction_methods, list): raise ValueError("`reduction_methods` must be str or list[str].")
+        #if not isinstance(reduction_methods, list): raise ValueError("`reduction_methods` must be str or list[str].")
         self.reduction_methods = [m.lower() for m in reduction_methods if m.lower() == 'pca']
         if reduction_methods and not self.reduction_methods:
             warnings.warn(f"Specified reduction methods {reduction_methods} are not supported (only 'pca'). No reduction will be performed.")
