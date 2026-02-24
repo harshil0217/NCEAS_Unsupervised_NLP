@@ -85,9 +85,9 @@ llm_client = Groq(api_key=key)
 def groq_caller(prompt: str) -> str:
     response = llm_client.chat.completions.create(
         model="openai/gpt-oss-20b", 
-        messages=[{"role": "user", "content": prompt}]
+        messages=[{"role": "system", "content": "You are a helpful assistant Generating Summaries."}, {"role": "user", "content": prompt}]
     )
-    return response.choices[0].message.content
+    return response
 
 
 amz_40 = pd.read_csv("data/amazon/train_40k.csv")
