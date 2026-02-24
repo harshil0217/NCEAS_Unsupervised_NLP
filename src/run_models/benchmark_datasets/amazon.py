@@ -285,7 +285,7 @@ for embed_name, embed_data in tqdm(embedding_methods.items()):
                 )
                 
                 top_clusters = hercules.cluster(embed_data, topic_seed="Amazon product reviews")
-                labels = hercules.get_level_assignments(level=level)
+                labels = hercules.get_level_assignments(level=1)[0]
                 print(labels)
                 
                 
