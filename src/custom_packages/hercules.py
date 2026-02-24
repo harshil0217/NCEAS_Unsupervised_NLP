@@ -2367,7 +2367,6 @@ IMPORTANT: Ensure the entire output is valid JSON. Do NOT include markdown fence
             if len(l0_vectors) != len(l0_clusters):
                 print(f"Error: Loaded existing embeddings length {len(l0_vectors)} does not match number of L0 clusters {len(l0_clusters)}."); return False
             else:
-                self._log(f"  Loaded existing embeddings from {self.existing_embeddings_path} for L0 representation.", level=2)
                 l0_representation_space = 'text_embedding'
 
         if self.representation_mode == 'direct':
