@@ -1,6 +1,7 @@
 import os
 import sys
 from dotenv import load_dotenv
+import json
 load_dotenv() 
 
 # Set the target folder name you want to reach
@@ -348,7 +349,7 @@ scores_df = scores_df.sort_values(by=["reduction_method", "cluster_method", "lev
 write_header = not os.path.exists(f'{embedding_model}_results/other_amz_results.csv')
 scores_df.to_csv(f"{embedding_model}_results/other_amz_results.csv",mode='a', index=False, header=write_header)
 
-import json
+
 with open("combo_color_map.json", 'r') as file:
         combo_color_map = json.load(file)
 
