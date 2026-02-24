@@ -942,7 +942,7 @@ class Hercules:
     DEFAULT_RESAMPLING_ITERATIONS = 10
     EMPTY_TEXT_PLACEHOLDER = "[EMPTY_CONTENT]"
     USE_EXISTING_EMBEDDINGS = False
-    EXISTING_EMBEDDINGS_PATH = 'existing_embeddings.json'
+
 
     def __init__(self,
                  level_cluster_counts: Optional[list[int]],
@@ -987,8 +987,8 @@ class Hercules:
                  use_resampling: bool = DEFAULT_USE_RESAMPLING,
                  resampling_points_per_cluster: int = DEFAULT_RESAMPLING_POINTS_PER_CLUSTER,
                  resampling_iterations: int = DEFAULT_RESAMPLING_ITERATIONS,
-                 existing_embeddings_path: str = EXISTING_EMBEDDINGS_PATH,
-                 use_existing_embeddings: bool = USE_EXISTING_EMBEDDINGS
+                 use_existing_embeddings: bool = USE_EXISTING_EMBEDDINGS,
+                 existing_embeddings = None
                  ):
         """
         Initializes the Hercules clusterer.
@@ -1181,7 +1181,7 @@ class Hercules:
         self._original_id_to_index = {}
         
         self.use_existing_embeddings = use_existing_embeddings
-        self.existing_embeddings_path = existing_embeddings_path
+        self.existing_embeddings= existing_embeddings
 
         if self.save_run_details and not os.path.exists(self.run_details_dir):
              try: os.makedirs(self.run_details_dir, exist_ok=True)
@@ -2363,7 +2363,7 @@ IMPORTANT: Ensure the entire output is valid JSON. Do NOT include markdown fence
         l0_representation_space = None
         
         if self.representation_mode == 'direct' and self.use_existing_embeddings:
-            l0_vectors = np.load(self.existing_embeddings_path)
+            l0_vectors = self.existing_embeddings
             if len(l0_vectors) != len(l0_clusters):
                 print(f"Error: Loaded existing embeddings length {len(l0_vectors)} does not match number of L0 clusters {len(l0_clusters)}."); return False
             else:
