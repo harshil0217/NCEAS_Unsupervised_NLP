@@ -1042,7 +1042,7 @@ class Hercules:
         if text_embedding_client is None:
             self.text_embedding_client = _dummy_text_embedding_function
             using_dummy_text_embed = True
-        elif not callable(text_embedding_client) and self.use_existing_embeddings == False:
+        elif not callable(text_embedding_client) and use_existing_embeddings == False:
             raise TypeError("If provided, `text_embedding_client` must be callable.")
         else:
             self.text_embedding_client = text_embedding_client
@@ -1179,6 +1179,9 @@ class Hercules:
         self._l0_clusters_ordered: list[Cluster] = []
         self._max_level: int = 0
         self._original_id_to_index = {}
+        
+        self.use_existing_embeddings = use_existing_embeddings
+        self.existing_embeddings_path = existing_embeddings_path
 
         if self.save_run_details and not os.path.exists(self.run_details_dir):
              try: os.makedirs(self.run_details_dir, exist_ok=True)
