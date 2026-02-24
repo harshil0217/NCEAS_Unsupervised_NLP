@@ -987,8 +987,8 @@ class Hercules:
                  use_resampling: bool = DEFAULT_USE_RESAMPLING,
                  resampling_points_per_cluster: int = DEFAULT_RESAMPLING_POINTS_PER_CLUSTER,
                  resampling_iterations: int = DEFAULT_RESAMPLING_ITERATIONS,
-                 EXISTING_EMBEDDINGS: str = EXISTING_EMBEDDINGS_PATH,
-                 use_existing_embeddgs: bool = USE_EXISTING_EMBEDDINGS
+                 existing_embeddings_path: str = EXISTING_EMBEDDINGS_PATH,
+                 use_existing_embeddings: bool = USE_EXISTING_EMBEDDINGS
                  ):
         """
         Initializes the Hercules clusterer.
