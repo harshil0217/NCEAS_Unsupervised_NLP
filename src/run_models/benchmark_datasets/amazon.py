@@ -83,15 +83,38 @@ key = os.getenv('GROQ_API_KEY')
 llm_client = Groq(api_key=key)
 
 def groq_caller(prompt: str) -> str:
-    response = llm_client.chat.completions.create(
-        model="openai/gpt-oss-20b", 
-        messages=[{"role": "system", "content": "You are a helpful assistant Generating Summaries."}, {"role": "user", "content": prompt}]
-    )
-    raw_content = response.choices[0].message.content
-    
-    # 3. Parse the string into a Python dictionary
-    return json.loads(raw_content)
+    # We use a try-except block to mirror your local function's error handling
+    try:
+        # Remote APIs handle the 'processor' and 'device' logic server-side
+        response = llm_client.chat.completions.create(
+            model="openai/gpt-oss-20b", 
+            # Forces the model to output valid JSON
+            response_format={"type": "json_object"},
+            messages=[
+                {
+                    "role": "system", 
+                    "content": "You are a helpful assistant providing concise summaries. Respond only in valid JSON."
+                },
+                {
+                    "role": "user", 
+                    "content": prompt
+                }
+            ],
+            # Mirroring 'do_sample=False' from your local code
+            temperature=0.0, 
+            max_tokens=16384
+        )
 
+        # Accessing the content string from the response object
+        raw_content = response.choices[0].message.content.strip()
+        
+        # Parse and return as a dictionary (JSON)
+        return json.loads(raw_content)
+
+    except Exception as e:
+        print(f"Error during remote Groq generation: {e}")
+        # Return an empty dict or a dummy response to match your local error behavior
+        return {}
 
 amz_40 = pd.read_csv("data/amazon/train_40k.csv")
 amz_10 = pd.read_csv("data/amazon/val_10k.csv")
