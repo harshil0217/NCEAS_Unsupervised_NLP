@@ -30,6 +30,7 @@ sys.path.insert(0, current_dir)
 import importlib
 import os
 import re
+from pathlib import Path
 import warnings
 from collections import defaultdict
 import torch
@@ -82,6 +83,91 @@ from groq import Groq
 key = os.getenv('GROQ_API_KEY')
 
 llm_client = Groq(api_key=key)
+
+
+def _safe_slug(value: str) -> str:
+    return re.sub(r"[^A-Za-z0-9._-]+", "_", str(value)).strip("_")
+
+
+def export_top_clusters_txt(
+    top_clusters,
+    embedding_model: str,
+    reduction_method: str,
+    clustering_level: int,
+    clustering_method: str = "HERCULES-DIRECT",
+) -> str:
+    """
+    Export top cluster summaries and key Cluster-object field documentation to a txt file.
+
+    Output path pattern:
+        {embedding_model}_results/cluster_documentation/{reduction_method}/level_{clustering_level}/top_clusters_{clustering_method}.txt
+    """
+    if top_clusters is None:
+        return ""
+
+    if not isinstance(top_clusters, (list, tuple)):
+        top_clusters = [top_clusters]
+
+    output_dir = Path(f"{embedding_model}_results") / "cluster_documentation" / _safe_slug(reduction_method) / f"level_{clustering_level}"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_file = output_dir / f"top_clusters_{_safe_slug(clustering_method)}.txt"
+
+    field_docs = {
+        "level": "Depth level in hierarchy (0 = leaf/original item).",
+        "id": "Internal sequential cluster ID assigned by Cluster._get_next_id().",
+        "original_data_type": "Underlying leaf data type (e.g., 'text', 'numeric', 'image').",
+        "children": "Child Cluster nodes (empty for leaf clusters).",
+        "parent": "Parent Cluster node, or None when this is a top/root cluster.",
+        "title": "Short cluster label/title.",
+        "description": "Cluster summary/description.",
+        "original_id": "Original source item ID (mainly for level-0 nodes).",
+        "_raw_item_data": "Original raw source payload for leaf item(s).",
+    }
+
+    lines = [
+        "Cluster Object Documentation + Top Cluster Export",
+        "=" * 60,
+        f"embedding_model: {embedding_model}",
+        f"reduction_method: {reduction_method}",
+        f"clustering_method: {clustering_method}",
+        f"clustering_level: {clustering_level}",
+        f"num_top_clusters: {len(top_clusters)}",
+        "",
+        "Cluster Object Field Documentation",
+        "-" * 60,
+    ]
+
+    for field_name, field_doc in field_docs.items():
+        lines.append(f"- {field_name}: {field_doc}")
+
+    lines.extend(["", "Top Clusters", "-" * 60])
+
+    for idx, cluster in enumerate(top_clusters, start=1):
+        children = getattr(cluster, "children", None)
+        cluster_info = {
+            "level": getattr(cluster, "level", None),
+            "id": getattr(cluster, "id", None),
+            "original_data_type": getattr(cluster, "original_data_type", None),
+            "children_count": len(children) if children is not None else 0,
+            "parent_id": getattr(getattr(cluster, "parent", None), "id", None),
+            "title": getattr(cluster, "title", None),
+            "description": getattr(cluster, "description", None),
+            "original_id": getattr(cluster, "original_id", None),
+            "_raw_item_data": getattr(cluster, "_raw_item_data", None),
+        }
+
+        lines.append(f"\n[Top Cluster {idx}]")
+        for key_name, value in cluster_info.items():
+            if key_name == "_raw_item_data":
+                value_str = str(value)
+                if len(value_str) > 500:
+                    value_str = value_str[:500] + "... [truncated]"
+                lines.append(f"{key_name}: {value_str}")
+            else:
+                lines.append(f"{key_name}: {value}")
+
+    output_file.write_text("\n".join(lines), encoding="utf-8")
+    return str(output_file)
 
 def groq_caller(prompt: str) -> str:
     """
@@ -285,8 +371,17 @@ for embed_name, embed_data in tqdm(embedding_methods.items()):
                 )
                 
                 top_clusters = hercules.cluster(embed_data, topic_seed="Amazon product reviews")
+                cluster_doc_path = export_top_clusters_txt(
+                    top_clusters=top_clusters,
+                    embedding_model=embedding_model,
+                    reduction_method=embed_name,
+                    clustering_level=level,
+                    clustering_method=cluster_method,
+                )
+                print(f"Exported top cluster documentation to: {cluster_doc_path}")
                 labels = hercules.get_level_assignments(level=1)[0]
                 print(labels)
+                
                 
                 
                 
@@ -330,7 +425,6 @@ rows = []
 for (embed_name, cluster_method), score_dict in scores_all.items():
     n_levels = len(score_dict["FM"])  # assuming all score lists have same length
     for i in range(n_levels):
-        if embed_name == 'UMAP':
             rows.append({
                 "reduction_method": embed_name,
                 "cluster_method": cluster_method,
