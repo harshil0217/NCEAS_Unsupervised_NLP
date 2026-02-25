@@ -418,7 +418,7 @@ combo_params = [
 ]
 
 with tqdm_joblib(tqdm(desc="Processing embedding-clustering combos", total=len(combo_params))):
-    with Parallel(n_jobs=-4, backend="loky") as parallel:
+    with Parallel(n_jobs=-4, backend="threading") as parallel:
         combo_results = parallel(
             delayed(safe_run_combo)(embed_name, cluster_method)
             for embed_name, cluster_method in combo_params
