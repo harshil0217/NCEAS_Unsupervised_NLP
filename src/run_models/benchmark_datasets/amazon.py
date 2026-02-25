@@ -66,6 +66,8 @@ from sklearn.metrics import adjusted_rand_score, rand_score
 
 
 from tqdm import tqdm
+from joblib import Parallel, delayed
+from tqdm_joblib import tqdm_joblib
 # ==============
 # Global Config
 # ==============
@@ -324,52 +326,52 @@ from sklearn.manifold import TSNE
 
 scores_all = defaultdict(lambda: defaultdict(list))
 
-for embed_name, embed_data in tqdm(embedding_methods.items()):
-    print(f"\n{'='*60}")
-    print(f"Processing Embedding Method: {embed_name}")
-    print(f"Embedding shape: {embed_data.shape}")
-    print(f"{'='*60}")
-    
-    for cluster_method in ["HERCULES-DIRECT", "Agglomerative", "HDBSCAN","DC"]:
-        print(f"\n Clustering Method: {cluster_method}")
-        
+
+def safe_run_combo(embed_name, cluster_method):
+    embed_data = embedding_methods[embed_name]
+    combo_scores = {"FM": [], "Rand": [], "ARI": []}
+    try:
+        print(f"\n{'='*60}")
+        print(f"Processing Embedding Method: {embed_name}")
+        print(f"Clustering Method: {cluster_method}")
+        print(f"Embedding shape: {embed_data.shape}")
+        print(f"{'='*60}")
+
         for level in cluster_levels:
             print(f"Testing cluster level: {level}")
-            
-            # Clustering
+
             if cluster_method == "Agglomerative":
                 model = AgglomerativeClustering(n_clusters=level)
                 model.fit(embed_data)
                 labels = model.labels_
                 print(f"Agglomerative clustering complete. Unique labels: {len(np.unique(labels))}")
-                
+
             elif cluster_method == "HDBSCAN":
                 model = HDBSCAN(min_cluster_size=level)
                 model.fit(embed_data)
-                labels = model.labels_
                 Z = model.single_linkage_tree_.to_numpy()
-                labels = fcluster(Z, i, criterion='maxclust')
+                labels = fcluster(Z, level, criterion='maxclust')
                 labels[labels == -1] = labels.max() + 1
                 print(f"HDBSCAN clustering complete. Unique labels: {len(np.unique(labels))}")
-                
-            elif cluster_method=="DC":
-                model = dc(min_clusters=level, max_iterations=5000,k=10,alpha=3)
+
+            elif cluster_method == "DC":
+                model = dc(min_clusters=level, max_iterations=5000, k=10, alpha=3)
                 model.fit(embed_data)
-                labels =model.labels_
+                labels = model.labels_
                 print(f"DC clustering complete. Unique labels: {len(np.unique(labels))}")
-                
-            elif cluster_method=='HERCULES-DIRECT':
-                print(f"Running HERCULES-DIRECT...")
+
+            elif cluster_method == 'HERCULES-DIRECT':
+                print("Running HERCULES-DIRECT...")
                 hercules = Hercules(
                     level_cluster_counts=[level],
                     representation_mode="direct",
-                    text_embedding_client= client,
-                    llm_client= groq_caller,
+                    text_embedding_client=client,
+                    llm_client=groq_caller,
                     verbose=1,
-                    existing_embeddings = embed_data,
+                    existing_embeddings=embed_data,
                     use_existing_embeddings=True,
                 )
-                
+
                 top_clusters = hercules.cluster(embed_data, topic_seed="Amazon product reviews")
                 cluster_doc_path = export_top_clusters_txt(
                     top_clusters=top_clusters,
@@ -380,39 +382,52 @@ for embed_name, embed_data in tqdm(embedding_methods.items()):
                 )
                 print(f"Exported top cluster documentation to: {cluster_doc_path}")
                 labels = hercules.get_level_assignments(level=1)[0]
-                print(labels)
-                
-                
-                
-                
-            # Use topic_dict for comparison
+
             available_levels = np.array(sorted(topic_dict.keys()))
             closest_level = min(available_levels, key=lambda k: abs(k - level))
             print(f"Ground truth: Using closest level {closest_level} (requested: {level})")
 
             topic_series = topic_dict[closest_level]
             valid_idx = ~pd.isna(topic_series)
-            n_valid = valid_idx.sum()
-            print(f"Valid samples for evaluation: {n_valid}/{len(topic_series)}")
-
             target_lst = topic_series[valid_idx]
             label_lst = labels[valid_idx]
 
-            # Compute metrics
             try:
                 fm_score = FowlkesMallows.Bk({level: target_lst}, {level: label_lst})[level]['FM']
-            except:
-                fm_score = np.nan  # In case of failure
-                print(f"WARNING: FM score computation failed!")
+            except Exception:
+                fm_score = np.nan
+                print("WARNING: FM score computation failed!")
 
             rand = rand_score(target_lst, label_lst)
             ari = adjusted_rand_score(target_lst, label_lst)
-            
             print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}")
-            
-            scores_all[(embed_name, cluster_method)]["FM"].append(fm_score)
-            scores_all[(embed_name, cluster_method)]["Rand"].append(rand)
-            scores_all[(embed_name, cluster_method)]["ARI"].append(ari)
+
+            combo_scores["FM"].append(fm_score)
+            combo_scores["Rand"].append(rand)
+            combo_scores["ARI"].append(ari)
+
+        return embed_name, cluster_method, combo_scores
+    except Exception as e:
+        print(f"Error in combo ({embed_name}, {cluster_method}): {e}")
+        return embed_name, cluster_method, combo_scores
+
+combo_params = [
+    (embed_name, cluster_method)
+    for embed_name in embedding_methods.keys()
+    for cluster_method in ["HERCULES-DIRECT", "Agglomerative", "HDBSCAN", "DC"]
+]
+
+with tqdm_joblib(tqdm(desc="Processing embedding-clustering combos", total=len(combo_params))):
+    with Parallel(n_jobs=-4, backend="loky") as parallel:
+        combo_results = parallel(
+            delayed(safe_run_combo)(embed_name, cluster_method)
+            for embed_name, cluster_method in combo_params
+        )
+
+for embed_name, cluster_method, combo_scores in combo_results:
+    scores_all[(embed_name, cluster_method)]["FM"] = combo_scores["FM"]
+    scores_all[(embed_name, cluster_method)]["Rand"] = combo_scores["Rand"]
+    scores_all[(embed_name, cluster_method)]["ARI"] = combo_scores["ARI"]
 
 print(f"\n{'='*60}")
 print("All clustering and evaluation complete!")
