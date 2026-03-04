@@ -73,11 +73,6 @@ from tqdm_joblib import tqdm_joblib
 np.random.seed(42)
 warnings.filterwarnings("ignore")
 
-# Reload modules if needed
-importlib.reload(phate)
-
-
-
 
 amz_40 = pd.read_csv("data/amazon/train_40k.csv")
 amz_10 = pd.read_csv("data/amazon/val_10k.csv")
@@ -98,4 +93,102 @@ amz = amz[amz['topic'].apply(lambda x: isinstance(x, str) and x.strip() != '')].
 
 amz.to_csv("data/amazon/amz_data.csv")
 
-amz.shape
+print("Amazon HERC dataset loaded and preprocessed successfully.")
+
+
+
+
+model_name = "Qwen/Qwen3-0.6B"
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    torch_dtype="auto",
+    device_map="auto"
+)
+
+
+def qwen_caller(prompt: str) -> str:
+    """
+    generates text using the Qwen model and returns the generated text.
+    """
+    
+    messages = [
+        {"role": "system", "content": "You are a helpful assistant providing concise summaries."},
+        {"role": "user", "content": prompt}
+    ]
+    
+    text = tokenizer.apply_chat_template(messages, add_generation_prompt=True, thinking=True, tokenize = False)
+    inputs = tokenizer([text], return_tensors="pt").to(model.device)
+    
+    generated_ids = model.generate(**inputs, 
+                                   max_new_tokens=32768)
+    
+    output_ids = generated_ids[0][len(inputs["input_ids"][0]):].tolist() # Get only the generated part
+    
+    try:
+        # rindex finding 151668 (</think>)
+        index = len(output_ids) - output_ids[::-1].index(151668)
+    except ValueError:
+        index = 0
+    
+    content = tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
+    
+    return content
+    
+    
+embedding_model_names = [
+    "Qwen/Qwen3-Embedding-0.6B",
+    "sentence-transformers/all-MiniLM-L6-v2",
+]
+
+# Prepare data once (same for all embedding models)
+shuffle_idx = np.random.RandomState(seed=67).permutation(len(amz))
+topic_data = amz.iloc[shuffle_idx].reset_index(drop=True)
+reverse_idx = np.argsort(shuffle_idx)
+
+# Build topic_dict from ground truth categories
+topic_dict = {}
+for col in topic_data.columns:
+    if re.match(r'^category_\d+$', col):
+        unique_count = len(topic_data[col].unique())
+        topic_dict[unique_count] = np.array(topic_data[col])
+        
+# Determine cluster levels from hierarchy depth
+depth = 3
+print(f"Depth: {depth}")
+print(f"Building cluster levels by counting unique categories at each level...\n")
+
+cluster_levels = []
+for i in reversed(range(0, depth)):
+    unique_count = len(topic_data[f'category_{i}'].unique())
+    print(f"Level {i} (category_{i}): {unique_count} unique categories")
+    cluster_levels.append(unique_count)
+
+print(f"\nFinal cluster_levels (from deepest to shallowest): {cluster_levels}\n")
+
+
+
+for model_name in embedding_model_names:
+    embedding_client = SentenceTransformer(model_name, device=device)
+    
+    hercules = Hercules(
+    level_cluster_counts=cluster_levels,
+    representation_mode="direct",
+    text_embedding_client=embedding_client,
+    llm_client=qwen_caller,
+    verbose=1
+    )
+    
+    # 3. Run clustering
+    top_clusters = hercules.cluster(amz['topic'].tolist(), topic_seed="amazon reviews")
+
+    # 4. Print results
+    if top_clusters:
+        for cluster in top_clusters:
+            cluster.print_hierarchy(indent_increment=2, print_level_0=False)
+            with open(f"results/amazon_herc_{model_name.replace('/', '_')}.json", "w") as f:
+                json.dump(cluster.to_dict(), f, indent=4)
+    
+    
+    

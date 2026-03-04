@@ -139,93 +139,114 @@ def get_embeddings(texts, model):
     return embeddings
 
 
-embedding_model = "Qwen/Qwen3-Embedding-0.6B" 
-os.makedirs(f'{embedding_model}_results', exist_ok=True)
-os.makedirs(f"{embedding_model}_embeddings", exist_ok=True)
-embedding_list = get_embeddings(amz['topic'], model=embedding_model)
+embedding_model_names = [
+    "Qwen/Qwen3-Embedding-0.6B",
+    "sentence-transformers/all-MiniLM-L6-v2",
+]
 
-np.save(f"{embedding_model}_embeddings/amz_embed.npy",embedding_list)
+embedding_models = {}  # Will store {model_name: {reduction_method: embeddings}}
 
-embedding_list=np.load(f"{embedding_model}_embeddings/amz_embed.npy")
-
-os.makedirs(f'{embedding_model}_reduced_embeddings', exist_ok=True)
-
-shuffle_idx = np.random.RandomState(seed=42).permutation(len(amz))
-# Shuffle both documents and embeddings using the same index
+# Prepare data once (same for all embedding models)
+shuffle_idx = np.random.RandomState(seed=67).permutation(len(amz))
 topic_data = amz.iloc[shuffle_idx].reset_index(drop=True)
-data = np.array(embedding_list)[shuffle_idx] 
 reverse_idx = np.argsort(shuffle_idx)
 
+# Build topic_dict from ground truth categories
 topic_dict = {}
 for col in topic_data.columns:
-    if re.match(r'^category_\d+$', col): 
+    if re.match(r'^category_\d+$', col):
         unique_count = len(topic_data[col].unique())
         topic_dict[unique_count] = np.array(topic_data[col])
 
-reducer_model = phate.PHATE(n_jobs=-2,random_state=42, n_components=300,decay=20,t="auto",n_pca=None) #{'k':10,'alpha':4,'t':3}
-embed_phate = reducer_model.fit_transform(data)
-np.save(f"{embedding_model}_reduced_embeddings/PHATE_amz_embed.npy",embed_phate)
-
-embed_phate =np.load(f"{embedding_model}_reduced_embeddings/PHATE_amz_embed.npy")
-
-depth= 3
+# Determine cluster levels from hierarchy depth
+depth = 3
 print(f"Depth: {depth}")
 print(f"Building cluster levels by counting unique categories at each level...\n")
 
-cluster_levels=[]
+cluster_levels = []
 for i in reversed(range(0, depth)):
     unique_count = len(topic_data[f'category_{i}'].unique())
     print(f"Level {i} (category_{i}): {unique_count} unique categories")
     cluster_levels.append(unique_count)
 
-print(f"\nFinal cluster_levels (from deepest to shallowest): {cluster_levels}")
+print(f"\nFinal cluster_levels (from deepest to shallowest): {cluster_levels}\n")
 
-import numpy as np
-from sklearn.decomposition import PCA
-import umap
-import matplotlib.pyplot as plt
-include_pca =True
-include_umap=True
+# Now process each embedding model
+for embedding_model in embedding_model_names:
+    print(f"\n{'='*60}")
+    print(f"Processing embedding model: {embedding_model}")
+    print(f"{'='*60}\n")
 
-# Load your embeddings
-embeddings = np.array(data)
-embedding_methods = {}
-# PCA to 2D
+    os.makedirs(f'{embedding_model}_results', exist_ok=True)
+    os.makedirs(f"{embedding_model}_embeddings", exist_ok=True)
+    embedding_list = get_embeddings(amz['topic'], model=embedding_model)
 
-embedding_methods["PHATE"]  =embed_phate
-if include_pca:
-    pca = PCA(n_components=300)
-    embedding_methods["PCA"] = pca.fit_transform(embeddings)
-np.save(f"{embedding_model}_reduced_embeddings/PCA_amz_embed.npy",embedding_methods["PCA"])
+    np.save(f"{embedding_model}_embeddings/amz_embed.npy", embedding_list)
 
-# # UMAP to 2D
-if include_umap:
-    umap_model = umap.UMAP(n_components=300, random_state=42,min_dist=.05,n_neighbors=10)
-    embedding_methods["UMAP"] = umap_model.fit_transform(embeddings)
-np.save(f"{embedding_model}_reduced_embeddings/UMAP_amz_embed_new.npy",embedding_methods["UMAP"])
-from sklearn.manifold import TSNE
+    embedding_list = np.load(f"{embedding_model}_embeddings/amz_embed.npy")
 
-# # Fit t-SNE
-tsne_model = TSNE(n_components=3, random_state=42)
-embedding_methods["tSNE"] = tsne_model.fit_transform(embeddings)
-np.save(f"{embedding_model}_reduced_embeddings/tSNE_amz_embed.npy",embedding_methods["tSNE"])
+    os.makedirs(f'{embedding_model}_reduced_embeddings', exist_ok=True)
 
-# # Fit to PaCMAP
-pac = pacmap.PaCMAP(n_components=300, random_state=42, n_neighbors=10, MN_ratio=0.5, FP_ratio=2.0)
-embedding_methods["PaCMAP"] = pac.fit_transform(embeddings)
-np.save(f"{embedding_model}_reduced_embeddings/PaCMAP_amz_embed.npy", embedding_methods["PaCMAP"])
+    # Shuffle embeddings with the same index as topic_data
+    data = np.array(embedding_list)[shuffle_idx]
 
-# # Fit to TriMAP
-tr = trimap.TRIMAP(n_components=300, random_state=42, n_neighbors=10, min_dist=0.05)
-embedding_methods["TriMAP"] = tr.fit_transform(embeddings)
-np.save(f"{embedding_model}_reduced_embeddings/TriMAP_amz_embed.npy", embedding_methods["TriMAP"])
+    reducer_model = phate.PHATE(n_jobs=-2, random_state=42, n_components=300, decay=20, t="auto", n_pca=None)
+    embed_phate = reducer_model.fit_transform(data)
+    np.save(f"{embedding_model}_reduced_embeddings/PHATE_amz_embed.npy", embed_phate)
 
+    embed_phate = np.load(f"{embedding_model}_reduced_embeddings/PHATE_amz_embed.npy")
+
+    import umap
+    import matplotlib.pyplot as plt
+
+    # Load your embeddings
+    embeddings = np.array(data)
+    embedding_methods_for_model = {}  # Local dict for this embedding model
+
+    embedding_methods_for_model["PHATE"] = embed_phate
+
+    # Apply other dimensionality reduction methods
+    include_pca = True
+    include_umap = True
+
+    if include_pca:
+        pca_model = PCA(n_components=300, random_state=42)
+        embedding_methods_for_model["PCA"] = pca_model.fit_transform(embeddings)
+        np.save(f"{embedding_model}_reduced_embeddings/PCA_amz_embed.npy", embedding_methods_for_model["PCA"])
+
+    # # UMAP to 2D
+    if include_umap:
+        umap_model = umap.UMAP(n_components=300, random_state=42, min_dist=.05, n_neighbors=10)
+        embedding_methods_for_model["UMAP"] = umap_model.fit_transform(embeddings)
+        np.save(f"{embedding_model}_reduced_embeddings/UMAP_amz_embed_new.npy", embedding_methods_for_model["UMAP"])
+
+    from sklearn.manifold import TSNE
+
+    # # Fit t-SNE
+    tsne_model = TSNE(n_components=3, random_state=42)
+    embedding_methods_for_model["tSNE"] = tsne_model.fit_transform(embeddings)
+    np.save(f"{embedding_model}_reduced_embeddings/tSNE_amz_embed.npy", embedding_methods_for_model["tSNE"])
+
+    # # Fit to PaCMAP
+    pac = pacmap.PaCMAP(n_components=300, random_state=42, n_neighbors=10, MN_ratio=0.5, FP_ratio=2.0)
+    embedding_methods_for_model["PaCMAP"] = pac.fit_transform(embeddings)
+    np.save(f"{embedding_model}_reduced_embeddings/PaCMAP_amz_embed.npy", embedding_methods_for_model["PaCMAP"])
+
+    # # Fit to TriMAP
+    tr = trimap.TRIMAP(n_components=300, random_state=42, n_neighbors=10, min_dist=0.05)
+    embedding_methods_for_model["TriMAP"] = tr.fit_transform(embeddings)
+    np.save(f"{embedding_model}_reduced_embeddings/TriMAP_amz_embed.npy", embedding_methods_for_model["TriMAP"])
+
+    # Store the embedding methods for this model
+    embedding_models[embedding_model] = embedding_methods_for_model
+
+    
 scores_all = defaultdict(lambda: defaultdict(list))
 
 
-def safe_run_combo(embed_name, cluster_method):
-    embed_data = embedding_methods[embed_name]
-    combo_scores = {"FM": [], "Rand": [], "ARI": []}
+def safe_run_combo(embedding_model, embed_name, cluster_method):
+    embed_data = embedding_models[embedding_model][embed_name]
+    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": []}
     try:
         print(f"\n{'='*60}")
         print(f"Processing Embedding Method: {embed_name}")
@@ -282,29 +303,30 @@ def safe_run_combo(embed_name, cluster_method):
             combo_scores["ARI"].append(ari)
             combo_scores["AMI"].append(ami)
 
-        return embed_name, cluster_method, combo_scores
+        return embedding_model, embed_name, cluster_method, combo_scores
     except Exception as e:
-        print(f"Error in combo ({embed_name}, {cluster_method}): {e}")
-        return embed_name, cluster_method, combo_scores
+        print(f"Error in combo ({embedding_model}, {embed_name}, {cluster_method}): {e}")
+        return embedding_model, embed_name, cluster_method, combo_scores
 
 combo_params = [
-    (embed_name, cluster_method)
-    for embed_name in embedding_methods.keys()
+    (embedding_model, embed_name, cluster_method)
+    for embedding_model in embedding_models.keys()
+    for embed_name in embedding_models[embedding_model].keys()
     for cluster_method in ["Agglomerative", "HDBSCAN", "DC"]
 ]
 
 with tqdm_joblib(tqdm(desc="Processing embedding-clustering combos", total=len(combo_params))):
     with Parallel(n_jobs=-4, backend="threading") as parallel:
         combo_results = parallel(
-            delayed(safe_run_combo)(embed_name, cluster_method)
-            for embed_name, cluster_method in combo_params
+            delayed(safe_run_combo)(embedding_model, embed_name, cluster_method)
+            for embedding_model, embed_name, cluster_method in combo_params
         )
 
-for embed_name, cluster_method, combo_scores in combo_results:
-    scores_all[(embed_name, cluster_method)]["FM"] = combo_scores["FM"]
-    scores_all[(embed_name, cluster_method)]["Rand"] = combo_scores["Rand"]
-    scores_all[(embed_name, cluster_method)]["ARI"] = combo_scores["ARI"]
-    scores_all[(embed_name, cluster_method)]["AMI"] = combo_scores["AMI"]
+for embedding_model, embed_name, cluster_method, combo_scores in combo_results:
+    scores_all[(embedding_model, embed_name, cluster_method)]["FM"] = combo_scores["FM"]
+    scores_all[(embedding_model, embed_name, cluster_method)]["Rand"] = combo_scores["Rand"]
+    scores_all[(embedding_model, embed_name, cluster_method)]["ARI"] = combo_scores["ARI"]
+    scores_all[(embedding_model, embed_name, cluster_method)]["AMI"] = combo_scores["AMI"]
 
 print(f"\n{'='*60}")
 print("All clustering and evaluation complete!")
@@ -314,10 +336,11 @@ print(f"{'='*60}")
 
 rows = []
 
-for (embed_name, cluster_method), score_dict in scores_all.items():
+for (embedding_model, embed_name, cluster_method), score_dict in scores_all.items():
     n_levels = len(score_dict["FM"])  # assuming all score lists have same length
     for i in range(n_levels):
             rows.append({
+                "embedding_model": embedding_model,
                 "reduction_method": embed_name,
                 "cluster_method": cluster_method,
                 "level": cluster_levels[i],  # assumes scores were appended in order
@@ -331,50 +354,59 @@ for (embed_name, cluster_method), score_dict in scores_all.items():
 # Create DataFrame
 scores_df = pd.DataFrame(rows)
 
+
 # Optional: sort for easier viewing
-scores_df = scores_df.sort_values(by=["reduction_method", "cluster_method", "level"]).reset_index(drop=True)
-write_header = not os.path.exists(f'{embedding_model}_results/other_amz_results.csv')
-scores_df.to_csv(f"{embedding_model}_results/other_amz_results.csv",mode='a', index=False, header=write_header)
+scores_df = scores_df.sort_values(by=["embedding_model", "reduction_method", "cluster_method", "level"]).reset_index(drop=True)
+scores_df.to_csv(f"amazon_clustering_scores.csv", index=False)
 
 combo_color_map = {
-    ("PHATE", "Agglomerative"): "blue",
-    ("PHATE", "HDBSCAN"): "cyan",
+    ("PHATE", "Agglomerative"): "tab:blue",
+    ("PHATE", "HDBSCAN"): "deepskyblue",
     ("PHATE", "DC"): "navy",
-    ("PCA", "Agglomerative"): "orange",
-    ("PCA", "HDBSCAN"): "lightorange",
-    ("PCA", "DC"): "darkorange",
-    ("UMAP", "Agglomerative"): "green",
-    ("UMAP", "HDBSCAN"): "lightgreen",
+    ("PCA", "Agglomerative"): "tab:orange",
+    ("PCA", "HDBSCAN"): "gold",
+    ("PCA", "DC"): "chocolate",
+    ("UMAP", "Agglomerative"): "tab:green",
+    ("UMAP", "HDBSCAN"): "limegreen",
     ("UMAP", "DC"): "darkgreen",
-    ("tSNE", "Agglomerative"): "red",
+    ("tSNE", "Agglomerative"): "tab:red",
     ("tSNE", "HDBSCAN"): "lightcoral",
     ("tSNE", "DC"): "darkred",
+    ("PaCMAP", "Agglomerative"): "tab:purple",
+    ("PaCMAP", "HDBSCAN"): "mediumorchid",
+    ("PaCMAP", "DC"): "indigo",
+    ("TriMAP", "Agglomerative"): "tab:brown",
+    ("TriMAP", "HDBSCAN"): "sandybrown",
+    ("TriMAP", "DC"): "maroon",
 }
 
-import matplotlib.pyplot as plt
-
+# Plot per embedding model
 metrics = ['FM', 'Rand', 'ARI', 'AMI']
 
-for metric in metrics:
-    plt.figure(figsize=(10, 6))
-    for (embed_name, method), metric_scores in scores_all.items():
-        if method=="DC":
-            method="Diffusion Condensation"
-        combo_key = f"{embed_name}_{method}"
-        plt.plot(
-            cluster_levels, 
-            metric_scores[metric], 
-            marker='o', 
-            label=f"{embed_name} {method}",
-            color= combo_color_map.get((embed_name, method), 'black')
-        )
-    
-    plt.title(f"{metric} Score Across Cluster Levels")
-    plt.xlabel("Cluster Level")
-    plt.ylabel(metric)
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.show()
-    plt.savefig(f"{embedding_model}_results/{metric}_scores_plot.png")
+for embedding_model, df in scores_df.groupby("embedding_model"):
+    os.makedirs(f"{embedding_model}_results", exist_ok=True)
+
+    for metric in metrics:
+        plt.figure(figsize=(10, 6))
+
+        for (embed_name, cluster_method), group_df in df.groupby(["reduction_method", "cluster_method"]):
+            plot_df = group_df.sort_values("level")
+            method_label = "Diffusion Condensation" if cluster_method == "DC" else cluster_method
+
+            plt.plot(
+                plot_df["level"],
+                plot_df[metric],
+                marker='o',
+                label=f"{embed_name} {method_label}",
+                color=combo_color_map.get((embed_name, cluster_method), 'black')
+            )
+
+        plt.title(f"{metric} Score Across Cluster Levels ({embedding_model})")
+        plt.xlabel("Cluster Level")
+        plt.ylabel(metric)
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.savefig(f"{embedding_model}_results/{metric}_scores_plot.png")
+        plt.close()
 
