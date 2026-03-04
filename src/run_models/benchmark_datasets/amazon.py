@@ -357,7 +357,7 @@ scores_df = pd.DataFrame(rows)
 
 # Optional: sort for easier viewing
 scores_df = scores_df.sort_values(by=["embedding_model", "reduction_method", "cluster_method", "level"]).reset_index(drop=True)
-scores_df.to_csv(f"amazon_clustering_scores.csv", index=False)
+scores_df.to_csv(f"results/amazon_clustering_scores.csv", index=False)
 
 combo_color_map = {
     ("PHATE", "Agglomerative"): "tab:blue",
