@@ -41,12 +41,22 @@ import torch
 import numpy as np
 import pandas as pd
 
+# ====================
+# Embeddings
+# ====================
+from sentence_transformers import SentenceTransformer
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
+
+
 # ==========================
 # Dimensionality Reduction
 # ==========================
 import phate
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
+import pacmap
+import trimap
 
 # ========================
 # Clustering
@@ -62,7 +72,7 @@ from custom_packages.hercules import Hercules
 # Evaluation Metrics
 # ======================
 from custom_packages.fowlkes_mallows import FowlkesMallows
-from sklearn.metrics import adjusted_rand_score, rand_score
+from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
 
 
 from tqdm import tqdm
@@ -76,134 +86,9 @@ warnings.filterwarnings("ignore")
 
 # Reload modules if needed
 importlib.reload(phate)
-from openai import OpenAI
-key = os.getenv('GPT_API_KEY')
-
-client = OpenAI(api_key=key)
-
-from groq import Groq
-key = os.getenv('GROQ_API_KEY')
-
-llm_client = Groq(api_key=key)
 
 
-def _safe_slug(value: str) -> str:
-    return re.sub(r"[^A-Za-z0-9._-]+", "_", str(value)).strip("_")
 
-
-def export_top_clusters_txt(
-    top_clusters,
-    embedding_model: str,
-    reduction_method: str,
-    clustering_level: int,
-    clustering_method: str = "HERCULES-DIRECT",
-) -> str:
-    """
-    Export top cluster summaries and key Cluster-object field documentation to a txt file.
-
-    Output path pattern:
-        {embedding_model}_results/cluster_documentation/{reduction_method}/level_{clustering_level}/top_clusters_{clustering_method}.txt
-    """
-    if top_clusters is None:
-        return ""
-
-    if not isinstance(top_clusters, (list, tuple)):
-        top_clusters = [top_clusters]
-
-    output_dir = Path(f"{embedding_model}_results") / "cluster_documentation" / _safe_slug(reduction_method) / f"level_{clustering_level}"
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_file = output_dir / f"top_clusters_{_safe_slug(clustering_method)}.txt"
-
-    field_docs = {
-        "level": "Depth level in hierarchy (0 = leaf/original item).",
-        "id": "Internal sequential cluster ID assigned by Cluster._get_next_id().",
-        "original_data_type": "Underlying leaf data type (e.g., 'text', 'numeric', 'image').",
-        "children": "Child Cluster nodes (empty for leaf clusters).",
-        "parent": "Parent Cluster node, or None when this is a top/root cluster.",
-        "title": "Short cluster label/title.",
-        "description": "Cluster summary/description.",
-        "original_id": "Original source item ID (mainly for level-0 nodes).",
-        "_raw_item_data": "Original raw source payload for leaf item(s).",
-    }
-
-    lines = [
-        "Cluster Object Documentation + Top Cluster Export",
-        "=" * 60,
-        f"embedding_model: {embedding_model}",
-        f"reduction_method: {reduction_method}",
-        f"clustering_method: {clustering_method}",
-        f"clustering_level: {clustering_level}",
-        f"num_top_clusters: {len(top_clusters)}",
-        "",
-        "Cluster Object Field Documentation",
-        "-" * 60,
-    ]
-
-    for field_name, field_doc in field_docs.items():
-        lines.append(f"- {field_name}: {field_doc}")
-
-    lines.extend(["", "Top Clusters", "-" * 60])
-
-    for idx, cluster in enumerate(top_clusters, start=1):
-        children = getattr(cluster, "children", None)
-        cluster_info = {
-            "level": getattr(cluster, "level", None),
-            "id": getattr(cluster, "id", None),
-            "original_data_type": getattr(cluster, "original_data_type", None),
-            "children_count": len(children) if children is not None else 0,
-            "parent_id": getattr(getattr(cluster, "parent", None), "id", None),
-            "title": getattr(cluster, "title", None),
-            "description": getattr(cluster, "description", None),
-            "original_id": getattr(cluster, "original_id", None),
-            "_raw_item_data": getattr(cluster, "_raw_item_data", None),
-        }
-
-        lines.append(f"\n[Top Cluster {idx}]")
-        for key_name, value in cluster_info.items():
-            if key_name == "_raw_item_data":
-                value_str = str(value)
-                if len(value_str) > 500:
-                    value_str = value_str[:500] + "... [truncated]"
-                lines.append(f"{key_name}: {value_str}")
-            else:
-                lines.append(f"{key_name}: {value}")
-
-    output_file.write_text("\n".join(lines), encoding="utf-8")
-    return str(output_file)
-
-def groq_caller(prompt: str) -> str:
-    """
-    Generates text using remote Groq/OpenAI client.
-    Returns a raw string (potentially containing JSON/markdown) 
-    to be processed by _parse_llm_response later.
-    """
-    # 1. Mirrored System/User structure from your local Gemma function
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant providing concise summaries."},
-        {"role": "user", "content": prompt}
-    ]
-
-    try:
-        # 2. Remote API Call
-        # We don't use response_format="json_object" here because your 
-        # parser function expects to handle the raw string/markdown itself.
-        response = llm_client.chat.completions.create(
-            model="openai/gpt-oss-20b", 
-            messages=messages,
-            temperature=0.0,  # Mirroring do_sample=False
-            max_tokens=16384
-        )
-
-        # 3. Accessing the text content
-        # Note: Groq/OpenAI use .choices[0].message.content
-        decoded_content = response.choices[0].message.content
-        
-        return decoded_content.strip()
-
-    except Exception as e:
-        # 4. Mirrored error handling from your local logic
-        print(f"Error during remote Groq generation: {e}")
-        return ""
 
 amz_40 = pd.read_csv("data/amazon/train_40k.csv")
 amz_10 = pd.read_csv("data/amazon/val_10k.csv")
@@ -226,7 +111,7 @@ amz.to_csv("data/amazon/amz_data.csv")
 
 amz.shape
 
-def get_embeddings(texts, model="text-embedding-3-small"):
+def get_embeddings(texts, model):
     """
     Fetches embeddings using the specified backend: 'gpt' (OpenAI) or 'sentence-transformers'.
     
@@ -238,26 +123,30 @@ def get_embeddings(texts, model="text-embedding-3-small"):
     Returns:
         list: List of embeddings.
     """
- # Make sure `openai` is configured with your API key
-    batch_size = 200
-    embeddings = []
-
-    for i in tqdm(range(0, len(texts), batch_size), desc="Fetching GPT embeddings", unit="batch"):
-        batch = texts[i : i + batch_size]
-        response = client.embeddings.create(input=batch, model=model)
-        batch_embeddings = [entry.embedding for entry in response.data]
-        embeddings.extend(batch_embeddings)
-
+    print("Using device:", device)
+    
+    model = SentenceTransformer(model, device=device)
+    
+    print("Generating embeddings...")
+    embeddings = model.encode(
+        texts,
+        batch_size=32,
+        show_progress_bar=True,
+        convert_to_numpy=True,
+        normalize_embeddings=True
+    )
+    
     return embeddings
 
-embedding_model = "text-embedding-3-large" 
+
+embedding_model = "Qwen/Qwen3-Embedding-0.6B" 
 os.makedirs(f'{embedding_model}_results', exist_ok=True)
-os.makedirs('gpt_embeddings', exist_ok=True)
+os.makedirs(f"{embedding_model}_embeddings", exist_ok=True)
 embedding_list = get_embeddings(amz['topic'], model=embedding_model)
 
-np.save("gpt_embeddings/amz_embed.npy",embedding_list)
+np.save(f"{embedding_model}_embeddings/amz_embed.npy",embedding_list)
 
-embedding_list=np.load("gpt_embeddings/amz_embed.npy")
+embedding_list=np.load(f"{embedding_model}_embeddings/amz_embed.npy")
 
 os.makedirs(f'{embedding_model}_reduced_embeddings', exist_ok=True)
 
@@ -277,7 +166,7 @@ reducer_model = phate.PHATE(n_jobs=-2,random_state=42, n_components=300,decay=20
 embed_phate = reducer_model.fit_transform(data)
 np.save(f"{embedding_model}_reduced_embeddings/PHATE_amz_embed.npy",embed_phate)
 
-embed_phate  =np.load(f"{embedding_model}_reduced_embeddings/PHATE_amz_embed.npy")
+embed_phate =np.load(f"{embedding_model}_reduced_embeddings/PHATE_amz_embed.npy")
 
 depth= 3
 print(f"Depth: {depth}")
@@ -316,13 +205,20 @@ if include_umap:
 np.save(f"{embedding_model}_reduced_embeddings/UMAP_amz_embed_new.npy",embedding_methods["UMAP"])
 from sklearn.manifold import TSNE
 
-# # # Fit t-SNE
-# tsne_model = TSNE(n_components=3, random_state=42)
-# embedding_methods["tSNE"] = tsne_model.fit_transform(embeddings)
-# np.save(f"{embedding_model}_reduced_embeddings/tSNE_amz_embed.npy",embedding_methods["tSNE"])
+# # Fit t-SNE
+tsne_model = TSNE(n_components=3, random_state=42)
+embedding_methods["tSNE"] = tsne_model.fit_transform(embeddings)
+np.save(f"{embedding_model}_reduced_embeddings/tSNE_amz_embed.npy",embedding_methods["tSNE"])
 
+# # Fit to PaCMAP
+pac = pacmap.PaCMAP(n_components=300, random_state=42, n_neighbors=10, MN_ratio=0.5, FP_ratio=2.0)
+embedding_methods["PaCMAP"] = pac.fit_transform(embeddings)
+np.save(f"{embedding_model}_reduced_embeddings/PaCMAP_amz_embed.npy", embedding_methods["PaCMAP"])
 
-
+# # Fit to TriMAP
+tr = trimap.TRIMAP(n_components=300, random_state=42, n_neighbors=10, min_dist=0.05)
+embedding_methods["TriMAP"] = tr.fit_transform(embeddings)
+np.save(f"{embedding_model}_reduced_embeddings/TriMAP_amz_embed.npy", embedding_methods["TriMAP"])
 
 scores_all = defaultdict(lambda: defaultdict(list))
 
@@ -351,7 +247,7 @@ def safe_run_combo(embed_name, cluster_method):
                 model.fit(embed_data)
                 Z = model.single_linkage_tree_.to_numpy()
                 labels = fcluster(Z, level, criterion='maxclust')
-                labels[labels == -1] = labels.max() + 1
+                labels[labels == -1] = None
                 print(f"HDBSCAN clustering complete. Unique labels: {len(np.unique(labels))}")
 
             elif cluster_method == "DC":
@@ -360,29 +256,7 @@ def safe_run_combo(embed_name, cluster_method):
                 labels = model.labels_
                 print(f"DC clustering complete. Unique labels: {len(np.unique(labels))}")
 
-            elif cluster_method == 'HERCULES-DIRECT':
-                print("Running HERCULES-DIRECT...")
-                hercules = Hercules(
-                    level_cluster_counts=[level],
-                    representation_mode="direct",
-                    text_embedding_client=client,
-                    llm_client=groq_caller,
-                    verbose=1,
-                    existing_embeddings=embed_data,
-                    use_existing_embeddings=True,
-                )
-
-                top_clusters = hercules.cluster(embed_data, topic_seed="Amazon product reviews")
-                cluster_doc_path = export_top_clusters_txt(
-                    top_clusters=top_clusters,
-                    embedding_model=embedding_model,
-                    reduction_method=embed_name,
-                    clustering_level=level,
-                    clustering_method=cluster_method,
-                )
-                print(f"Exported top cluster documentation to: {cluster_doc_path}")
-                labels = hercules.get_level_assignments(level=1)[0]
-
+            
             available_levels = np.array(sorted(topic_dict.keys()))
             closest_level = min(available_levels, key=lambda k: abs(k - level))
             print(f"Ground truth: Using closest level {closest_level} (requested: {level})")
@@ -400,11 +274,13 @@ def safe_run_combo(embed_name, cluster_method):
 
             rand = rand_score(target_lst, label_lst)
             ari = adjusted_rand_score(target_lst, label_lst)
+            ami = adjusted_mutual_info_score(target_lst, label_lst)
             print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}")
 
             combo_scores["FM"].append(fm_score)
             combo_scores["Rand"].append(rand)
             combo_scores["ARI"].append(ari)
+            combo_scores["AMI"].append(ami)
 
         return embed_name, cluster_method, combo_scores
     except Exception as e:
@@ -414,7 +290,7 @@ def safe_run_combo(embed_name, cluster_method):
 combo_params = [
     (embed_name, cluster_method)
     for embed_name in embedding_methods.keys()
-    for cluster_method in ["HERCULES-DIRECT", "Agglomerative", "HDBSCAN", "DC"]
+    for cluster_method in ["Agglomerative", "HDBSCAN", "DC"]
 ]
 
 with tqdm_joblib(tqdm(desc="Processing embedding-clustering combos", total=len(combo_params))):
@@ -428,6 +304,7 @@ for embed_name, cluster_method, combo_scores in combo_results:
     scores_all[(embed_name, cluster_method)]["FM"] = combo_scores["FM"]
     scores_all[(embed_name, cluster_method)]["Rand"] = combo_scores["Rand"]
     scores_all[(embed_name, cluster_method)]["ARI"] = combo_scores["ARI"]
+    scores_all[(embed_name, cluster_method)]["AMI"] = combo_scores["AMI"]
 
 print(f"\n{'='*60}")
 print("All clustering and evaluation complete!")
@@ -447,6 +324,7 @@ for (embed_name, cluster_method), score_dict in scores_all.items():
                 "FM": score_dict["FM"][i],
                 "Rand": score_dict["Rand"][i],
                 "ARI": score_dict["ARI"][i],
+                "AMI": score_dict["AMI"][i],
             })
 
 
@@ -458,13 +336,24 @@ scores_df = scores_df.sort_values(by=["reduction_method", "cluster_method", "lev
 write_header = not os.path.exists(f'{embedding_model}_results/other_amz_results.csv')
 scores_df.to_csv(f"{embedding_model}_results/other_amz_results.csv",mode='a', index=False, header=write_header)
 
-
-with open("combo_color_map.json", 'r') as file:
-        combo_color_map = json.load(file)
+combo_color_map = {
+    ("PHATE", "Agglomerative"): "blue",
+    ("PHATE", "HDBSCAN"): "cyan",
+    ("PHATE", "DC"): "navy",
+    ("PCA", "Agglomerative"): "orange",
+    ("PCA", "HDBSCAN"): "lightorange",
+    ("PCA", "DC"): "darkorange",
+    ("UMAP", "Agglomerative"): "green",
+    ("UMAP", "HDBSCAN"): "lightgreen",
+    ("UMAP", "DC"): "darkgreen",
+    ("tSNE", "Agglomerative"): "red",
+    ("tSNE", "HDBSCAN"): "lightcoral",
+    ("tSNE", "DC"): "darkred",
+}
 
 import matplotlib.pyplot as plt
 
-metrics = ['FM', 'Rand', 'ARI']
+metrics = ['FM', 'Rand', 'ARI', 'AMI']
 
 for metric in metrics:
     plt.figure(figsize=(10, 6))
@@ -477,7 +366,7 @@ for metric in metrics:
             metric_scores[metric], 
             marker='o', 
             label=f"{embed_name} {method}",
-            color= combo_color_map.get(combo_key, 'black')
+            color= combo_color_map.get((embed_name, method), 'black')
         )
     
     plt.title(f"{metric} Score Across Cluster Levels")
@@ -487,4 +376,5 @@ for metric in metrics:
     plt.grid(True)
     plt.tight_layout()
     plt.show()
+    plt.savefig(f"{embedding_model}_results/{metric}_scores_plot.png")
 
