@@ -1,797 +1,901 @@
 {
   "Ecosystem Health Indicators": {
-    "Water Quality Index": {
-      "Dissolved Oxygen Concentration": {
-        "Water Temperature (\u00b0C)": {},
-        "Biochemical Oxygen Demand (mg/L)": {},
-        "Chlorophyll\u2011a Concentration (\u00b5g/L)": {},
-        "Turbidity (NTU)": {},
-        "Organic Carbon Load (kg/day)": {}
+    "Primary Production Rate (g\u202fC\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {
+      "Chlorophyll\u2011a Concentration (\u00b5g\u202fL\u207b\u00b9)": {
+        "Surface Water Total Nitrogen Load (mg\u202fL\u207b\u00b9)": {},
+        "Secchi Disk Transparency (m)": {},
+        "Phytoplankton Species Richness Index (unitless)": {}
       },
-      "Nitrate Load Rate": {
-        "Agricultural Fertilizer Application Rate": {},
-        "Livestock Manure Export Rate": {},
-        "Septic System Leaching Rate": {},
-        "Wetland Nitrogen Retention Capacity": {},
-        "Groundwater Nitrate Concentration": {},
-        "Riverine Nitrate Export Volume": {},
-        "Atmospheric Nitrogen Deposition Rate": {}
+      "Light Use Efficiency (g\u202fC\u202fMJ\u207b\u00b9\u202fPAR)": {
+        "Canopy-Level Light Use Efficiency (g\u202fC\u202fMJ\u207b\u00b9\u202fPAR) for Dominant Tree Species": {},
+        "Soil Moisture\u2011Adjusted Light Use Efficiency (g\u202fC\u202fMJ\u207b\u00b9\u202fPAR) in Grassland Ecosystems": {},
+        "Seasonal Variation in Light Use Efficiency (\u0394g\u202fC\u202fMJ\u207b\u00b9\u202fPAR) across Phenological Phases": {}
+      },
+      "Seasonal Amplitude of Gross Primary Production (g\u202fC\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {
+        "Seasonal Amplitude of Ecosystem Respiration (g\u202fC\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Seasonal Range of Dissolved Oxygen Concentration (mg\u202fL\u207b\u00b9)": {},
+        "Seasonal Variation in Sea Surface Temperature (\u00b0C)": {},
+        "Seasonal Amplitude of Satellite\u2011Derived NDVI (unitless)": {},
+        "Seasonal Fluctuation of Carbon Export Flux (g\u202fC\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Seasonal Range of Nitrate Concentration (\u00b5M)": {},
+        "Seasonal Amplitude of Mixed\u2011Layer Depth (m)": {},
+        "Seasonal Variation in Water\u2011Use Efficiency (g\u202fC\u202fkg\u207b\u00b9\u202fH\u2082O)": {}
+      },
+      "Net Primary Production of Terrestrial Vegetation (g\u202fC\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {
+        "Soil Moisture Availability (mm\u202fday\u207b\u00b9)": {},
+        "Atmospheric Vapor Pressure Deficit (kPa)": {},
+        "Vegetation Nitrogen Uptake Rate (g\u202fN\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Root Biomass Stock (g\u202fC\u202fm\u207b\u00b2)": {},
+        "Canopy Temperature Anomaly (\u00b0C)": {}
+      },
+      "Phytoplankton Biomass Carbon Content (mg\u202fC\u202fm\u207b\u00b3)": {
+        "Diatom-to-Cyanobacteria Carbon Ratio (unitless)": {},
+        "Phytoplankton Carbon Export Flux (g\u202fC\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Vertical Integrated Phytoplankton Carbon Stock (g\u202fC\u202fm\u207b\u00b2)": {},
+        "Phytoplankton Carbon Isotopic Signature (\u03b413C \u2030)": {}
+      },
+      "Leaf Area Index (m\u00b2\u202fm\u207b\u00b2)": {
+        "Stem Density (stems\u202fha\u207b\u00b9)": {},
+        "Mean Leaf Size (cm\u00b2\u202fleaf\u207b\u00b9)": {},
+        "Canopy Gap Fraction (%)": {},
+        "Seasonal Amplitude of Leaf Area Index (\u0394LAI\u202fm\u00b2\u202fm\u207b\u00b2)": {}
+      },
+      "Photosynthetic Electron Transport Rate (\u00b5mol\u202fe\u207b\u202fm\u207b\u00b2\u202fs\u207b\u00b9)": {
+        "Maximum Quantum Efficiency of PSII (Fv/Fm)": {},
+        "Photochemical Quenching Coefficient (qP)": {},
+        "Non\u2011Photochemical Quenching (NPQ)": {},
+        "Electron Transport Saturation Light Intensity (I_sat)": {},
+        "Rubisco Carboxylation Capacity (Vcmax)": {}
+      },
+      "Carbon Fixation per Unit Nitrogen Uptake (g\u202fC\u202fmol\u202fN\u207b\u00b9)": {
+        "Aquatic Nitrogen Uptake Rate (mol\u202fN\u202fm\u207b\u00b3\u202fday\u207b\u00b9)": {},
+        "Terrestrial Leaf Nitrogen Content (g\u202fN\u202fm\u207b\u00b2\u202fleaf\u202farea)": {},
+        "Carbon Sequestration per Unit Nitrogen Input (g\u202fC\u202fkg\u202fN\u207b\u00b9)": {}
       }
     },
-    "Terrestrial Biodiversity Index": {
-      "Forest Understory Species Richness": {
-        "Understory Herbaceous Plant Species Count": {},
-        "Understory Fungal Taxa Richness": {}
+    "Water Turbidity Level (NTU)": {
+      "Suspended Sediment Concentration (mg\u202fL\u207b\u00b9)": {
+        "Particle\u2011bound Phosphorus Concentration (\u00b5g\u202fL\u207b\u00b9)": {},
+        "Sediment Deposition Rate on Aquatic Vegetation (kg\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Proportion of Fine\u2011Scale Particles (\u2264\u202f10\u202f\u00b5m) in Suspended Load (%)": {}
       },
-      "Pollinator Abundance Index": {
-        "Wild Bee Species Richness": {},
-        "Managed Honey Bee Colony Density": {},
-        "Floral Resource Availability Index": {},
-        "Pesticide Residue Concentration in Nectar": {},
-        "Nesting Habitat Area": {},
-        "Pollinator Foraging Range Coverage": {},
-        "Pollinator Disease Prevalence Rate": {},
-        "Seasonal Flight Activity Duration": {}
+      "Secchi Disk Transparency (meters)": {
+        "Total Phosphorus Concentration in Surface Water (\u00b5g\u202fL\u207b\u00b9)": {},
+        "Dissolved Oxygen Saturation (%)": {},
+        "Aquatic Macroinvertebrate Richness Index": {},
+        "Water Temperature Gradient (\u00b0C)": {}
+      },
+      "Median Particle Size in Water Column (\u00b5m)": {
+        "Median Size of Fine\u2011Particle Fraction (\u00b5m)": {},
+        "Median Size of Coarse\u2011Particle Fraction (\u00b5m)": {},
+        "Depth\u2011Weighted Median Particle Size (\u00b5m)": {},
+        "Seasonal Median Particle Size (\u00b5m)": {},
+        "Coefficient of Variation of Median Particle Size (unitless)": {},
+        "Median Particle Size\u2013Based Light Attenuation Coefficient (m\u207b\u00b9)": {},
+        "Benthic Habitat Suitability Score Based on Median Particle Size (unitless)": {}
+      },
+      "Colored Dissolved Organic Matter Absorbance (m\u207b\u00b9)": {
+        "Dissolved Organic Carbon Concentration (mg\u202fC\u202fL\u207b\u00b9)": {},
+        "CDOM Specific Absorption Coefficient at 440\u202fnm (m\u00b2\u202fmg\u207b\u00b9\u202fC)": {},
+        "Allochthonous Organic Matter Input Rate (kg\u202fC\u202fkm\u207b\u00b2\u202fyr\u207b\u00b9)": {},
+        "Photodegradation Rate of CDOM (day\u207b\u00b9)": {},
+        "Water\u2011Column UV\u2011A Irradiance (W\u202fm\u207b\u00b2)": {},
+        "Lake Water pH": {},
+        "Microbial CDOM Mineralization Rate (mg\u202fC\u202fL\u207b\u00b9\u202fday\u207b\u00b9)": {},
+        "Riverine CDOM Export Flux (kg\u202fC\u202fday\u207b\u00b9)": {}
+      },
+      "Turbidity\u2011Adjusted Light Penetration Depth (meters)": {
+        "Phytoplankton Biomass (\u00b5g\u202fL\u207b\u00b9)": {},
+        "Submerged Aquatic Vegetation Cover (% of lake area)": {},
+        "Dissolved Oxygen Concentration (mg\u202fL\u207b\u00b9)": {},
+        "Benthic Macroinvertebrate Diversity Index (Shannon H)": {},
+        "Water Column Temperature Stratification Strength (\u00b0C)": {},
+        "UV Radiation Attenuation Coefficient (m\u207b\u00b9)": {},
+        "Aquatic Habitat Complexity Index (dimensionless)": {}
+      },
+      "Riverine Sediment Input Rate (tonnes\u202fyr\u207b\u00b9)": {
+        "Catchment Soil Erosion Rate (tonnes\u202fyr\u207b\u00b9)": {},
+        "Riverine Organic Carbon Export (tonnes\u202fyr\u207b\u00b9)": {}
       }
     },
-    "Soil Organic Carbon Stock": {
-      "Topsoil Organic Carbon Content": {
-        "Soil Microbial Biomass Carbon": {},
-        "Soil Water Holding Capacity": {},
-        "Root-Derived Carbon Input Rate": {},
-        "Soil Enzyme Activity Index": {}
+    "Species Richness Index (count)": {
+      "Terrestrial Mammal Species Count": {
+        "Large Carnivore Population Density": {},
+        "Herbivore Biomass per Square Kilometer": {},
+        "Mammalian Species Richness Index": {}
       },
-      "Subsoil Organic Carbon Stock": {
-        "Subsoil Labile Carbon Fraction": {},
-        "Subsoil Dissolved Organic Carbon Concentration": {},
-        "Subsoil Carbon Isotopic Composition (\u03b413C)": {}
+      "Freshwater Fish Species Count": {
+        "Native Freshwater Fish Species Richness": {},
+        "Introduced Freshwater Fish Species Count": {},
+        "Threatened Freshwater Fish Species Count": {},
+        "Juvenile Freshwater Fish Species Count": {}
       },
-      "Soil Carbon Sequestration Rate": {
-        "Root Biomass Production Rate": {},
-        "Mycorrhizal Fungal Colonization Percentage": {},
-        "Soil Moisture Volumetric Content": {},
-        "Soil Temperature Seasonal Amplitude": {},
-        "Land Use Conversion Rate": {},
-        "Cover Crop Biomass Return Rate": {}
+      "Avian Species Count": {
+        "Breeding Pair Count of Ground\u2011nesting Birds": {},
+        "Species Richness of Wetland Avian Communities": {},
+        "Migratory Bird Arrival Count per Season": {},
+        "Nesting Success Count of Tree\u2011cavity Birds": {},
+        "Resident Songbird Territory Count": {}
       },
-      "Soil Respiration CO\u2082 Flux": {
-        "Soil Temperature at 10\u202fcm Depth (\u00b0C)": {},
-        "Volumetric Soil Moisture Content (%)": {},
-        "Root Biomass Density (g\u202fm\u207b\u00b2)": {},
-        "Microbial Biomass Carbon (mg\u202fC\u202fkg\u207b\u00b9 soil)": {},
-        "Soil Oxygen Diffusion Capacity (mol\u202fm\u207b\u00b3\u202fs\u207b\u00b9)": {},
-        "Litter Decomposition Rate (percent mass loss per month)": {}
+      "Amphibian Species Count": {
+        "Amphibian Breeding Success Rate": {},
+        "Amphibian Larval Survival Proportion": {},
+        "Amphibian Habitat Connectivity Index": {},
+        "Amphibian Chytrid Infection Prevalence": {},
+        "Amphibian Wetland Habitat Area (hectares)": {},
+        "Amphibian Road Mortality Incidence": {}
       },
-      "Soil Aggregate Stability Index": {
-        "Water\u2011Stable Aggregate Ratio (%)": {},
-        "Mean Aggregate Size (mm)": {},
-        "Soil Infiltration Rate (mm\u202f/\u202fhr)": {},
-        "Soil Shear Strength (kPa)": {},
-        "Earthworm Abundance (individuals\u202f/\u202fm\u00b2)": {},
-        "Root Length Density (cm\u202froot\u202f/\u202fcm\u00b3\u202fsoil)": {},
-        "Soil Porosity (%)": {}
+      "Pollinator Species Count": {
+        "Pollinator Nesting Habitat Area (hectares)": {},
+        "Pollinator Floral Resource Diversity Index (plant species per km\u00b2)": {}
       },
-      "Soil Bulk Density": {
-        "Soil Porosity Percentage": {},
-        "Soil Infiltration Rate": {}
+      "Invasive Species Count": {
+        "Invasive Plant Species Count": {},
+        "Invasive Aquatic Species Count": {},
+        "Invasive Invertebrate Species Count": {},
+        "Annual Number of Newly Established Invasive Species": {},
+        "Proportion of Habitat Area Occupied by Invasive Species": {},
+        "Rate of Invasive Species Spread (km\u202fper\u202fyear)": {}
       },
-      "Litter-Derived Carbon Input": {
-        "Leaf Litter Carbon Deposition Rate": {},
-        "Woody Debris Carbon Input Amount": {},
-        "Fine Litter Carbon Flux to Soil Surface": {},
-        "Litter Decomposition Carbon Release Rate": {},
-        "Litter Carbon Export to Adjacent Water Bodies": {},
-        "Litter Carbon Retention Time on the Forest Floor": {},
-        "Litter Carbon Contribution to Soil Organic Carbon Pool": {},
-        "Litter Carbon Input from Invasive Plant Species": {}
-      },
-      "Soil C:N Ratio": {
-        "Soil Inorganic Nitrogen Concentration": {},
-        "Soil Total Nitrogen Content": {},
-        "Soil Phosphorus-to-Nitrogen Ratio": {},
-        "Soil Microbial Biomass Nitrogen": {}
+      "Endemic Species Count": {
+        "Endemic Marine Coral Species Count": {},
+        "Endemic Freshwater Algae Species Count": {},
+        "Endemic Soil Fungal Species Count": {},
+        "Endemic Lichen Species Count": {},
+        "Endemic Marine Mollusk Species Count": {}
       }
     },
-    "Atmospheric Particulate Concentration": {
-      "PM2.5 Mass Concentration": {
-        "PM2.5 Deposition Rate on Forest Canopy": {},
-        "PM2.5 Deposition Flux into Freshwater Bodies": {}
+    "Soil Organic Carbon Content (g\u202fC\u202fkg\u207b\u00b9)": {
+      "Soil Microbial Biomass Carbon (mg\u202fC\u202fkg\u207b\u00b9)": {
+        "Soil Basal Respiration Rate (\u00b5g CO\u2082\u2011C\u202fg\u207b\u00b9\u202fsoil\u202fh\u207b\u00b9)": {},
+        "Soil Microbial Enzyme Activity (\u03b2\u2011glucosidase, U\u202fg\u207b\u00b9\u202fsoil)": {},
+        "Soil Microbial Community Diversity Index (Shannon, unitless)": {},
+        "Soil Nitrogen Mineralization Rate (mg\u202fN\u202fkg\u207b\u00b9\u202fday\u207b\u00b9)": {},
+        "Soil Phosphatase Activity (\u00b5g\u202fP\u2011released\u202fg\u207b\u00b9\u202fsoil\u202fh\u207b\u00b9)": {},
+        "Soil Water\u2011Extractable Organic Carbon (mg\u202fC\u202fkg\u207b\u00b9)": {},
+        "Soil Organic Carbon Stock (g\u202fC\u202fkg\u207b\u00b9)": {}
       },
-      "Black Carbon Atmospheric Concentration": {
-        "Black Carbon Deposition Rate in Snowpack": {},
-        "Black Carbon Concentration in Soil": {},
-        "Black Carbon Flux to Marine Surface Waters": {},
-        "Black Carbon\u2011Induced Albedo Reduction Index": {},
-        "Black Carbon Concentration in Freshwater Systems": {},
-        "Black Carbon Seasonal Variation Amplitude": {}
+      "Soil Aggregate Stability (percentage)": {
+        "Mean Weight Diameter of Soil Aggregates (mm)": {},
+        "Macroaggregate Proportion (percentage)": {},
+        "Saturated Hydraulic Conductivity (mm\u202fh\u207b\u00b9)": {},
+        "Soil Infiltration Rate (mm\u202fh\u207b\u00b9)": {}
+      }
+    },
+    "Coral Cover Percentage (%)": {
+      "Live Coral Tissue Thickness (mm)": {
+        "Sea Surface Temperature Anomaly (\u00b0C)": {},
+        "Water Column Nutrient Concentration (\u00b5M)": {},
+        "Sedimentation Deposition Rate (mg\u202fcm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Photosynthetically Active Radiation at Reef Depth (\u00b5mol\u202fm\u207b\u00b2\u202fs\u207b\u00b9)": {},
+        "Ocean pH (unitless)": {},
+        "Turbidity Level (NTU)": {},
+        "Herbivorous Fish Biomass (kg\u202fha\u207b\u00b9)": {}
       },
-      "Sulfate Aerosol Load": {
-        "Atmospheric Sulfate Deposition Flux": {},
-        "Surface Water Sulfate Concentration": {},
-        "Soil Sulfate Content": {},
-        "Lichen Sulfate Accumulation Index": {},
-        "Aquatic Acidification Potential (Sulfate-Driven)": {}
+      "Coral Recruitment Density (settlers\u202fm\u207b\u00b2)": {
+        "Suitable Settlement Substrate Coverage (% of reef area)": {},
+        "Larval Supply Flux (larvae\u202fm\u207b\u00b3\u202fday\u207b\u00b9)": {},
+        "Nitrate Concentration (mg\u202fL\u207b\u00b9)": {},
+        "Coral Spawning Synchrony Index (proportion of colonies spawning concurrently)": {},
+        "Seawater pH (unitless)": {},
+        "Temperature Variability Index (\u00b0C\u202fstandard deviation over 30\u202fdays)": {}
       },
-      "Heavy Metal Particle Concentration": {
-        "Aquatic Sediment Heavy Metal Load": {},
-        "Soil Heavy Metal Concentration": {},
-        "Marine Biota Tissue Metal Concentration": {},
-        "Freshwater Phytoplankton Metal Accumulation Rate": {}
+      "Algal Overgrowth Percentage (% of reef area)": {
+        "Macroalgal Biomass Density (kg\u202fm\u207b\u00b2)": {},
+        "Herbivorous Fish Grazing Rate (kg\u202fday\u207b\u00b9\u202fha\u207b\u00b9)": {},
+        "Dissolved Inorganic Nitrogen Concentration (mg\u202fL\u207b\u00b9)": {},
+        "Phosphate Concentration in Reef Waters (\u00b5g\u202fL\u207b\u00b9)": {},
+        "Sedimentation Rate onto Reef Substrate (g\u202fm\u207b\u00b2\u202fday\u207b\u00b9)": {},
+        "Secchi Disk Depth (m) \u2013 Water Clarity": {},
+        "Algal Species Diversity Index (Shannon H)": {}
+      },
+      "Coral Disease Prevalence (% of colonies)": {
+        "White Band Disease Prevalence (% of colonies)": {},
+        "Fusarium spp. Infection Rate (% of colonies)": {},
+        "Coral Disease\u2011Related Tissue Necrosis Extent (mm\u00b2 per colony)": {}
+      },
+      "Bleaching Severity Index (average % bleaching per colony)": {
+        "Sea Surface Temperature Anomaly (\u00b0C above climatology)": {},
+        "Ocean pH Deviation (\u0394pH from baseline)": {},
+        "Light Stress Index (average daily UV irradiance, W\u202fm\u207b\u00b2)": {},
+        "Nutrient Enrichment Concentration (dissolved inorganic nitrogen, \u03bcM)": {}
+      }
+    },
+    "Macroinvertebrate Diversity Index (Shannon\u2011H)": {
+      "Macroinvertebrate Functional Feeding Group Diversity (Shannon\u2011H)": {
+        "Functional Feeding Group Richness (Count of distinct feeding groups present)": {},
+        "Coefficient of Variation of Functional Feeding Group Abundance (Variability of group abundances)": {}
+      },
+      "Macroinvertebrate Taxa Evenness (Pielou\u2019s J)": {
+        "Evenness of Ephemeroptera Taxa (Pielou\u2019s J) in Stream Substrate": {},
+        "Evenness of Coleoptera Taxa (Pielou\u2019s J) in River Benthic Samples": {},
+        "Temporal Stability of Macroinvertebrate Taxa Evenness (Coefficient of Variation of Pielou\u2019s J across Seasons)": {}
+      }
+    },
+    "Nitrogen Loading Rate (kg\u202fN\u202fha\u207b\u00b9\u202fyr\u207b\u00b9)": {
+      "Agricultural Nitrogen Input Rate (kg\u202fN\u202fha\u207b\u00b9\u202fyr\u207b\u00b9)": {
+        "Crop Nitrogen Recovery Efficiency (kg\u202fN\u202fin\u202fharvested\u202fproduct\u202fper\u202fkg\u202fN\u202fapplied)": {},
+        "Soil Microbial Biomass Nitrogen (mg\u202fN\u202fper\u202fg\u202fsoil)": {}
+      },
+      "Nitrogen Leaching Export Rate (kg\u202fN\u202fha\u207b\u00b9\u202fyr\u207b\u00b9)": {
+        "Soil Nitrate Stock (kg\u202fN\u202fha\u207b\u00b9)": {},
+        "Groundwater Nitrate Concentration (mg\u202fN\u202fL\u207b\u00b9)": {},
+        "Riparian Buffer Nitrogen Retention Efficiency (%)": {}
       }
     }
   },
   "Economic Impact Metrics": {
-    "Coastal Tourism Revenue": {
-      "Coastal Hotel Occupancy Rate (%)": {
-        "Average Daily Room Rate (USD per room)": {},
-        "Revenue per Available Room (RevPAR) (USD)": {},
-        "Hotel Cancellation Rate (%)": {},
-        "Average Length of Stay (Days)": {},
-        "Booking Lead Time (Days)": {},
-        "Hotel Workforce Wage Index (USD per employee)": {},
-        "Operating Cost per Occupied Room (USD)": {},
-        "Seasonal Price Premium Ratio (%)": {}
+    "Industrial Output Value": {
+      "Manufacturing Gross Output Value": {
+        "Automobile Manufacturing Gross Output Value": {},
+        "Electronic Component Manufacturing Gross Output Value": {},
+        "Textile Manufacturing Gross Output Value": {}
       },
-      "Average Daily Expenditure of Coastal Tourists (USD)": {
-        "Average Daily Spending on Local Food and Beverage (USD)": {},
-        "Average Daily Expenditure on Non\u2011Accommodation Services (USD)": {}
+      "Construction Gross Output Value": {
+        "Residential Construction Gross Output Value": {},
+        "Commercial Construction Gross Output Value": {},
+        "Public Infrastructure Construction Output Value": {},
+        "Renovation and Retrofit Construction Output Value": {},
+        "Construction Material Procurement Expenditure": {},
+        "Urban Housing Development Gross Output": {},
+        "Transportation Infrastructure Construction Output Value": {}
       },
-      "Number of International Visitors to Coastal Areas": {
-        "International Visitor Cruise Disembarkation Count": {},
-        "International Visitor Visa Fee Revenue": {},
-        "International Visitor Foreign Exchange Earnings (Net)": {},
-        "International Visitor Direct Tax Receipts from Tourism": {},
-        "International Visitor Spending on Local Handicrafts": {}
+      "Mining and Quarrying Output Value": {
+        "Coal Extraction Revenue": {},
+        "Gold Ore Sale Value": {},
+        "Industrial Sand and Gravel Export Value": {},
+        "Limestone Quarry Production Value": {},
+        "Rare Earth Elements Extraction Revenue": {},
+        "Lithium-Bearing Clay Mining Output Value": {},
+        "Copper Ore Export Revenue": {}
       },
-      "Revenue from Coastal Recreational Activities (USD)": {
-        "Coastal Fishing Charter Revenue (USD)": {},
-        "Coastal Water Sports Rental Revenue (USD)": {}
+      "Petrochemical Production Value": {
+        "Ethylene Production Value": {},
+        "Polypropylene Production Value": {},
+        "Petrochemical Feedstock Cost": {},
+        "Petrochemical Plant Operating Margin": {},
+        "Petrochemical Sector Employment Wage Expenditure": {},
+        "Petrochemical Byproduct Sales Value": {}
       },
-      "Seasonal Employment Hours in Coastal Tourism Sector": {
-        "Total Seasonal Wage Expenditure in Coastal Tourism (USD)": {},
-        "Full\u2011Time Equivalent (FTE) Seasonal Employment in Coastal Tourism": {},
-        "Average Seasonal Overtime Hours per Coastal Tourism Worker": {}
+      "Metal Processing Output Value": {
+        "Refined Copper Production Value": {},
+        "Aluminum Alloy Fabrication Revenue": {},
+        "Stainless Steel Sheet Export Value": {}
+      },
+      "Industrial Export Sales Value": {
+        "High\u2011tech machinery export sales value": {},
+        "Renewable\u2011energy equipment export sales value": {},
+        "Automobile export sales value": {},
+        "Industrial chemicals export sales value": {},
+        "Aerospace component export sales value": {},
+        "Industrial robotics export sales value": {},
+        "Metal alloy export sales value": {},
+        "Precision instrumentation export sales value": {}
+      },
+      "Industrial Investment Spending": {
+        "Industrial Machinery Capital Expenditure (USD)": {},
+        "Industrial Facility Construction Investment (USD)": {},
+        "Industrial Research and Development Investment (USD)": {},
+        "Foreign Direct Investment in Industrial Sectors (USD)": {},
+        "Public Sector Industrial Investment Grants (USD)": {}
       }
     },
-    "Fisheries Gross Value Added": {
-      "Domestic Fishery Sales Revenue": {
-        "Marine Capture Fishery Sales Revenue (USD per year)": {},
-        "Freshwater Capture Fishery Sales Revenue (USD per year)": {},
-        "Aquaculture Production Sales Revenue (USD per year)": {},
-        "Small\u2011scale Artisanal Fishery Sales Revenue (USD per year)": {},
-        "Revenue from High\u2011value Species (USD per year)": {},
-        "Revenue per Active Fishing Vessel (USD per vessel per year)": {},
-        "Seasonal Domestic Fishery Sales Revenue (USD per quarter)": {}
+    "Tourism Expenditure": {
+      "Domestic Tourist Spending per Capita": {
+        "Domestic Accommodation Expenditure per Capita": {},
+        "Domestic Food & Beverage Expenditure per Capita": {},
+        "Domestic Transportation Cost per Capita": {},
+        "Domestic Recreation & Entertainment Expenditure per Capita": {},
+        "Domestic Shopping & Souvenir Expenditure per Capita": {},
+        "Domestic Travel Insurance Expenditure per Capita": {}
       },
-      "Fish Processing Industry Value Added": {
-        "Processed Fish Product Export Earnings (USD)": {},
-        "Value Added per Ton of Processed Fish (USD per ton)": {},
-        "Processing Plant Labor Productivity (USD per employee)": {},
-        "Processing Facility Capacity Utilization (%)": {},
-        "Average Energy Cost per Ton of Processed Fish (USD per ton)": {},
-        "Number of Registered Fish Processing Firms": {},
-        "Capital Investment in Fish Processing Equipment (USD)": {}
+      "International Visitor Expenditure Share": {
+        "International Visitor Expenditure Share on Accommodation Services": {},
+        "International Visitor Expenditure Share on Transportation Services": {},
+        "International Visitor Expenditure Share on Food & Beverage Services": {},
+        "International Visitor Expenditure Share on Retail Goods": {}
+      },
+      "Average Daily Tourism Expenditure per Visitor": {
+        "Average Daily Expenditure on Sustainable Accommodation Services": {},
+        "Average Daily Expenditure on Local Environmental Recreation Activities": {},
+        "Average Daily Expenditure on Renewable Energy\u2011Based Transportation": {}
+      },
+      "Tourism Revenue from Heritage and Cultural Sites": {
+        "Heritage Site Admission Fee Revenue": {},
+        "Cultural Site Event Sponsorship Income": {}
       }
     },
-    "Renewable Energy Investment Returns": {
-      "Renewable Energy Project Net Present Value (NPV)": {
-        "Projected Annual Energy Revenue (USD per year)": {},
-        "Capital Expenditure (CAPEX) for Renewable Project (USD)": {},
-        "Tax Credit Benefit Amount per MWh (USD)": {}
+    "Agricultural Market Revenue": {
+      "Farmgate Price Index for Major Crops": {
+        "Farmgate Price Index for Maize": {},
+        "Farmgate Price Index for Wheat": {},
+        "Farmgate Price Index for Rice": {},
+        "Farmgate Price Index for Soybeans": {},
+        "Farmgate Price Index for Cotton": {},
+        "Farmgate Price Index for Sugarcane": {},
+        "Farmgate Price Index for Pulses": {}
       },
-      "Renewable Energy Investment Payback Period": {
-        "Average Project Payback Duration (Years)": {},
-        "Renewable Energy Investment Debt Service Coverage Ratio": {},
-        "Capital Cost Recovery Rate per Megawatt": {}
-      },
-      "Renewable Energy Capacity Expansion Return on Investment (%)": {
-        "Renewable Energy Capacity Expansion Cost per MW ($/MW)": {},
-        "Annual Revenue Yield per Added MW of Renewable Capacity ($/MW\u00b7yr)": {},
-        "Tax Incentive Utilization Rate for New Renewable Installations (%)": {},
-        "Local Economic Output Attributable to New Renewable Capacity (USD per annum)": {},
-        "Grid Integration Efficiency Ratio for Expanded Renewable Capacity (%)": {}
-      }
-    },
-    "Property Damage Cost from Storm Events": {
-      "Residential Building Damage Cost per Storm Event": {
-        "Residential Roof Repair Cost per Storm Event": {},
-        "Residential Foundation Repair Cost per Storm Event": {},
-        "Residential Interior Damage Cost per Storm Event": {}
-      },
-      "Commercial and Industrial Property Damage Cost per Storm Event": {
-        "Manufacturing Facility Damage Cost per Storm Event": {},
-        "Warehouse Damage Cost per Storm Event": {},
-        "Office Complex Damage Cost per Storm Event": {},
-        "Logistics Hub Damage Cost per Storm Event": {},
-        "Data Center Damage Cost per Storm Event": {},
-        "Retail Complex Damage Cost per Storm Event": {},
-        "Port Facility Damage Cost per Storm Event": {}
-      },
-      "Energy Infrastructure Damage Cost per Storm Event": {
-        "Transmission Line Repair Cost per Storm Event": {},
-        "Substation Equipment Replacement Cost per Storm Event": {},
-        "Offshore Wind Turbine Damage Cost per Storm Event": {},
-        "Natural Gas Pipeline Repair Cost per Storm Event": {},
-        "Energy Storage System Damage Cost per Storm Event": {},
-        "Grid Restoration Labor Cost per Storm Event": {},
-        "Energy Infrastructure Insurance Payout per Storm Event": {}
+      "Agricultural Export Revenue": {
+        "Export Volume of Major Crops (Metric Tons)": {},
+        "Export Revenue per Hectare of Cultivated Land (USD\u202f/\u202fha)": {},
+        "Share of Agricultural Exports in Total National Export Portfolio (%)": {}
       }
     }
   },
   "Energy Security Performance": {
-    "Domestic Fossil Fuel Production Volume": {
-      "Crude Oil Production Volume": {
-        "Onshore Crude Oil Production Volume": {},
-        "Offshore Crude Oil Production Volume": {},
-        "Crude Oil Well Count": {},
-        "Crude Oil Facility Utilization Rate": {},
-        "Crude Oil Production Downtime Hours": {}
+    "Domestic Fossil Fuel Production Volume (Barrels per Day)": {
+      "Onshore Crude Oil Well Count (Number of Active Wells)": {
+        "Average Operational Lifespan of Active Onshore Wells (Years)": {},
+        "Geographic Concentration Index of Active Onshore Wells (Wells per 1000 km\u00b2)": {}
       },
-      "Natural Gas Production Volume": {
-        "Daily Natural Gas Extraction Rate": {},
-        "Number of Active Natural Gas Wells": {}
+      "Average Daily Production per Well (Barrels per Day per Well)": {
+        "Well Operating Days per Year (Days)": {},
+        "Average Reservoir Pressure (Pascal)": {},
+        "Gas\u2011Oil Ratio (Standard Cubic Feet per Barrel)": {},
+        "Water Cut Percentage (% of Produced Fluids)": {},
+        "Artificial\u2011Lift Energy Consumption per Barrel (kWh\u202f/\u202fBarrel)": {},
+        "Production Downtime Duration per Well (Hours per Month)": {},
+        "Enhanced\u2011Oil\u2011Recovery Injection Rate (Barrels per Day)": {}
       },
-      "Coal Production Volume": {
-        "Coal Mine Output Capacity": {},
-        "Coal Export Shipment Volume": {},
-        "Coal\u2011Fired Power Generation Output": {}
+      "Offshore Platform Production Volume (Barrels per Day)": {
+        "Offshore Platform Operating Hours per Day": {},
+        "Offshore Platform Production Facility Utilization Rate": {},
+        "Offshore Platform Water Injection Rate (Barrels per Day)": {}
+      },
+      "Domestic Shale Oil Production Volume (Barrels per Day)": {
+        "Shale Reservoir Pressure Index (Pascals)": {},
+        "Shale Oil Production Downtime Hours (Hours per Day)": {},
+        "Domestic Shale Oil Transport Capacity Utilization (%)": {}
+      },
+      "Oil Field Decline Rate (Percent Per Year)": {
+        "Reservoir Pressure Decline Rate (psi per year)": {},
+        "Water Cut  Rate (% per year)": {}
+      },
+      "Oil Recovery Efficiency (% of Original Oil in Place)": {
+        "Chemical EOR Injection Efficiency (% of injected chemicals reaching target zone)": {},
+        "Water\u2011Flood Sweep Efficiency (% of reservoir volume swept by injected water)": {},
+        "Gas\u2011Injection Utilization Ratio (Standard cubic meters of gas injected per barrel of oil recovered)": {},
+        "Reservoir Pressure Retention Index (% of original reservoir pressure maintained)": {},
+        "Thermal EOR Temperature Control Accuracy (\u00b0C deviation from target temperature)": {}
+      },
+      "Domestic Oil Exploration Drilling Permits Issued (Permits per Month)": {
+        "Average Permit Processing Time (Days per Permit)": {},
+        "Exploration Permit Cost (USD per Permit)": {},
+        "Share of Permits for Deepwater Exploration (Percent of Total Permits)": {}
+      },
+      "Upstream Capital Expenditure on Oil Production (Million USD per Year)": {
+        "Exploration Drilling Capital Outlay (Million\u202fUSD\u202fper\u202fYear)": {},
+        "Production Facility Upgrade Investment (Million\u202fUSD\u202fper\u202fYear)": {},
+        "Pipeline Construction Expenditure (Million\u202fUSD\u202fper\u202fYear)": {},
+        "Enhanced Oil Recovery Technology Investment (Million\u202fUSD\u202fper\u202fYear)": {},
+        "Regulatory Compliance Capital Spending (Million\u202fUSD\u202fper\u202fYear)": {},
+        "Offshore Drilling Rig Acquisition Cost (Million\u202fUSD\u202fper\u202fYear)": {},
+        "Upstream Logistics Infrastructure Investment (Million\u202fUSD\u202fper\u202fYear)": {}
       }
     },
-    "Renewable Energy Generation Capacity": {
-      "Solar PV Installed Capacity (MW)": {
-        "Utility\u2011Scale Solar PV Installed Capacity (MW)": {},
-        "Distributed Rooftop Solar PV Installed Capacity (MW)": {},
-        "Solar PV Capacity Integrated with Grid\u2011Connected Storage (MW)": {},
-        "Solar PV Capacity Dedicated to Critical Infrastructure (MW)": {},
-        "Solar PV Capacity Installed in Energy\u2011Import\u2011Dependent Regions (MW)": {}
+    "Renewable Electricity Generation Capacity (Megawatts)": {
+      "Solar Photovoltaic Generation Capacity (MW)": {
+        "Utility\u2011scale Solar PV Capacity (MW)": {},
+        "Distributed Rooftop Solar PV Capacity (MW)": {},
+        "Solar PV Capacity Under Construction (MW)": {},
+        "Retired Solar PV Capacity (MW)": {},
+        "Solar PV Capacity Factor (%)": {},
+        "Solar PV Grid Integration Losses (MW)": {},
+        "Solar PV Energy Storage Coupled Capacity (MW)": {}
       },
-      "Onshore Wind Installed Capacity (MW)": {
-        "Onshore Wind Capacity in High\u2011Load Reliability Zones (MW)": {},
-        "Domestic\u2011Owned Onshore Wind Capacity (MW)": {},
-        "Onshore Wind Capacity Secured by Firm Power Purchase Agreements (MW)": {},
-        "Onshore Wind Capacity Integrated with Grid\u2011Scale Storage (MW)": {},
-        "Onshore Wind Capacity Located in Low Transmission Congestion Areas (MW)": {}
+      "Onshore Wind Generation Capacity (MW)": {
+        "Installed Onshore Wind Capacity (MW)": {},
+        "Operational Onshore Wind Capacity (MW)": {},
+        "Onshore Wind Capacity Factor (%)": {},
+        "Number of Operational Onshore Wind Turbines": {},
+        "Average Hub Height of Onshore Wind Turbines (m)": {},
+        "Onshore Wind Farm Availability Rate (%)": {},
+        "Onshore Wind Capacity Under Construction (MW)": {},
+        "Onshore Wind Grid Interconnection Utilization (MW)": {}
       },
-      "Offshore Wind Installed Capacity (MW)": {
-        "Commissioned Offshore Wind Capacity (MW)": {},
-        "Offshore Wind Capacity Under Construction (MW)": {},
-        "Available Offshore Wind Capacity (MW)": {},
-        "Average Turbine Age in Offshore Wind Farms (Years)": {},
-        "Offshore Wind Grid Connection Capacity (MW)": {},
-        "Offshore Wind Power Purchase Agreement Volume (MW)": {},
-        "Offshore Wind Decommissioned Capacity (MW)": {},
-        "Offshore Wind Capacity Utilization Rate (%)": {}
+      "Offshore Wind Generation Capacity (MW)": {
+        "Operational Offshore Wind Capacity (MW)": {},
+        "Planned Offshore Wind Capacity (MW)": {},
+        "Offshore Wind Capacity Factor (%)": {},
+        "Offshore Wind Turbine Availability Rate (%)": {},
+        "Offshore Grid Interconnection Capacity (MW)": {},
+        "Offshore Wind Energy Curtailment Volume (MW)": {},
+        "Number of Offshore Wind Turbines Operational": {},
+        "Offshore Wind Power Purchase Agreement Commitment (MW)": {}
       },
-      "Bioenergy Installed Capacity (MW)": {
-        "Domestic Biomass Feedstock Production Volume (tons/year)": {},
-        "Bioenergy Plant Capacity Factor (%)": {}
+      "Hydropower Generation Capacity (MW)": {
+        "Installed Turbine Capacity (MW)": {},
+        "Annual River Flow Volume (cubic meters per year)": {}
       },
-      "Geothermal Installed Capacity (MW)": {
-        "Geothermal Electricity Generation Capacity (MW)": {},
-        "Geothermal Direct\u2011Use Heat Capacity (MW)": {}
+      "Biomass Electricity Generation Capacity (MW)": {
+        "Domestic Biomass Feedstock Supply Volume (tons/year)": {},
+        "Biomass Power Plant Capacity Factor (%)": {},
+        "Biomass Electricity Generation Capacity Utilization (MW)": {},
+        "Biomass Plant Operational Availability (hours/year)": {},
+        "Biomass Fuel Logistics Reliability Index (0\u2011100 scale)": {},
+        "Biomass Generation Capacity Expansion Rate (MW/year)": {},
+        "Biomass Plant Net Capacity Additions (MW)": {},
+        "Biomass Grid Interconnection Downtime (hours/year)": {}
       },
-      "Hydropower Installed Capacity (MW)": {
-        "Run-of-River Hydropower Installed Capacity (MW)": {},
-        "Pumped-Storage Hydropower Installed Capacity (MW)": {},
-        "Small-Scale (\u226410\u202fMW) Hydropower Installed Capacity (MW)": {},
-        "Large-Scale (>100\u202fMW) Hydropower Installed Capacity (MW)": {},
-        "Hydropower Capacity Under Construction (MW)": {},
-        "Decommissioned Hydropower Capacity (MW)": {},
-        "Hydropower Capacity in Transboundary River Basins (MW)": {},
-        "Hydropower Capacity in High-Season Flow Zones (MW)": {}
-      },
-      "Renewable Capacity Utilization Rate (%)": {
-        "Renewable Capacity Availability Factor (%)": {},
-        "Renewable Energy Curtailment Ratio (%)": {},
-        "Renewable Storage Utilization Rate (%)": {}
-      },
-      "Renewable Generation Capacity Expansion Rate (MW per year)": {
-        "Renewable Project Approval Rate (projects per year)": {},
-        "Renewable Transmission Line Expansion Rate (km per year)": {},
-        "Renewable Energy Investment Flow Rate (USD per year)": {},
-        "Renewable Technology Manufacturing Output Growth Rate (MW per year)": {}
+      "Geothermal Electricity Generation Capacity (MW)": {
+        "Geothermal Plant Operational Availability (%)": {},
+        "Geothermal Reservoir Sustainable Extraction Rate (MW)": {}
       }
     },
-    "Fuel Import Dependency Ratio": {
-      "Fuel Import Share Percentage": {
-        "Domestic Crude Oil Production Volume": {},
-        "Renewable Energy Share in Total Energy Supply": {},
-        "Strategic Petroleum Reserve Utilization Rate": {},
-        "Domestic Refinery Capacity Utilization": {},
-        "Fuel Import Share for Power Generation Sector": {},
-        "Domestic Natural Gas Production Volume": {},
-        "Fuel Import Share for Transportation Sector": {}
+    "Energy Import Dependency Ratio (Percent of Total Energy Consumption)": {
+      "Net Energy Imports (Petajoules per Year)": {
+        "Net Energy Import Dependency Ratio (Net Energy Imports \u00f7 Total Primary Energy Supply)": {},
+        "Seasonal Variability of Net Energy Imports (PJ Difference Between Peak and Off\u2011Peak Months)": {},
+        "Import Infrastructure Capacity Utilization Rate (Percentage of Terminal Capacity Used for Net Energy Imports)": {},
+        "Transmission and Distribution Losses of Imported Energy (PJ Lost During Delivery)": {}
       },
-      "Fuel Import Cost Volatility Index": {
-        "Domestic Fuel Price Index Volatility": {},
-        "Long\u2011Term Fuel Contract Price Stability": {},
-        "Currency Exchange Rate Volatility for Imported Fuel": {},
-        "Fuel Transportation Cost Variability": {}
+      "Domestic Energy Production Share (% of Total Energy Consumption)": {
+        "Domestic Solar Electricity Generation Share (% of Total Electricity Consumption)": {},
+        "Domestic Wind Electricity Generation Share (% of Total Electricity Consumption)": {},
+        "Domestic Natural Gas Production Share (% of Total Energy Consumption)": {},
+        "Domestic Biofuel Production Share (% of Total Energy Consumption)": {}
       },
-      "Fuel Import Origin Diversification Index": {
-        "Number of Distinct Fuel Supplier Countries": {},
-        "Fuel Import Origin Herfindahl\u2011Hirschman Index": {},
-        "Geographic Spread Index of Fuel Origins": {},
-        "Average Political Stability Rating of Supplier Nations": {}
+      "Average Price of Imported Energy (USD per Megawatt\u2011hour)": {
+        "Average Fuel Purchase Cost Component of Imported Energy (USD\u202fper\u202fMWh)": {},
+        "Average Transmission and Distribution Losses for Imported Energy (%\u202floss)": {},
+        "Average Regulatory Tariff Surcharge on Imported Energy (USD\u202fper\u202fMWh)": {},
+        "Average Currency Exchange Rate Adjustment Factor for Energy Imports (USD\u202fper\u202fforeign\u2011currency\u202funit)": {},
+        "Average Energy Import Insurance Premium (USD\u202fper\u202fMWh)": {},
+        "Average Supplier Credit\u2011Risk Premium on Imported Energy (USD\u202fper\u202fMWh)": {}
       },
-      "Foreign Fuel Supply Disruption Frequency": {
-        "Number of International Fuel Transport Route Closures per Year": {},
-        "Average Duration of Foreign Fuel Supply Interruptions (Days)": {},
-        "Frequency of Geopolitical Events Affecting Fuel Supply": {},
-        "Port Congestion Incidents Impacting Fuel Imports": {},
-        "Regulatory Clearance Delays for Imported Fuel Shipments (Days)": {},
-        "Maritime Piracy Incidents on Fuel Supply Lines": {},
-        "Incidence of International Sanctions on Fuel Exporting Nations": {},
-        "Cross\u2011Border Fuel Pipeline Leak Events": {}
+      "Energy Import Diversity Index (Weighted Count of Source Countries)": {
+        "Weighted Supplier Country Stability Index": {},
+        "Energy Import Supplier Market Share Concentration (HHI)": {},
+        "Number of Distinct Energy Carrier Types Imported": {},
+        "Average Geographical Distance of Energy Imports": {},
+        "Number of Active Energy Import Trade Agreements": {}
+      },
+      "Renewable Energy Import Share (% of Total Energy Imports)": {
+        "Renewable Energy Import Volume (Petajoules per Year)": {},
+        "Renewable Energy Import Cost Share (% of Total Energy Import Expenditure)": {},
+        "Renewable Energy Import Reliability Index (Percentage of Scheduled Deliveries Met)": {},
+        "Renewable Energy Import Source Concentration (Herfindahl\u2011Hirschman Index of Renewable Supplier Countries)": {},
+        "Renewable Energy Import Policy Compliance Rate (Percentage of Imports Meeting Domestic Renewable Standards)": {}
+      },
+      "Average Transportation Emissions per Imported Energy Unit (kg CO\u2082 per MJ)": {
+        "Average Bunker Fuel Carbon Intensity (kg\u202fCO\u2082\u202fper\u202fMJ of transport fuel)": {},
+        "Mean Transport Distance per Imported Energy Unit (km\u202fper\u202fMJ)": {},
+        "Transport Vessel Load Factor (MJ of imported energy per tonne of cargo)": {},
+        "Share of Low\u2011Carbon Transport Modes for Energy Imports (% of total imported energy)": {},
+        "Adoption Rate of Emission\u2011Control Technologies on Energy Transport Vessels (% of fleet equipped)": {},
+        "Average Transport Vessel Speed (km\u202fper\u202fhour)": {},
+        "Frequency of Consolidated Transport Trips (trips\u202fper\u202fPJ of imported energy)": {}
+      },
+      "Long\u2011Term Energy Import Contract Duration (Years)": {
+        "Average Remaining Term of Active Energy Import Contracts (Years)": {},
+        "Percentage of Energy Import Contracts with Duration \u2265 15 Years": {},
+        "Annual Count of New Long\u2011Term Energy Import Contracts Initiated": {},
+        "Frequency of Contract Extension Negotiations per Year": {},
+        "Proportion of Total Imported Energy Volume Secured by Contracts Longer Than 10 Years": {},
+        "Average Early\u2011Termination Penalty Cost as Percentage of Contract Value": {}
+      },
+      "Energy Import Price Volatility Index (Standard Deviation of Monthly Import Prices)": {
+        "Monthly Import Price Spike Count": {},
+        "Import Price Autocorrelation Coefficient (Lag\u202f1)": {},
+        "Import Price Forecast Error Standard Deviation": {},
+        "Import Price Seasonality Amplitude Index": {},
+        "Import Price Hedging Coverage Ratio": {},
+        "Import Price Market Liquidity Index": {},
+        "Import Price Supply Disruption Event Frequency": {},
+        "Import Price Currency\u2011Exchange Volatility Impact Score": {}
       }
     },
-    "Strategic Energy Reserve Stock Level": {
-      "Strategic Petroleum Reserve Volume (Barrels)": {
-        "Strategic Petroleum Reserve Release Rate (Barrels per Day)": {},
-        "Strategic Petroleum Reserve Drawdown Frequency (Events per Year)": {}
+    "Strategic Energy Reserve Stock Level (Barrels of Oil Equivalent)": {
+      "Strategic Reserve Turnover Rate (Barrels per Year)": {
+        "Strategic Reserve Release Volume (Barrels per Quarter)": {},
+        "Strategic Reserve Refill Rate (Barrels per Year)": {},
+        "Strategic Reserve Utilization Ratio (% of Total Capacity)": {},
+        "Strategic Reserve Turnover Frequency (Turns per Year)": {},
+        "Strategic Reserve Stock Level Variation (Barrels)": {},
+        "Strategic Reserve Dispatch Lead Time (Days)": {}
       },
-      "Strategic Natural Gas Reserve Capacity (Cubic Meters)": {
-        "Annual Natural Gas Injection Volume (cubic meters per year)": {},
-        "Seasonal Withdrawal Capacity (cubic meters per day)": {},
-        "Reserve Utilization Ratio (percent of total capacity)": {},
-        "Underground Storage Pressure Level (bars)": {},
-        "Regional Distribution Connectivity Index (number of connected delivery points)": {}
-      },
-      "Strategic Renewable Fuel Reserve Level (Liters)": {
-        "Renewable Biofuel Stockpile Volume (Liters)": {},
-        "Annual Renewable Fuel Reserve Replenishment Rate (Liters per Year)": {},
-        "Renewable Fuel Reserve Utilization Ratio (Percent)": {}
-      },
-      "Strategic Energy Reserve Days of Supply (Days)": {
-        "Strategic Energy Reserve Turnover Frequency (Cycles per Year)": {},
-        "Reserve Activation Lead Time (Hours)": {},
-        "Domestic Production Share of Reserve Supply (%)": {},
-        "Strategic Energy Reserve Utilization Ratio (%)": {},
-        "Reserve Facility Operational Availability (%)": {}
+      "Strategic Reserve Degradation Loss (Barrels of Oil Equivalent per Year)": {
+        "Storage Tank Corrosion Loss (Barrels of Oil Equivalent per Year)": {},
+        "Seal Integrity Leakage Volume (Barrels of Oil Equivalent per Year)": {},
+        "Fuel Evaporation Loss from Reserve Facilities (Barrels of Oil Equivalent per Year)": {},
+        "Unplanned Release Due to Mechanical Failure (Barrels of Oil Equivalent per Year)": {},
+        "Temperature\u2011Induced Vaporization Degradation (Barrels of Oil Equivalent per Year)": {}
       }
     },
-    "Grid Reliability Index": {
-      "Frequency Deviation Incidence Rate": {
-        "Primary Frequency Control Activation Count": {},
-        "Reserve Spinning Capacity Utilization Rate": {},
-        "Load Frequency Sensitivity Index": {},
-        "Inertia Availability Ratio": {}
+    "Grid Frequency Stability Index (Hertz Deviation)": {
+      "Primary Frequency Control Reserve Deployment (MW)": {
+        "Conventional Generator Primary Frequency Reserve Capacity (MW)": {},
+        "Renewable Generator Primary Frequency Reserve Contribution (MW)": {},
+        "Demand\u2011Side Primary Frequency Reserve Activation (MW)": {},
+        "Spinning Reserve Availability for Primary Frequency Control (MW)": {}
       },
-      "Voltage Unbalance Index": {
-        "Phase Voltage Imbalance Ratio": {},
-        "Neutral\u2011to\u2011Phase Voltage Ratio": {},
-        "Voltage Unbalance Total Harmonic Distortion (THD)": {}
+      "System Inertia Level (MW\u00b7s)": {
+        "Conventional Thermal Generation Inertia (MW\u00b7s)": {},
+        "Renewable Energy Synthetic Inertia Provision (MW\u00b7s)": {}
       },
-      "Transmission Line Redundancy Ratio": {
-        "Alternative Path Capacity Utilization Ratio": {},
-        "Critical Node Connectivity Index": {},
-        "Geographic Diversity of Transmission Corridors": {}
+      "Battery Energy Storage Frequency Regulation Power (MW)": {
+        "Battery Energy Storage State\u2011of\u2011Charge Availability for Frequency Regulation (MWh)": {},
+        "Dispatchable Battery Frequency Regulation Capacity Utilization Rate (%)": {},
+        "Response Time of Battery Energy Storage to Frequency Deviations (seconds)": {},
+        "Battery Degradation Impact on Frequency Regulation Power (MW\u202f\u00b7\u202fyear\u207b\u00b9)": {},
+        "Market Participation Share of Battery Storage in Frequency Regulation Services (%)": {}
       },
-      "Grid Cybersecurity Incident Frequency": {
-        "SCADA System Intrusion Attempt Rate": {},
-        "Control Center Malware Detection Frequency": {}
-      },
-      "Distributed Energy Resource Dispatch Accuracy": {
-        "Solar Generation Forecast RMSE": {},
-        "DER Control Signal Latency": {},
-        "Aggregated DER Utilization Ratio": {}
-      },
-      "Protection Relay Misoperation Rate": {
-        "False Trip Frequency of Protection Relays": {},
-        "Missed Trip Incidence Rate for Critical Faults": {},
-        "Relay Setting Drift Magnitude": {},
-        "Selective Isolation Success Ratio": {}
-      },
-      "Automatic Generation Control Response Time": {
-        "AGC Setpoint Tracking Error (MW)": {},
-        "Reserve Deployment Latency (seconds)": {}
+      "Cross\u2011border Power Transfer Imbalance (MW)": {
+        "Cross\u2011border Power Transfer Imbalance Magnitude (MW)": {},
+        "Cross\u2011border Power Transfer Imbalance Duration (hours)": {}
       }
     },
-    "Energy Storage Capacity Utilization": {
-      "Battery State\u2011of\u2011Charge Utilization Ratio": {
-        "Average Battery Depth\u2011of\u2011Discharge Utilization": {},
-        "Battery Fleet State\u2011of\u2011Charge Availability Fraction": {}
+    "Critical Energy Infrastructure Downtime Hours (Hours per Year)": {
+      "Average Restoration Time per Outage (Hours)": {
+        "Spare Parts Inventory Turnover Rate (Days)": {},
+        "Crew Dispatch Response Time (Minutes)": {},
+        "Restoration Process Automation Level (Percent)": {}
       },
-      "Grid\u2011Scale Lithium\u2011Ion Storage Turnover Rate": {
-        "Annual Lithium\u2011Ion Storage Energy Throughput (MWh\u202fper\u202fyear)": {},
-        "Grid\u2011Scale Lithium\u2011Ion Capacity Replacement Rate (%\u202fper\u202fyear)": {},
-        "Lithium\u2011Ion Storage Dispatch Flexibility Ratio (dispatchable\u202fMWh\u202f/\u202ftotal\u202fMWh)": {},
-        "Frequency Regulation Event Count for Grid\u2011Scale Lithium\u2011Ion Storage (events\u202fper\u202fyear)": {}
+      "Number of Unplanned Transmission Line Faults (Events per Year)": {
+        "Lightning Strike Frequency on Transmission Lines (Events per Year)": {},
+        "Vegetation Encroachment Incidents on Line Right\u2011of\u2011Way (Events per Year)": {},
+        "Mechanical Fatigue Failure Rate of Conductors (Events per Year)": {},
+        "Wind\u2011Induced Line Damage Events (Events per Year)": {},
+        "Animal\u2011Induced Fault Incidents (Events per Year)": {},
+        "Equipment Age\u2011Related Failure Count (Events per Year)": {},
+        "Soil Erosion Impact on Line Foundations (Events per Year)": {},
+        "Insulator Contamination Fault Frequency (Events per Year)": {}
       },
-      "Pumped\u2011Hydro Storage Energy Dispatch Efficiency": {
-        "Pumped\u2011Hydro Round\u2011Trip Energy Conversion Efficiency": {},
-        "Dispatch Start\u2011up Ramp Rate of Pumped\u2011Hydro Units": {},
-        "Peak\u2011Demand Capacity Utilization Ratio of Pumped\u2011Hydro Storage": {}
+      "Scheduled Maintenance Duration (Hours per Year)": {
+        "Planned Maintenance Event Count (Events per Year)": {},
+        "Average Planned Outage Duration (Hours per Event)": {}
       },
-      "Distributed Residential Storage Participation Rate": {
-        "Residential Battery Installed Capacity per Household (kWh)": {},
-        "Number of Households Enrolled in Residential Demand\u2011Response Programs": {},
-        "Average Round\u2011Trip Efficiency of Residential Storage Systems (%)": {},
-        "Backup Autonomy Duration of Residential Storage (hours)": {},
-        "Frequency of Residential Storage Discharge Events per Year": {},
-        "Residential Storage Contribution to Peak Load Reduction (% of peak demand)": {},
-        "Smart\u2011Inverter Enabled Residential Storage Penetration Rate (%)": {},
-        "Renewable Self\u2011Consumption Ratio for Homes with Storage (%)": {}
+      "Protection System Failure Count (Events per Year)": {
+        "Protective Relay Misoperation Rate (Events per Year)": {},
+        "Backup Power Supply Failure Incidents (Events per Year)": {},
+        "Automatic Reclosure Failure Count (Events per Year)": {},
+        "Fault Detection System False Negative Rate (Events per Year)": {},
+        "Surge Protection Device Failure Incidents (Events per Year)": {},
+        "Protection System Testing Non\u2011Compliance Events (Events per Year)": {}
       },
-      "Thermal Energy Storage Cycle Count": {
-        "Thermal Storage Charge\u2011Discharge Frequency": {},
-        "Average Heat Retention Efficiency per Cycle": {},
-        "Molten Salt Temperature Differential per Cycle": {},
-        "Thermal Storage Vessel Availability Rate": {},
-        "Cumulative Thermal Energy Throughput per Cycle": {}
+      "Cybersecurity Incident Downtime Hours (Hours per Year)": {
+        "Number of Detected Cyber Intrusion Events (Events per Year)": {},
+        "Average Time to Detect Cybersecurity Incident (Hours)": {},
+        "Average Time to Contain Cybersecurity Incident (Hours)": {},
+        "Percentage of Critical Grid Control Systems Implementing Multi\u2011Factor Authentication (Percent)": {},
+        "Frequency of Security Patch Deployments for SCADA Systems (Patches per Year)": {},
+        "Number of Unauthorized Access Attempts on Energy Management Network (Attempts per Year)": {}
       },
-      "Hydrogen Storage Capacity Utilization Percentage": {
-        "Hydrogen Storage Leakage Loss Percentage": {},
-        "Hydrogen Storage Pressure Stability Ratio": {}
+      "Fuel Supply Interruption Hours (Hours per Year)": {
+        "Diesel Fuel Delivery Delay Hours per Year": {},
+        "Natural Gas Supply Outage Duration (Hours per Year)": {},
+        "Renewable Fuel Availability Gap Hours per Year": {},
+        "Fuel Transportation Disruption Hours per Year": {},
+        "Fuel Storage Capacity Shortfall Hours per Year": {}
       },
-      "Electrochemical Storage Degradation Rate": {
-        "Calendar Capacity Fade Rate": {},
-        "Electrolyte Contamination Accumulation Rate": {}
-      },
-      "Energy Storage Ancillary Service Provision Hours": {
-        "Frequency Regulation Service Provision Hours": {},
-        "Voltage Support Service Provision Hours": {},
-        "Spinning Reserve Service Provision Hours": {},
-        "Black\u2011Start Service Provision Hours": {}
-      }
-    },
-    "Critical Energy Infrastructure Outage Duration": {
-      "Mean Time to Restore Critical Energy Services": {
-        "Field Technician Dispatch Time": {},
-        "Spare Parts Availability Index": {},
-        "System Diagnostic Completion Time": {},
-        "Critical Substation Accessibility Score": {},
-        "Restoration Planning Decision Latency": {},
-        "Crew Mobilization Efficiency Ratio": {}
-      },
-      "Backup Generation Activation Lag Time": {
-        "Control System Signal Transmission Delay": {},
-        "Fuel Pump Start\u2011up Delay": {},
-        "Backup Generator Engine Warm\u2011up Time": {},
-        "Operator Manual Initiation Lag": {},
-        "Battery Storage Switch\u2011over Latency": {},
-        "Automatic Transfer Switch Closing Time": {}
-      },
-      "Redundant Path Availability Ratio": {
-        "Parallel Transmission Path Ratio": {},
-        "Critical Substation Alternate Connection Ratio": {},
-        "Geographically Dispersed Generation Redundancy Ratio": {}
-      },
-      "Protective Equipment Failure Rate": {
-        "Transformer Insulation Failure Rate": {},
-        "Circuit Breaker Failure Frequency": {},
-        "Protective Relay Misoperation Rate": {},
-        "Lightning Arrestor Failure Incidence": {},
-        "Gas\u2011Insulated Switchgear Fault Rate": {},
-        "Surge Protector Failure Rate": {},
-        "Protective Equipment Preventive Maintenance Delay": {}
-      },
-      "Real-time Outage Detection Latency": {
-        "Sensor Data Transmission Delay (ms)": {},
-        "SCADA Communication Latency (ms)": {},
-        "Grid Monitoring System Alert Processing Time (seconds)": {},
-        "Distributed Energy Resource Fault Detection Interval (seconds)": {},
-        "Customer Smart Meter Reporting Latency (seconds)": {}
-      },
-      "Critical Load Shedding Duration per Event": {
-        "Peak Demand Exceedance Frequency per Event": {},
-        "Grid Frequency Deviation Magnitude during Load Shedding": {},
-        "Renewable Generation Curtailment Ratio per Event": {},
-        "Emergency Power Reserve Utilization Rate per Event": {},
-        "Critical Infrastructure Load Shedding Proportion per Event": {}
-      }
-    },
-    "Energy Supply-Demand Balance Ratio": {
-      "Real-Time Supply\u2011Demand Ratio (MW/MW)": {
-        "Real-Time Conventional Generation Output (MW)": {},
-        "Real-Time Renewable Generation Output (MW)": {},
-        "Real-Time Grid Reserve Capacity (MW)": {},
-        "Real-Time Transmission Constraint Loss (MW)": {},
-        "Real-Time Battery Storage Discharge Rate (MW)": {}
-      },
-      "Seasonal Supply\u2011Demand Gap (Megawatt\u2011hours)": {
-        "Seasonal Thermal Generation Availability (MWh)": {},
-        "Seasonal Energy Storage Discharge Shortfall (MWh)": {}
-      },
-      "Demand Response Participation Share (%)": {
-        "Residential Demand Response Enrollment Percentage": {},
-        "Commercial and Industrial Demand Response Participation Rate": {},
-        "Average Load Reduction per Demand Response Event (MWh)": {},
-        "Demand Response Program Cost per Kilowatt Reduced (USD/kW)": {}
+      "Critical Substation Availability Ratio (Percent of Time Operational)": {
+        "Transformer Cooling System Performance Index": {},
+        "Backup Generator Runtime Availability (Hours per Year)": {},
+        "Remote Monitoring Data Latency (Seconds)": {},
+        "Vegetation Encroachment Proximity Score": {},
+        "Substation Insulation Resistance Level (Megohms)": {},
+        "Grid Load Margin at Substation (MW)": {},
+        "Storm-Related Physical Damage Incidence (Events per Year)": {}
       }
     }
   },
   "Human Wellbeing Measures": {
-    "Access to Safe Drinking Water": {
-      "Household Tap Water Contamination Frequency": {
-        "Lead Exceedance Frequency in Household Tap Water": {},
-        "Microbial Contamination Event Rate in Household Tap Water": {}
+    "Household Access to Safe Drinking Water": {
+      "Percentage of Households with Continuous Safe Water Supply": {
+        "Annual Frequency of Safe Water Service Interruptions per Household": {},
+        "Average Duration of Safe Water Service Outages (hours per year) per Household": {},
+        "Proportion of Households Served by Pressurized Continuous Supply Networks": {},
+        "Rate of Unplanned Safe Water Supply Failures in the Community": {},
+        "Percentage of Households with Access to 24\u2011Hour Safe Water Pressure Monitoring": {}
       },
-      "Percentage of Population with Piped Water Access": {
-        "Urban Household Piped Water Access Rate": {},
-        "Rural Household Piped Water Access Rate": {},
-        "Piped Water Access Affordability (% of household income spent on water bills)": {},
-        "Piped Water Network Coverage Percentage (network length per km\u00b2)": {},
-        "Piped Water Access Equity Index (low\u2011income to high\u2011income access ratio)": {},
-        "Percentage of Schools with On\u2011site Piped Water": {},
-        "Percentage of Healthcare Facilities with On\u2011site Piped Water": {},
-        "Annual Change in Population Piped Water Access (%)": {}
+      "Average Daily Safe Water Consumption per Household (L\u202fperson\u207b\u00b9\u202fday\u207b\u00b9)": {
+        "Average Daily Safe Water Consumption per Household Member by Age Group (L\u202fperson\u207b\u00b9\u202fday\u207b\u00b9)": {},
+        "Household Safe Water Retrieval Distance (meters per person per day)": {},
+        "Seasonal Safe Water Consumption Ratio (dry\u2011season to wet\u2011season consumption)": {},
+        "Average Daily Safe Water Storage Utilization Rate (percentage of stored safe water used per day)": {},
+        "Per Capita Safe Water Consumption during Peak Household Activity Hours (L\u202fperson\u207b\u00b9\u202fhour\u207b\u00b9)": {},
+        "Household Safe Water Consumption Inequality Index (Gini coefficient of daily safe water consumption across households)": {},
+        "Average Daily Safe Water Consumption per Household Income Quintile (L\u202fperson\u207b\u00b9\u202fday\u207b\u00b9)": {}
       },
-      "Average Daily Household Water Collection Time": {
-        "Average Distance to Primary Water Source (km)": {},
-        "Number of Water Collection Trips per Household per Day": {},
-        "Average Waiting Time at Water Source (minutes)": {},
-        "Seasonal Variation Index of Collection Time": {},
-        "Proportion of Households Using Manual Carrying vs. Mechanized Transport (%)": {},
-        "Time Spent Maintaining Water Storage Containers (minutes per day)": {},
-        "Accessibility Score of Water Infrastructure (percentage of households within 500\u202fm of a functional source)": {},
-        "Household Labor Allocation to Water Collection (percentage of adult labor hours)": {}
-      },
-      "Incidence of Waterborne Disease Cases per 10,000 Population": {
-        "Hospitalization Rate for Waterborne Diarrheal Diseases per 1,000 Population": {},
-        "Average Days of Work Lost per Waterborne Illness Episode": {},
-        "Healthcare Expenditure on Waterborne Diseases per Capita (USD)": {},
-        "Child Stunting Prevalence Attributed to Waterborne Infections (%)": {},
-        "Antibiotic Prescription Rate for Confirmed Waterborne Infections (Prescriptions per 1,000 Population)": {}
-      },
-      "Per Capita Treated Drinking Water Volume": {
-        "Per Capita Treated Water Consumption Rate (Liters\u202fper\u202fperson\u202fper\u202fday)": {},
-        "Seasonal Per Capita Treated Water Volume (Liters\u202fper\u202fperson\u202fper\u202fseason)": {},
-        "Per Capita Treated Water Price (USD\u202fper\u202fcubic\u202fmeter)": {},
-        "Household Treated Water Storage Volume per Capita (Liters\u202fper\u202fperson)": {}
-      },
-      "Drinking Water Supply Reliability (Hours per Day)": {
-        "Average Daily Hours of Continuous Tap Water Availability": {},
-        "Frequency of Daily Supply Interruption Events": {},
-        "Proportion of Days Meeting Minimum Required Supply Hours": {},
-        "Seasonal Variation in Daily Supply Hours": {},
-        "Average Time Between Consecutive Supply Outages (Hours)": {},
-        "Household Reported Satisfaction Score for Water Supply Continuity (0-100)": {}
+      "Household Water Treatment Device Coverage Rate": {
+        "Household Water Treatment Device Functional Efficiency Rate": {},
+        "Average Annual Maintenance Cost per Household for Water Treatment Devices": {},
+        "Proportion of Households Using Solar\u2011Powered Water Treatment Devices": {},
+        "Household Water Treatment Device Replacement Frequency": {},
+        "Percentage of Households Receiving Financial Assistance for Water Treatment Devices": {}
       }
     },
-    "Indoor Air Quality Index": {
-      "PM2.5 Concentration": {
-        "Ambient Outdoor PM2.5 Concentration in Residential Zones": {},
-        "Indoor PM2.5 Concentration in Household Living Spaces": {},
-        "PM2.5 Concentration in School Classrooms": {},
-        "PM2.5 Concentration in Healthcare Facility Waiting Areas": {},
-        "Daily Average PM2.5 Exposure for Elderly Population": {},
-        "Peak Hour PM2.5 Concentration during Commute Times": {},
-        "Seasonal Mean PM2.5 Concentration (Winter)": {}
+    "Ambient Air Quality Exposure Index": {
+      "PM2.5 Exposure Concentration": {
+        "Average Annual Ambient PM2.5 Concentration for Residential Zones": {},
+        "Mean Daily Inhaled PM2.5 Dose for Outdoor Workers": {},
+        "Peak 8\u2011Hour PM2.5 Concentration Experienced Near Traffic Corridors": {}
       },
-      "Volatile Organic Compounds Concentration": {
-        "Indoor Residential VOC Concentration (\u00b5g/m\u00b3)": {},
-        "Workplace VOC Exposure Level (\u00b5g/m\u00b3)": {},
-        "VOC-Related Respiratory Symptom Frequency (episodes per month)": {},
-        "VOC-Associated Healthcare Utilization Rate (clinic visits per 1,000 residents)": {},
-        "VOC Exposure Duration Above Threshold (hours per day)": {},
-        "VOC-Related Cognitive Performance Score (standardized test)": {},
-        "VOC-Related Sick Leave Days (average days per employee per year)": {}
+      "Ground\u2011level Ozone Exposure Level": {
+        "Average  in Forced Expiratory Volume (FEV1) Among Residents": {},
+        "Frequency of Ozone\u2011Induced Eye Irritation Episodes per 1,000 People": {},
+        "Self\u2011Reported Ozone\u2011Related Fatigue Days per Household per Month": {},
+        "Reduction in Outdoor Physical Activity Hours per Capita Due to Ozone Levels": {}
+      },
+      "Household NO\u2082 Inhalation Dose": {
+        "Indoor NO\u2082 Concentration Level": {},
+        "Frequency of Kitchen Ventilation Use": {},
+        "Number of Gas\u2011fueled Cooking Appliances per Household": {},
+        "Average Daily Indoor NO\u2082 Exposure Hours": {},
+        "Proportion of Households Using Low\u2011NO\u2082 Emission Stoves": {}
+      },
+      "Number of Days Exceeding WHO Air\u2011Quality Guidelines": {
+        "Number of Days Exceeding WHO Air\u2011Quality Guidelines for Sulfur Dioxide (SO\u2082)": {},
+        "Number of Days Exceeding WHO Air\u2011Quality Guidelines for Carbon Monoxide (CO)": {},
+        "Number of Days Exceeding WHO Air\u2011Quality Guidelines for Nitrogen Dioxide (NO\u2082)": {},
+        "Number of Days Exceeding WHO Air\u2011Quality Guidelines for Indoor Household Air Quality": {},
+        "Number of Days Exceeding WHO Air\u2011Quality Guidelines due to Wildfire Smoke Episodes": {},
+        "Number of Days Exceeding WHO Air\u2011Quality Guidelines for Seasonal Agricultural Burning": {},
+        "Number of Days Exceeding WHO Air\u2011Quality Guidelines for Volatile Organic Compounds (VOCs)": {},
+        "Number of Days Exceeding WHO Air\u2011Quality Guidelines for Lead (Pb) Concentrations": {}
+      },
+      "Respiratory Hospital Admissions Attributable to Air Pollution": {
+        "Annual Rate of Hospital Admissions for Asthma Exacerbations": {},
+        "Average Length of Hospital Stay for Pollution\u2011Related Respiratory Cases": {},
+        "30\u2011Day Readmission Rate for Respiratory Hospitalizations": {},
+        "In\u2011Hospital Mortality Rate for Respiratory Conditions Attributable to Air Pollution": {},
+        "Emergency Department Visit Count for Acute Upper Respiratory Infections Linked to Air Pollution": {}
       }
     },
-    "Heatwave Exposure Days": {
-      "Heat\u2011Related Hospital Admission Rate (per 100,000 population)": {
-        "Heat\u2011Related Emergency Department Visit Rate (per 100,000 population)": {},
-        "Heat\u2011Related Intensive Care Unit Admission Rate (per 100,000 population)": {},
-        "Heat\u2011Related Hospital Readmission Rate within 30 Days (per 100,000 population)": {}
+    "Population Mental Health Wellbeing Score": {
+      "Depression Prevalence Rate": {
+        "Average PHQ\u20119 Score Among Adults": {},
+        "Depression\u2011Related Work Absenteeism Rate (days per employee per year)": {},
+        "Depression\u2011Attributed Disability Benefit Enrollment Rate (per 10,000 population)": {},
+        "Depression\u2011Associated Hospital Admission Rate (per 100,000 population)": {}
       },
-      "Heatstroke Mortality Count (deaths per year)": {
-        "Daily Maximum Temperature Days (>35\u00b0C) Count": {},
-        "Number of Operational Public Cooling Centers": {},
-        "Percentage of Population Age\u202f>\u202f65": {},
-        "Average EMS Response Time to Heat Emergencies (minutes)": {},
-        "Heatstroke Prevention Awareness Score (0\u2011100)": {},
-        "Household Air\u2011Conditioner Ownership Rate (%)": {},
-        "Heatwave Early Warning Coverage (% of residents receiving alerts)": {},
-        "Prevalence of Chronic Cardiovascular Disease (% of population)": {}
+      "Anxiety Disorder Rate": {
+        "Perceived Work\u2011Life Balance Index": {},
+        "Self\u2011Reported Physical Health Score": {},
+        "Nighttime Screen Time Hours": {},
+        "Perceived Personal Safety Index": {}
       },
-      "Lost Outdoor Labor Hours Due to Heat (person\u2011hours per month)": {
-        "Agricultural Outdoor Labor Hours Lost to Heat (person\u2011hours per month)": {},
-        "Construction Outdoor Labor Hours Lost to Heat (person\u2011hours per month)": {},
-        "Fisheries Outdoor Labor Hours Lost to Heat (person\u2011hours per month)": {},
-        "Public\u2011Service Outdoor Labor Hours Lost to Heat (person\u2011hours per month)": {},
-        "Outdoor Tourism Labor Hours Lost to Heat (person\u2011hours per month)": {}
+      "Suicide Mortality Rate": {
+        "Access to Lethal Means Index": {},
+        "Prescription Opioid Dispensing Rate": {},
+        "Housing Instability Rate": {}
       },
-      "Residential Cooling Energy Use Intensity (kWh per household per day)": {
-        "Average Daily Indoor Temperature Deviation from Setpoint (\u00b0C)": {},
-        "Household Air\u2011Conditioner Energy Efficiency Ratio (EER, BTU/Wh)": {},
-        "Residential Cooling Energy Use per Occupant (kWh per person per day)": {},
-        "Average Daily Household Cooling System Runtime (hours per day)": {},
-        "Indoor Relative Humidity Level During Cooling Season (%)": {},
-        "Age of Primary Residential Cooling Equipment (years)": {}
+      "Average Perceived Stress Scale Score": {
+        "Daily Commute Duration (minutes)": {},
+        "Occupational Workload Intensity (high\u2011demand hours per week)": {},
+        "Ambient Noise Exposure Level (average daytime dB)": {},
+        "Indoor Air Quality Index (PM2.5 \u00b5g/m\u00b3)": {},
+        "Caffeine Consumption Rate (mg per day)": {},
+        "Physical Activity Frequency (moderate\u2011vigorous sessions per week)": {},
+        "Financial Strain Index (percentage of income spent on essential expenses)": {},
+        "Housing Overcrowding Ratio (persons per bedroom)": {}
       },
-      "Nighttime Heatwave Duration (average consecutive nights above threshold)": {
-        "Average Nighttime Sleep Duration (hours per night)": {},
-        "Prevalence of Self\u2011Reported Sleep Disturbance Due to Heat (% of population)": {},
-        "Nighttime Thermal Discomfort Index (average perceived discomfort rating, 0\u201110 scale)": {},
-        "Nighttime Outdoor Recreation Participation Rate (% of population)": {},
-        "Self\u2011Rated Nighttime Wellbeing Score (average on validated wellbeing questionnaire)": {},
-        "Incidence of Heat\u2011Related Nighttime Anxiety Episodes (episodes per 1,000 residents)": {}
-      }
-    },
-    "Access to Urban Green Space": {
-      "Public Green Space Area per Resident (sq\u202fm per capita)": {
-        "Tree Canopy Coverage per Resident (sq\u202fm per capita)": {},
-        "Public Green Space with Recreational Facilities per Resident (sq\u202fm per capita)": {},
-        "Green Space Biodiversity Index per Resident (species count per capita)": {},
-        "Average Daily Sunlight Exposure in Public Green Spaces per Resident (hours per person)": {},
-        "Air\u2011Quality Improvement Attributable to Public Green Space per Resident (\u00b5g/m\u00b3 reduction per capita)": {},
-        "Physical\u2011Activity Opportunities in Public Green Space per Resident (minutes of moderate activity per capita per week)": {},
-        "Community Cohesion Score Associated with Public Green Space per Resident (points per capita)": {}
+      "Mental Health Service Utilization Rate": {
+        "Average Wait Time for Mental Health Services (days)": {},
+        "Mental Health Provider\u2011to\u2011Population Ratio (providers per 10,000 residents)": {},
+        "Tele\u2011Mental\u2011Health Session Utilization Rate (sessions per 1,000 residents per month)": {}
       },
-      "Mean Travel Time to Nearest Urban Park (minutes)": {
-        "Public Transport Service Frequency to Nearest Urban Park (vehicles per hour)": {},
-        "Percentage of Residents Within 15\u2011Minute Travel Time to Nearest Urban Park (%)": {},
-        "Average Road Network Congestion Index on Routes to Urban Parks (unitless)": {},
-        "Bicycle Path Availability Ratio on Routes to Nearest Urban Park (km of bike lanes per km of road)": {},
-        "Average Walking Speed on Routes to Nearest Urban Park (meters per second)": {}
-      }
-    },
-    "Household Food Security Score": {
-      "Household Calorie Adequacy Ratio": {
-        "Per Capita Daily Calorie Intake (kilocalories per person per day)": {},
-        "Household Calorie Deficit Days per Month": {},
-        "Cooking Energy Availability Index (percentage of households with uninterrupted cooking energy supply)": {},
-        "Household Agricultural Calorie Yield (kilocalories produced per hectare of household\u2011managed land)": {}
+      "Population Loneliness Prevalence": {
+        "Community Event Participation Rate": {},
+        "Perceived Neighborhood Cohesion Score": {},
+        "Average Daily Digital Social Interaction Hours": {}
       },
-      "Household Dietary Diversity Score": {
-        "Number of Distinct Food Groups Consumed per Week": {},
-        "Frequency of Animal\u2011source Food Consumption per Month": {},
-        "Seasonal Availability Index of Fresh Produce": {},
-        "Household Access Distance to Fresh Food Markets (km)": {},
-        "Cooking Fuel Diversity Score": {},
-        "Household Micronutrient Adequacy Index": {}
+      "Average Sleep Duration": {
+        "Average Weekday Sleep Duration": {},
+        "Average Weekend Sleep Duration": {},
+        "Sleep Duration Variability Index": {},
+        "Proportion of Adults Meeting Recommended Sleep Duration": {}
       },
-      "Frequency of Food Shortage Episodes per Year": {
-        "Household Food Stock Depletion Days per Year": {},
-        "Number of Emergency Food Assistance Requests per Year": {},
-        "Average Duration of Food Shortage Episodes (days)": {},
-        "Frequency of Meal\u2011Skipping Events per Year": {},
-        "Incidence of Child Hunger Episodes per Year": {},
-        "Percentage of Households Reporting Reduced Meal Size per Year": {},
-        "Frequency of Reliance on Non\u2011Market Food Sources per Year": {}
-      },
-      "Proportion of Household Income Spent on Food": {
-        "Household Food Price Index Share of Income": {},
-        "Proportion of Household Income Allocated to Cooking Energy": {},
-        "Share of Household Income Spent on Homegrown Food": {},
-        "Proportion of Household Income Dedicated to Food Transportation": {},
-        "Household Food Waste Expenditure Ratio": {}
+      "Social Support Availability Index": {
+        "Community Volunteer Participation Rate": {},
+        "Average Number of Close Kin per Household": {},
+        "Frequency of Neighborhood Mutual\u2011Aid Events": {},
+        "Access to Formal Caregiver Service Slots": {},
+        "Perceived Availability of Peer Support Networks": {}
       }
     }
   },
   "Social Conflict Intensity": {
-    "Violent Incident Frequency": {
-      "Armed Clash Incident Count in Energy Infrastructure Areas": {
-        "Militant Armed Engagements Targeting Oil Pipeline Segments": {},
-        "Armed Clash Frequency at Natural Gas Processing Facilities": {},
-        "Incidents of Armed Interference with Solar Farm Infrastructure": {},
-        "Number of Armed Patrol Confrontations around Electrical Substations": {},
-        "Reported Armed Seizure Attempts of Energy Transport Vehicles": {}
+    "Protest Event Count": {
+      "Number of Protest Participants": {
+        "Protest Mobilization Funding (USD)": {},
+        "Social Media Share Ratio for Protest Calls (%)": {},
+        "Union Membership Participation Rate in Protests (%)": {}
       },
-      "Firearm-Related Homicide Rate in Residential Zones": {
-        "Residential Firearm Ownership Density (firearms per 1,000 residents)": {},
-        "Average Police Response Time to Residential Emergency Calls (minutes)": {},
-        "Reported Domestic Violence Incidents in Residential Areas (incidents per 1,000 households)": {},
-        "Illegal Firearm Seizure Rate in Residential Neighborhoods (seized firearms per 1,000 residents)": {},
-        "Community Law Enforcement Trust Index (score 0\u2011100)": {},
-        "Residential Gang Membership Prevalence (estimated gang members per 1,000 residents)": {},
-        "Residential Gun Violence Reporting Frequency (reports per 1,000 residents)": {}
+      "Average Protest Duration (Hours)": {
+        "Average Protest Start Delay (Hours)": {},
+        "Average Law Enforcement Detention Time per Protest (Hours)": {},
+        "Average Negotiation Phase Duration within Protest (Hours)": {},
+        "Average Interruption Interval between Protest Phases (Hours)": {}
       },
-      "Explosive Device Detonation Incidents per Year": {
-        "Explosive Device Detonation Incidents in Marketplaces per Year": {},
-        "Explosive Device Detonation Incidents in Educational Institutions per Year": {},
-        "Explosive Device Detonation Incidents in Religious Sites per Year": {},
-        "Explosive Device Detonation Incidents in Transportation Hubs per Year": {}
+      "Geographic Dispersion of Protests (Number of Locations)": {
+        "Count of Distinct Administrative Regions Hosting Protests": {},
+        "Geographic Spread Index (Standard Deviation of Protest Site Coordinates in km)": {},
+        "Proportion of Protests Occurring in Rural Areas": {},
+        "Average Pairwise Distance Between Protest Locations (km)": {},
+        "Number of Cross\u2011jurisdictional Protest Sites (e.g., spanning multiple states/provinces)": {}
+      },
+      "Policy Demands per Protest Event": {
+        "Count of Distinct Policy Demand Categories per Protest": {},
+        "Average Stringency Rating of Policy Demands per Protest": {},
+        "Proportion of Energy\u2011Related Policy Demands per Protest": {},
+        "Proportion of Ecosystem\u2011Related Policy Demands per Protest": {},
+        "Policy Demand Revision Frequency within a Protest Event": {},
+        "Policy Demand Framing Complexity Score per Protest": {}
       }
     },
-    "Protest Participation Rate": {
-      "Protest Participation Rate in Energy Policy Demonstrations": {
-        "Youth Participation Rate in Energy Policy Demonstrations": {},
-        "Urban Area Participation Rate in Energy Policy Demonstrations": {},
-        "Repeat Participation Rate in Energy Policy Demonstrations": {}
+    "Violent Incident Rate": {
+      "Firearm-Related Assault Rate": {
+        "Public Space Firearm Assault Incidence": {},
+        "Gang-Related Firearm Assault Frequency": {}
       },
-      "Protest Participation Rate in Ecosystem Conservation Protests": {
-        "Weekly Conservation Protest Participant Count": {},
-        "Monthly Conservation Protest Event Frequency": {},
-        "Youth Participation Ratio in Conservation Protests": {},
-        "Social Media Mention Volume of Conservation Protests": {},
-        "Number of Arrests During Conservation Protests": {},
-        "Funding Amount Allocated to Conservation Protest Organizations": {}
+      "Domestic Violence Incident Rate": {
+        "Physical Violence Incident Rate within Households": {},
+        "Emotional Abuse Incident Rate within Households": {},
+        "Sexual Coercion Incident Rate within Households": {},
+        "Domestic Violence Reporting Rate to Authorities": {}
+      },
+      "Knife Attack Frequency": {
+        "Knife Attack Incident Rate per 100,000 Population": {},
+        "Knife Carrying Prevalence among Adults (%)": {},
+        "Police Response Time to Knife Attack Calls (minutes)": {},
+        "Public Perceived Safety Regarding Knife Violence (scale 0\u2011100)": {}
       }
     },
-    "Community Grievance Reporting Rate": {
-      "Formal Grievance Filing Rate to Local Government": {
-        "Formal Grievance Filing Rate on Energy Infrastructure Projects": {},
-        "Formal Grievance Filing Rate on Water Resource Allocation": {},
-        "Formal Grievance Filing Rate on Land Access Restrictions": {},
-        "Formal Grievance Filing Rate on Pollution Incident Complaints": {},
-        "Formal Grievance Filing Rate on Indigenous Rights Claims": {},
-        "Formal Grievance Filing Rate on Public Service Delivery": {}
+    "Perceived Grievance Index": {
+      "Perceived Energy Access Disparity Index": {
+        "Perceived Electricity Availability Gap Score": {},
+        "Perceived Energy Affordability Disparity Index": {},
+        "Perceived Reliability of Energy Supply Differential": {}
       },
-      "Community Mediation Request Rate": {
-        "Number of Active Community Mediators per 10,000 Residents": {},
-        "Proportion of Households Aware of Mediation Services (%)": {},
-        "Average Distance to Nearest Mediation Center (km)": {},
-        "Frequency of Community Mediation Outreach Events (events per month)": {},
-        "Cultural Acceptance Score of Mediation (scale 0\u2011100)": {}
+      "Perceived Water Security Stress Score": {
+        "Perceived Household Water Shortage Frequency": {},
+        "Community Water Access Conflict Incidence": {},
+        "Perceived Reliability of Seasonal Water Supply": {},
+        "Household Water Allocation Stress Rating": {},
+        "Frequency of Water\u2011Related Protest Participation": {}
       },
-      "Online Grievance Platform Submission Frequency": {
-        "Daily Submission Count on Online Grievance Platform": {},
-        "Proportion of Grievances Pertaining to Energy Service Issues": {},
-        "Average Sentiment Negativity Score of Platform Submissions": {},
-        "Geographic Concentration Index of Platform Submissions": {}
+      "Perceived Environmental Degradation Concern Index": {
+        "Perceived Air Pollution Concern Score": {},
+        "Perceived Soil Contamination Concern Index": {},
+        "Perceived Biodiversity Decline Concern Rating": {},
+        "Perceived Climate Change Impact Concern Level": {}
       },
-      "Average Grievance Resolution Time (days)": {
-        "Average Time from Complaint Receipt to First Official Response (days)": {},
-        "Average Time from First Official Response to Formal Decision (days)": {},
-        "Average Duration of Community Negotiation Phase (days)": {},
-        "Average Time from Formal Decision to Enforcement Action (days)": {},
-        "Average Court Case Closure Time (days)": {},
-        "Average Time for Appeal Resolution (days)": {},
-        "Average Post\u2011Resolution Follow\u2011up Period (days)": {}
+      "Perceived Economic Inequality Rating": {
+        "Perceived Household Income Disparity Index": {},
+        "Perceived Fairness of Wage Distribution Score": {},
+        "Perceived Access to Financial Services Rating": {},
+        "Perceived Social Mobility Opportunity Index": {}
+      },
+      "Perceived Political Representation Gap Score": {
+        "Perceived Legislative Responsiveness Score": {},
+        "Perceived Policy Inclusion Index": {},
+        "Perceived Electoral Fairness Rating": {},
+        "Perceived Access to Decision\u2011Making Forums Score": {},
+        "Perceived Representative Accountability Rating": {},
+        "Perceived Trust in Elected Officials Score": {},
+        "Perceived Alignment of Community Priorities with Policy Score": {},
+        "Perceived Effectiveness of Advocacy Channels Index": {}
       }
     },
-    "Intergroup Conflict Perception Score": {
-      "Perceived Ethnic Tension Index": {
-        "Perceived Interethnic Hostility Score": {},
-        "Frequency of Ethnic-Related Protest Incidents": {},
-        "Self-Reported Ethnic Discrimination Experience Rate": {},
-        "Social Media Ethnic Conflict Sentiment Index": {},
-        "Perceived Threat from Out-Group Cultural Practices": {},
-        "Trust in Interethnic Community Organizations Rating": {},
-        "Perceived Economic Competition Between Ethnic Groups Index": {}
+    "Social Media Hostility Score": {
+      "Online Hate Speech Frequency": {
+        "Daily Count of Posts Containing Hate Speech Keywords": {},
+        "Number of Distinct User Accounts Posting Hate Speech": {},
+        "Average Audience Reach per Hate Speech Post": {},
+        "Rate of New Hate Speech Hashtag Creation (hashtags per week)": {},
+        "Frequency of Hate Speech Content Reposts per Hour": {}
       },
-      "Perceived Access Inequity Score": {
-        "Perceived Access to Clean Water Score": {},
-        "Perceived Access to Sanitation Facilities Index": {},
-        "Perceived Access to Affordable Housing Score": {},
-        "Perceived Access to Digital Connectivity Rating": {},
-        "Perceived Access to Land Tenure Rights Index": {},
-        "Perceived Access to Public Transportation Score": {}
+      "Conflict-Related Hashtag Sentiment Score": {
+        "Hashtag Sentiment Polarity Index": {},
+        "Temporal Sentiment Shift Rate": {},
+        "Geographic Sentiment Dispersion Metric": {},
+        "Pro\u2011 vs\u2011Anti Conflict Hashtag Sentiment Ratio": {},
+        "Sentiment Volatility of Conflict Hashtags": {},
+        "User Demographic Sentiment Differential": {},
+        "Cross\u2011Platform Conflict Hashtag Sentiment Correlation": {}
       },
-      "Perceived Institutional Legitimacy Gap": {
-        "Perceived Procedural Justice Score": {},
-        "Public Trust in Regulatory Agencies Index": {},
-        "Perceived Institutional Accountability Rating": {},
-        "Perceived Fairness of Resource Allocation Score": {},
-        "Perceived Legitimacy of Energy Policy Enforcement Index": {}
+      "Aggressive Reply Rate": {
+        "Average Aggression Lexicon Score per Reply": {},
+        "Proportion of Replies Initiating New Conflict Threads": {}
       },
-      "Perceived Cultural Marginalization Rating": {
-        "Perceived Exclusion from Community Decision\u2011Making Score": {},
-        "Perceived Undervaluation of Local Cultural Practices Index": {},
-        "Perceived Discrimination in Access to Cultural Services Rating": {},
-        "Perceived Language Barrier Impact on Social Participation Metric": {}
-      },
-      "Perceived Media Bias Influence Score": {
-        "Perceived Energy Policy Media Bias Rating": {},
-        "Perceived Climate Change Coverage Bias Score": {},
-        "Perceived Environmental Regulation Reporting Bias Index": {},
-        "Perceived Social Justice News Bias Level": {},
-        "Perceived Local Community Affairs Media Bias Metric": {}
+      "Threatening Content Proportion": {
+        "Proportion of Threatening Content in Textual Posts": {},
+        "Proportion of Threatening Content in Audio/Video Media": {}
       }
     },
-    "Resource Competition Dispute Count": {
-      "WaterRights Dispute Count": {
-        "Agricultural Water Allocation Conflict Cases": {},
-        "Urban Household Water Supply Dispute Incidents": {},
-        "Industrial Water Use Permit Violation Disputes": {},
-        "Transboundary River Water Sharing Conflict Count": {},
-        "Groundwater Extraction Rights Litigation Cases": {}
+    "Intergroup Trust Deficit": {
+      "Intergroup Trust Survey Score": {
+        "Intergroup Threat Perception Index": {},
+        "Perceived Group Loyalty Score": {},
+        "Historical Conflict Memory Rating": {},
+        "Media Representation Bias Index": {}
       },
-      "LandAllocation Conflict Incidents": {
-        "Land Allocation Dispute Frequency": {},
-        "Number of Legal Land Claims Filed": {},
-        "Incidents of Forced Relocation": {},
-        "Violent Clashes Over Land Use Zones": {},
-        "Community Protests Against Land Reallocation": {},
-        "Average Duration of Land Allocation Conflict Events": {}
+      "Cross-Group Institutional Participation Rate": {
+        "Number of Joint Governance Meetings Held per Quarter": {},
+        "Proportion of Minority Representatives on Decision\u2011Making Boards": {},
+        "Frequency of Cross\u2011Sector Policy Workshops Attended": {},
+        "Rate of Institutional Membership Applications from Different Demographic Groups": {},
+        "Share of Co\u2011authored Regulatory Drafts between Stakeholder Groups": {},
+        "Average Attendance Ratio of Cross\u2011Group Stakeholder Forums": {},
+        "Count of Inter\u2011Group Formal Agreements Signed Annually": {},
+        "Percentage of Budget Allocated to Cross\u2011Group Institutional Programs": {}
       },
-      "FisheriesAccess Dispute Frequency": {
-        "IllegalFishingVesselEncounterCount": {},
-        "FishingPermitRevocationFrequency": {},
-        "FishingZoneOverlapIncidentCount": {},
-        "AccessNegotiationDurationDays": {}
+      "Intergroup Communication Frequency": {
+        "Average Number of Cross\u2011Group Meetings per Month": {},
+        "Rate of Formal Intergroup Dialogue Sessions per Quarter": {},
+        "Digital Intergroup Message Volume per Week": {}
+      },
+      "Perceived Fairness of Resource Allocation Index": {
+        "Perceived Equity of Energy Distribution Score": {},
+        "Resource Allocation Grievance Frequency": {},
+        "Fairness Rating of Water Access Allocation": {},
+        "Perceived Bias in Land\u2011Use Allocation Index": {},
+        "Stakeholder Satisfaction with Renewable Resource Allocation": {}
+      }
+    },
+    "Dispute Resolution Time Lag": {
+      "Average Formal Mediation Duration (days)": {
+        "Number of Mediators Assigned per Case": {},
+        "Average Number of Parties Involved per Mediation": {},
+        "Pre\u2011Mediation Preparation Hours per Party": {},
+        "Stakeholder Trust Score in Mediation Process": {},
+        "Complexity Rating of Dispute (scale\u202f1\u201110)": {},
+        "Mediator Availability Delay (days)": {}
+      },
+      "Pending Arbitration Case Backlog (cases)": {
+        "New Arbitration Case Filing Rate (cases per month)": {},
+        "Arbitration Case Resolution Rate (cases per month)": {},
+        "Arbitration Funding Shortfall (USD)": {},
+        "Number of Parties Lacking Legal Representation (count)": {},
+        "Community Trust in Arbitration Process (scale 0\u2011100)": {},
+        "Frequency of Public Demonstrations Related to Arbitration (events per month)": {},
+        "Average Arbitration Appeal Rate (percentage)": {}
+      },
+      "Judicial Scheduling Wait Time (days)": {
+        "Number of Active Judges Assigned to Civil Cases": {},
+        "Daily Courtroom Availability Hours": {},
+        "Case Filing Rate (cases per day)": {},
+        "Administrative Staff Ratio per Judge": {},
+        "Court Information System Downtime (hours)": {},
+        "Average Case Complexity Score": {}
+      }
+    },
+    "Armed Conflict Casualty Count": {
+      "Combatant Fatality Count": {
+        "Combatant Fatality Count per 1,000 Active Combatants": {},
+        "Monthly Combatant Fatality Rate": {},
+        "Proportion of Senior Officer Fatalities among Combatant Deaths": {},
+        "Average Age of Deceased Combatants": {},
+        "Spatial Density of Combatant Fatalities (deaths per square kilometer of conflict zone)": {}
+      },
+      "Civilian Fatality Count": {
+        "Civilian Fatalities from Direct Weapon Use": {},
+        "Civilian Fatalities from Aerial Bombardment": {},
+        "Civilian Fatalities among Children (age\u202f<\u202f18)": {},
+        "Civilian Fatalities among Women": {},
+        "Civilian Fatalities in Healthcare Facilities": {},
+        "Civilian Fatalities due to Conflict\u2011Induced Disease Outbreaks": {},
+        "Civilian Fatalities from Energy Infrastructure Failures during Conflict": {}
+      },
+      "Non\u2011Combatant Injury Count": {
+        "Non\u2011Combatant Hospitalization Injury Count": {},
+        "Non\u2011Combatant Injury Incidence from Indirect Conflict Effects": {}
+      },
+      "Explosive Ordnance Accident Deaths": {
+        "Accidental Explosive Ordnance Deaths among Demobilized Combatants": {},
+        "Explosive Ordnance Accident Deaths per 10,000 Residents in Conflict Zones": {},
+        "Explosive Ordnance Accident Deaths during Post\u2011Conflict Demining Operations": {},
+        "Explosive Ordnance Accident Deaths among Child Laborers in Conflict\u2011Affected Areas": {}
+      },
+      "Conflict\u2011Induced Forced Displacement Mortality": {
+        "Displacement\u2011Related Mortality from Shelter Deficiency": {},
+        "Displacement\u2011Related Mortality from Food Insecurity": {}
+      },
+      "Targeted Infrastructure Fatalities": {
+        "Power Transmission Line Fatalities": {},
+        "Water Treatment Plant Fatalities": {},
+        "Transportation Hub Fatalities": {}
       }
     }
   }

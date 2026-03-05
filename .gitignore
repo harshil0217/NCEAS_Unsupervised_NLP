@@ -212,4 +212,8 @@ __marimo__/
 *.xlsx
 *.lock
 
+*.txt
+*.json
+
+core.*
 
