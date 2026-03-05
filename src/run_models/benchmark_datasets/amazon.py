@@ -53,19 +53,25 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # Dimensionality Reduction
 # ==========================
 import phate
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
 import pacmap
 import trimap
+
+# cuML GPU-accelerated dimensionality reduction
+import cuml
+from cuml.decomposition import PCA as cuPCA
+from cuml.manifold import TSNE as cuTSNE
+from cuml.manifold import UMAP as cuUMAP
 
 # ========================
 # Clustering
 # ========================
-from hdbscan import HDBSCAN
 from scipy.cluster.hierarchy import fcluster
-from sklearn.cluster import AgglomerativeClustering
 from custom_packages.diffusion_condensation import DiffusionCondensation as dc
 from custom_packages.hercules import Hercules
+
+# cuML GPU-accelerated clustering
+from cuml.cluster import AgglomerativeClustering as cuAgglomerativeClustering
+from cuml.cluster import HDBSCAN as cuHDBSCAN
 
 
 # ======================
@@ -76,8 +82,6 @@ from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_inf
 
 
 from tqdm import tqdm
-from joblib import Parallel, delayed
-from tqdm_joblib import tqdm_joblib
 # ==============
 # Global Config
 # ==============
@@ -196,7 +200,6 @@ for embedding_model in embedding_model_names:
 
     embed_phate = np.load(f"{embedding_model}_reduced_embeddings/PHATE_amz_embed.npy")
 
-    import umap
     import matplotlib.pyplot as plt
 
     # Load your embeddings
@@ -209,22 +212,30 @@ for embedding_model in embedding_model_names:
     include_pca = True
     include_umap = True
 
+    # PCA using cuML (GPU-accelerated)
     if include_pca:
-        pca_model = PCA(n_components=300, random_state=67)
-        embedding_methods_for_model["PCA"] = pca_model.fit_transform(embeddings)
+        print("Running PCA with cuML (GPU)...")
+        pca_model = cuPCA(n_components=300, random_state=67)
+        pca_result = pca_model.fit_transform(embeddings)
+        # Convert from GPU to numpy
+        embedding_methods_for_model["PCA"] = pca_result.to_output('numpy') if hasattr(pca_result, 'to_output') else np.array(pca_result)
         np.save(f"{embedding_model}_reduced_embeddings/PCA_amz_embed.npy", embedding_methods_for_model["PCA"])
 
-    # # UMAP to 2D
+    # UMAP using cuML (GPU-accelerated)
     if include_umap:
-        umap_model = umap.UMAP(n_components=300, random_state=67, min_dist=.05, n_neighbors=10)
-        embedding_methods_for_model["UMAP"] = umap_model.fit_transform(embeddings)
+        print("Running UMAP with cuML (GPU)...")
+        umap_model = cuUMAP(n_components=300, random_state=67, min_dist=.05, n_neighbors=10)
+        umap_result = umap_model.fit_transform(embeddings)
+        # Convert from GPU to numpy
+        embedding_methods_for_model["UMAP"] = umap_result.to_output('numpy') if hasattr(umap_result, 'to_output') else np.array(umap_result)
         np.save(f"{embedding_model}_reduced_embeddings/UMAP_amz_embed_new.npy", embedding_methods_for_model["UMAP"])
 
-    from sklearn.manifold import TSNE
-
-    # # Fit t-SNE
-    tsne_model = TSNE(n_components=3, random_state=67)
-    embedding_methods_for_model["tSNE"] = tsne_model.fit_transform(embeddings)
+    # t-SNE using cuML (GPU-accelerated)
+    print("Running t-SNE with cuML (GPU)...")
+    tsne_model = cuTSNE(n_components=3, random_state=67)
+    tsne_result = tsne_model.fit_transform(embeddings)
+    # Convert from GPU to numpy
+    embedding_methods_for_model["tSNE"] = tsne_result.to_output('numpy') if hasattr(tsne_result, 'to_output') else np.array(tsne_result)
     np.save(f"{embedding_model}_reduced_embeddings/tSNE_amz_embed.npy", embedding_methods_for_model["tSNE"])
 
     # # Fit to PaCMAP
@@ -276,25 +287,39 @@ def safe_run_combo(embedding_model, embed_name, cluster_method):
             print(f"Testing cluster level: {level}")
 
             if cluster_method == "Agglomerative":
-                model = AgglomerativeClustering(n_clusters=level)
+                # Use cuML GPU-accelerated Agglomerative Clustering
+                print("Using cuML Agglomerative Clustering (GPU)...")
+                model = cuAgglomerativeClustering(n_clusters=level)
                 model.fit(embed_data)
-                labels = model.labels_
+                # Convert GPU result to numpy
+                labels = model.labels_.to_output('numpy') if hasattr(model.labels_, 'to_output') else np.array(model.labels_)
                 print(f"Agglomerative clustering complete. Unique labels: {len(np.unique(labels))}")
 
             elif cluster_method == "HDBSCAN":
-                model = HDBSCAN(min_cluster_size=level)
+                # Use cuML GPU-accelerated HDBSCAN
+                print("Using cuML HDBSCAN (GPU)...")
+                model = cuHDBSCAN(min_cluster_size=level, min_samples=1)
                 model.fit(embed_data)
-                Z = model.single_linkage_tree_.to_numpy()
-                labels = fcluster(Z, level, criterion='maxclust')
+                # Convert GPU result to numpy
+                labels = model.labels_.to_output('numpy') if hasattr(model.labels_, 'to_output') else np.array(model.labels_)
+
+                # cuML HDBSCAN returns cluster labels directly, no need for single_linkage_tree
+                # If all points are noise (-1), assign unique labels
+                if np.all(labels == -1):
+                    print("WARNING: All points labeled as noise. Assigning unique labels.")
+                    labels = np.arange(len(labels))
+
                 print(f"HDBSCAN clustering complete. Unique labels: {len(np.unique(labels))}")
 
             elif cluster_method == "DC":
+                # Diffusion Condensation uses CPU implementation
+                print("Using CPU Diffusion Condensation...")
                 model = dc(min_clusters=level, max_iterations=5000, k=10, alpha=3)
                 model.fit(embed_data)
                 labels = model.labels_
                 print(f"DC clustering complete. Unique labels: {len(np.unique(labels))}")
 
-            
+
             available_levels = np.array(sorted(topic_dict.keys()))
             closest_level = min(available_levels, key=lambda k: abs(k - level))
             print(f"Ground truth: Using closest level {closest_level} (requested: {level})")
@@ -335,12 +360,11 @@ combo_params = [
     for cluster_method in ["Agglomerative", "HDBSCAN", "DC"]
 ]
 
-with tqdm_joblib(tqdm(desc="Processing embedding-clustering combos", total=len(combo_params))):
-    with Parallel(n_jobs=-4, backend="threading") as parallel:
-        combo_results = parallel(
-            delayed(safe_run_combo)(embedding_model, embed_name, cluster_method)
-            for embedding_model, embed_name, cluster_method in combo_params
-        )
+# Run each combo sequentially (no parallel processing)
+combo_results = []
+for embedding_model, embed_name, cluster_method in tqdm(combo_params, desc="Processing embedding-clustering combos"):
+    result = safe_run_combo(embedding_model, embed_name, cluster_method)
+    combo_results.append(result)
 
 for embedding_model, embed_name, cluster_method, combo_scores in combo_results:
     scores_all[(embedding_model, embed_name, cluster_method)]["FM"] = combo_scores["FM"]
