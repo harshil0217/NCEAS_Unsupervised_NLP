@@ -65,9 +65,7 @@ from cuml.manifold import UMAP as cuUMAP
 # ========================
 # Clustering
 # ========================
-from scipy.cluster.hierarchy import fcluster
 from custom_packages.diffusion_condensation import DiffusionCondensation as dc
-from custom_packages.hercules import Hercules
 
 # cuML GPU-accelerated clustering
 from cuml.cluster import AgglomerativeClustering as cuAgglomerativeClustering
@@ -215,7 +213,7 @@ for embedding_model in embedding_model_names:
     # PCA using cuML (GPU-accelerated)
     if include_pca:
         print("Running PCA with cuML (GPU)...")
-        pca_model = cuPCA(n_components=300, random_state=67)
+        pca_model = cuPCA(n_components=300)
         pca_result = pca_model.fit_transform(embeddings)
         # Convert from GPU to numpy
         embedding_methods_for_model["PCA"] = pca_result.to_output('numpy') if hasattr(pca_result, 'to_output') else np.array(pca_result)
@@ -224,7 +222,7 @@ for embedding_model in embedding_model_names:
     # UMAP using cuML (GPU-accelerated)
     if include_umap:
         print("Running UMAP with cuML (GPU)...")
-        umap_model = cuUMAP(n_components=300, random_state=67, min_dist=.05, n_neighbors=10)
+        umap_model = cuUMAP(n_components=300, min_dist=.05, n_neighbors=10)
         umap_result = umap_model.fit_transform(embeddings)
         # Convert from GPU to numpy
         embedding_methods_for_model["UMAP"] = umap_result.to_output('numpy') if hasattr(umap_result, 'to_output') else np.array(umap_result)
@@ -232,7 +230,7 @@ for embedding_model in embedding_model_names:
 
     # t-SNE using cuML (GPU-accelerated)
     print("Running t-SNE with cuML (GPU)...")
-    tsne_model = cuTSNE(n_components=3, random_state=67)
+    tsne_model = cuTSNE(n_components=2)
     tsne_result = tsne_model.fit_transform(embeddings)
     # Convert from GPU to numpy
     embedding_methods_for_model["tSNE"] = tsne_result.to_output('numpy') if hasattr(tsne_result, 'to_output') else np.array(tsne_result)
