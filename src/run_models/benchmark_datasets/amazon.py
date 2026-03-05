@@ -244,6 +244,24 @@ for embedding_model in embedding_model_names:
 scores_all = defaultdict(lambda: defaultdict(list))
 
 
+def make_noise_labels_unique(labels):
+    labels = np.asarray(labels).copy()
+    noise_mask = labels == -1
+    if not np.any(noise_mask):
+        return labels
+
+    if labels.size == 0:
+        return labels
+
+    next_label = int(np.max(labels)) + 1
+    if next_label <= -1:
+        next_label = 0
+
+    noise_indices = np.where(noise_mask)[0]
+    labels[noise_indices] = np.arange(next_label, next_label + noise_indices.size)
+    return labels
+
+
 def safe_run_combo(embedding_model, embed_name, cluster_method):
     embed_data = embedding_models[embedding_model][embed_name]
     combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": []}
@@ -268,7 +286,6 @@ def safe_run_combo(embedding_model, embed_name, cluster_method):
                 model.fit(embed_data)
                 Z = model.single_linkage_tree_.to_numpy()
                 labels = fcluster(Z, level, criterion='maxclust')
-                labels[labels == -1] = None
                 print(f"HDBSCAN clustering complete. Unique labels: {len(np.unique(labels))}")
 
             elif cluster_method == "DC":
@@ -283,9 +300,12 @@ def safe_run_combo(embedding_model, embed_name, cluster_method):
             print(f"Ground truth: Using closest level {closest_level} (requested: {level})")
 
             topic_series = topic_dict[closest_level]
-            valid_idx = ~pd.isna(topic_series)
+            valid_idx = (~pd.isna(topic_series))
             target_lst = topic_series[valid_idx]
             label_lst = labels[valid_idx]
+
+            if cluster_method == "HDBSCAN":
+                label_lst = make_noise_labels_unique(label_lst)
 
             try:
                 fm_score = FowlkesMallows.Bk({level: target_lst}, {level: label_lst})[level]['FM']
