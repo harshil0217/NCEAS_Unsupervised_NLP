@@ -228,12 +228,12 @@ for embedding_model in embedding_model_names:
     np.save(f"{embedding_model}_reduced_embeddings/tSNE_amz_embed.npy", embedding_methods_for_model["tSNE"])
 
     # # Fit to PaCMAP
-    pac = pacmap.PaCMAP(n_components=300, random_state=67, n_neighbors=10, MN_ratio=0.5, FP_ratio=2.0)
+    pac = pacmap.PaCMAP(n_components=300, random_state=67)
     embedding_methods_for_model["PaCMAP"] = pac.fit_transform(embeddings)
     np.save(f"{embedding_model}_reduced_embeddings/PaCMAP_amz_embed.npy", embedding_methods_for_model["PaCMAP"])
 
     # # Fit to TriMAP
-    tr = trimap.TRIMAP(n_dims=300, random_state=67, n_neighbors=10, min_dist=0.05)
+    tr = trimap.TRIMAP(n_dims=300)
     embedding_methods_for_model["TriMAP"] = tr.fit_transform(embeddings)
     np.save(f"{embedding_model}_reduced_embeddings/TriMAP_amz_embed.npy", embedding_methods_for_model["TriMAP"])
 
