@@ -81,7 +81,7 @@ from tqdm_joblib import tqdm_joblib
 # ==============
 # Global Config
 # ==============
-np.random.seed(42)
+np.random.seed(67)
 warnings.filterwarnings("ignore")
 
 # Reload modules if needed
@@ -190,7 +190,7 @@ for embedding_model in embedding_model_names:
     # Shuffle embeddings with the same index as topic_data
     data = np.array(embedding_list)[shuffle_idx]
 
-    reducer_model = phate.PHATE(n_jobs=-2, random_state=42, n_components=300, decay=20, t="auto", n_pca=None)
+    reducer_model = phate.PHATE(n_jobs=-2, random_state=67, n_components=300, decay=20, t="auto", n_pca=None)
     embed_phate = reducer_model.fit_transform(data)
     np.save(f"{embedding_model}_reduced_embeddings/PHATE_amz_embed.npy", embed_phate)
 
@@ -210,30 +210,30 @@ for embedding_model in embedding_model_names:
     include_umap = True
 
     if include_pca:
-        pca_model = PCA(n_components=300, random_state=42)
+        pca_model = PCA(n_components=300, random_state=67)
         embedding_methods_for_model["PCA"] = pca_model.fit_transform(embeddings)
         np.save(f"{embedding_model}_reduced_embeddings/PCA_amz_embed.npy", embedding_methods_for_model["PCA"])
 
     # # UMAP to 2D
     if include_umap:
-        umap_model = umap.UMAP(n_components=300, random_state=42, min_dist=.05, n_neighbors=10)
+        umap_model = umap.UMAP(n_components=300, random_state=67, min_dist=.05, n_neighbors=10)
         embedding_methods_for_model["UMAP"] = umap_model.fit_transform(embeddings)
         np.save(f"{embedding_model}_reduced_embeddings/UMAP_amz_embed_new.npy", embedding_methods_for_model["UMAP"])
 
     from sklearn.manifold import TSNE
 
     # # Fit t-SNE
-    tsne_model = TSNE(n_components=3, random_state=42)
+    tsne_model = TSNE(n_components=3, random_state=67)
     embedding_methods_for_model["tSNE"] = tsne_model.fit_transform(embeddings)
     np.save(f"{embedding_model}_reduced_embeddings/tSNE_amz_embed.npy", embedding_methods_for_model["tSNE"])
 
     # # Fit to PaCMAP
-    pac = pacmap.PaCMAP(n_components=300, random_state=42, n_neighbors=10, MN_ratio=0.5, FP_ratio=2.0)
+    pac = pacmap.PaCMAP(n_components=300, random_state=67, n_neighbors=10, MN_ratio=0.5, FP_ratio=2.0)
     embedding_methods_for_model["PaCMAP"] = pac.fit_transform(embeddings)
     np.save(f"{embedding_model}_reduced_embeddings/PaCMAP_amz_embed.npy", embedding_methods_for_model["PaCMAP"])
 
     # # Fit to TriMAP
-    tr = trimap.TRIMAP(n_components=300, random_state=42, n_neighbors=10, min_dist=0.05)
+    tr = trimap.TRIMAP(n_dims=300, random_state=67, n_neighbors=10, min_dist=0.05)
     embedding_methods_for_model["TriMAP"] = tr.fit_transform(embeddings)
     np.save(f"{embedding_model}_reduced_embeddings/TriMAP_amz_embed.npy", embedding_methods_for_model["TriMAP"])
 
