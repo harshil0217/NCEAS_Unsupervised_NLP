@@ -96,8 +96,6 @@ amz.to_csv("data/amazon/amz_data.csv")
 print("Amazon HERC dataset loaded and preprocessed successfully.")
 
 
-
-
 model_name = "Qwen/Qwen3-0.6B"
 
 tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -189,6 +187,34 @@ for model_name in embedding_model_names:
             cluster.print_hierarchy(indent_increment=2, print_level_0=False)
             with open(f"results/amazon_herc_{model_name.replace('/', '_')}.json", "w") as f:
                 json.dump(cluster.to_dict(), f, indent=4)
+
+    #get labels
+
+    labels = hercules.get_level_assignments(level=1)[0]
+
+    for cluster_level in cluster_levels:
+        available_levels = np.array(sorted(topic_dict.keys()))
+        closest_level = min(available_levels, key=lambda k: abs(k - level))
+        print(f"Ground truth: Using closest level {closest_level} (requested: {level})")
+
+        topic_series = topic_dict[closest_level]
+        valid_idx = ~pd.isna(topic_series)
+        target_lst = topic_series[valid_idx]
+        label_lst = labels[valid_idx]
+
+        try:
+            fm_score = FowlkesMallows.Bk({level: target_lst}, {level: label_lst})[level]['FM']
+        except Exception:
+            fm_score = np.nan
+            print("WARNING: FM score computation failed!")
+
+        rand = rand_score(target_lst, label_lst)
+        ari = adjusted_rand_score(target_lst, label_lst)
+        print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}")
+
+        combo_scores["FM"].append(fm_score)
+        combo_scores["Rand"].append(rand)
+        combo_scores["ARI"].append(ari)
     
     
     
