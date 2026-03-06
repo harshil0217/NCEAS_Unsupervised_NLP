@@ -166,8 +166,11 @@ for i in reversed(range(0, depth)):
 print(f"\nFinal cluster_levels (from deepest to shallowest): {cluster_levels}\n")
 
 
+scores_all = defaultdict(lambda: defaultdict(list))
+
 
 for model_name in embedding_model_names:
+    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": []}
     embedding_client = SentenceTransformer(model_name, device=device)
     
     hercules = Hercules(
@@ -190,20 +193,16 @@ for model_name in embedding_model_names:
 
     #get labels
 
-    labels = hercules.get_level_assignments(level=1)[0]
+    for i, cluster_level in enumerate(cluster_levels):
+        labels = hercules.get_level_assignments(level=i+1)
 
-    for cluster_level in cluster_levels:
-        available_levels = np.array(sorted(topic_dict.keys()))
-        closest_level = min(available_levels, key=lambda k: abs(k - level))
-        print(f"Ground truth: Using closest level {closest_level} (requested: {level})")
-
-        topic_series = topic_dict[closest_level]
+        topic_series = topic_dict[cluster_level]
         valid_idx = ~pd.isna(topic_series)
         target_lst = topic_series[valid_idx]
         label_lst = labels[valid_idx]
 
         try:
-            fm_score = FowlkesMallows.Bk({level: target_lst}, {level: label_lst})[level]['FM']
+            fm_score = FowlkesMallows.Bk({cluster_level: target_lst}, {cluster_level: label_lst})[cluster_level]['FM']
         except Exception:
             fm_score = np.nan
             print("WARNING: FM score computation failed!")
@@ -215,6 +214,12 @@ for model_name in embedding_model_names:
         combo_scores["FM"].append(fm_score)
         combo_scores["Rand"].append(rand)
         combo_scores["ARI"].append(ari)
+        combo_scores["AMI"].append(adjusted_mutual_info_score(target_lst, label_lst))
+    scores_all[model_name] = combo_scores
+    
+# Convert scores_all to a DataFrame and save to csv
+scores_df = pd.DataFrame(scores_all)
+scores_df.to_csv("results/amazon_herc_scores.csv", index=False)
     
     
     
