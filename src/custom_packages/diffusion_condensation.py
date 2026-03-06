@@ -4,7 +4,10 @@ import numpy as np
 from scipy.spatial.distance import pdist, squareform
 from sklearn.neighbors import kneighbors_graph
 import scipy
-
+from cuml.neighbors import NearestNeighbors
+from cuml.metrics import pairwise_distances
+import cupy
+import cupyx
 
 class DiffusionCondensation:
     def __init__(self,
@@ -45,8 +48,21 @@ class DiffusionCondensation:
 
     def diffusion_operator(self, data):
         """Create diffusion operator"""
-        # Generate the k-NN graph adjacency matrix using Scikit-learn
-        knn_graph_adjacency = kneighbors_graph(data, n_neighbors=self.k, mode='distance')
+        # Generate the k-NN graph adjacency matrix using cuML
+        knn = NearestNeighbors(n_neighbors = self.k)
+        knn.fit(data)
+        distances, indices = knn.kneighbors(data)
+
+        distances = cupy.asnumpy(distances).reshape(data.shape[0] * self.k)
+        indices = cupy.asnumpy(indices).reshape(data.shape[0] * self.k)
+        indptr = np.arange(0, (self.k * data.shape[0]) + 1, self.k)
+
+        knn_graph = scipy.sparse.csr_matrix(
+            (distances, indices, indptr),
+            shape=(data.shape[0], data.shape[0])
+        )
+        knn_graph_adjacency = knn_graph.maximum(knn_graph.T)
+
         knn_graph_adjacency = normalize(knn_graph_adjacency, norm=self.bandwidth_norm, axis=1, copy=False)
 
         knn_graph_adjacency = -knn_graph_adjacency.power(self.alpha)
@@ -74,7 +90,8 @@ class DiffusionCondensation:
         Merges data points that are within the merge_threshold distance of each other.
         Keeps track of which points are merged into which.
         """
-        distance_matrix = squareform(pdist(data))
+        data_gpu = cupy.asarray(data)
+        distance_matrix = cupy.asnumpy(pairwise_distances(data_gpu, metric='euclidean'))
         numpoints = distance_matrix.shape[0]
         cluster_mapping = {i: i for i in range(numpoints)}
         indices_to_keep = list(set(range(numpoints)))

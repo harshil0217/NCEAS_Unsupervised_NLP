@@ -1,5 +1,5 @@
 name: phate-env
-hannels:
+channels:
   - rapidsai
   - conda-forge
 dependencies:
