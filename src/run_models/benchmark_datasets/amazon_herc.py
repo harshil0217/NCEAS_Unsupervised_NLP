@@ -1,3 +1,6 @@
+
+
+
 import os
 import sys
 from dotenv import load_dotenv
@@ -35,6 +38,8 @@ import warnings
 from collections import defaultdict
 import torch
 
+torch.cuda.empty_cache()
+
 # ===================
 # Data Manipulation
 # ===================
@@ -66,7 +71,6 @@ from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_inf
 
 from tqdm import tqdm
 from joblib import Parallel, delayed
-from tqdm_joblib import tqdm_joblib
 # ==============
 # Global Config
 # ==============
@@ -96,14 +100,13 @@ amz.to_csv("data/amazon/amz_data.csv")
 print("Amazon HERC dataset loaded and preprocessed successfully.")
 
 
-model_name = "Qwen/Qwen3-0.6B"
+model_name = "Qwen/Qwen3-4B-Instruct-2507"
 
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(
-    model_name,
-    torch_dtype="auto",
-    device_map="auto"
-)
+# Define the 4-bit configuration
+
+model = AutoModelForCausalLM.from_pretrained(model_name,torch_dtype="auto", device_map = 'auto')
+print(model.hf_device_map)
 
 
 def qwen_caller(prompt: str) -> str:
@@ -116,22 +119,18 @@ def qwen_caller(prompt: str) -> str:
         {"role": "user", "content": prompt}
     ]
     
-    text = tokenizer.apply_chat_template(messages, add_generation_prompt=True, thinking=True, tokenize = False)
+    text = tokenizer.apply_chat_template(messages, add_generation_prompt=True, tokenize = False)
     inputs = tokenizer([text], return_tensors="pt").to(model.device)
     
     generated_ids = model.generate(**inputs, 
-                                   max_new_tokens=32768)
+                                   max_new_tokens=16384)
     
     output_ids = generated_ids[0][len(inputs["input_ids"][0]):].tolist() # Get only the generated part
     
-    try:
-        # rindex finding 151668 (</think>)
-        index = len(output_ids) - output_ids[::-1].index(151668)
-    except ValueError:
-        index = 0
     
-    content = tokenizer.decode(output_ids[index:], skip_special_tokens=True).strip("\n")
+    content = tokenizer.decode(output_ids, skip_special_tokens=True).strip("\n")
     
+    print(content)
     return content
     
     
@@ -169,32 +168,60 @@ print(f"\nFinal cluster_levels (from deepest to shallowest): {cluster_levels}\n"
 scores_all = defaultdict(lambda: defaultdict(list))
 
 
+
+
+def get_sentence_transformer_embeddings(texts: list[str], model_name: str = "all-MiniLM-L6-v2") -> np.ndarray:
+    """
+    Embeds text using a specified SentenceTransformer model.
+    """
+    if not texts:
+        return np.array([])
+
+    model = SentenceTransformer(model_name)
+
+    try:
+        # encode() handles the list input and returns a numpy array by default
+        embeddings = model.encode(
+            texts, 
+            convert_to_numpy=True, 
+            show_progress_bar=False
+        )
+        
+        # Ensure output is 2D even for single strings
+        if embeddings.ndim == 1:
+            embeddings = embeddings[np.newaxis, :]
+            
+        return embeddings
+
+    except Exception as e:
+        print(f"Error during embedding generation with '{model_name}': {e}")
+        return dummy_text_embedding(texts)
+
+
+rep_mode = 'direct'
 for model_name in embedding_model_names:
+    torch.cuda.empty_cache()
+
     combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": []}
-    embedding_client = SentenceTransformer(model_name, device=device)
     
     hercules = Hercules(
     level_cluster_counts=cluster_levels,
-    representation_mode="direct",
-    text_embedding_client=embedding_client,
+    representation_mode=rep_mode,
+    text_embedding_client=get_sentence_transformer_embeddings,
     llm_client=qwen_caller,
-    verbose=1
+    verbose=2,
+    llm_initial_batch_size=32
     )
     
     # 3. Run clustering
     top_clusters = hercules.cluster(amz['topic'].tolist(), topic_seed="amazon reviews")
 
-    # 4. Print results
-    if top_clusters:
-        for cluster in top_clusters:
-            cluster.print_hierarchy(indent_increment=2, print_level_0=False)
-            with open(f"results/amazon_herc_{model_name.replace('/', '_')}.json", "w") as f:
-                json.dump(cluster.to_dict(), f, indent=4)
 
     #get labels
 
     for i, cluster_level in enumerate(cluster_levels):
-        labels = hercules.get_level_assignments(level=i+1)
+        labels = hercules.get_level_assignments(level=i+1)[0]
+        print(labels)
 
         topic_series = topic_dict[cluster_level]
         valid_idx = ~pd.isna(topic_series)
@@ -210,16 +237,18 @@ for model_name in embedding_model_names:
         rand = rand_score(target_lst, label_lst)
         ari = adjusted_rand_score(target_lst, label_lst)
         print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}")
+        ami = adjusted_mutual_info_score(target_lst, label_lst)
 
-        combo_scores["FM"].append(fm_score)
-        combo_scores["Rand"].append(rand)
-        combo_scores["ARI"].append(ari)
-        combo_scores["AMI"].append(adjusted_mutual_info_score(target_lst, label_lst))
-    scores_all[model_name] = combo_scores
+    scores_all[model_name] = [fm_score, rand, ari, ami]
     
 # Convert scores_all to a DataFrame and save to csv
-scores_df = pd.DataFrame(scores_all)
-scores_df.to_csv("results/amazon_herc_scores.csv", index=False)
+scores_df = pd.DataFrame.from_dict(scores_all, orient = 'index')
+scores_df.columns = ['Embedding Model Name', 'FM', 'Rand', 'ARI', 'AMI']
+
+scores_df = scores_df.explode(['FM', 'Rand', 'ARI', 'AMI'])
+scores_df['Level'] = cluster_levels * 2
+scores_df = scores_df.reset_index(drop=True)
+scores_df.to_csv(f"results/amazon_herc_scores_{rep_mode}.csv", index=False)
     
     
     

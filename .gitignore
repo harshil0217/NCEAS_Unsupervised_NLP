@@ -211,9 +211,9 @@ __marimo__/
 *.npy
 *.xlsx
 *.lock
+*.json
 
 *.txt
-*.json
 
 core.*
 

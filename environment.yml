@@ -5,6 +5,7 @@ channels:
 dependencies:
   - _openmp_mutex=4.5=7_kmp_llvm
   - _python_abi3_support=1.0=hd8ed1ab_2
+  - accelerate=1.13.0=pyhcf101f3_0
   - attr=2.5.2=h39aace5_0
   - aws-c-auth=0.9.6=hb9c0fe4_1
   - aws-c-cal=0.9.13=h2c9d079_1
@@ -204,6 +205,7 @@ dependencies:
   - pillow=12.1.1=py311hf88fc01_0
   - pip=26.0.1=pyh8b19718_0
   - prometheus-cpp=1.3.0=ha5d0236_0
+  - psutil=7.2.2=py311haee01d2_0
   - pthread-stubs=0.4=hb9d3cd8_1002
   - pyarrow=21.0.0=py311h38be061_3
   - pyarrow-core=21.0.0=py311h342b5a4_3_cpu
@@ -275,8 +277,9 @@ dependencies:
       - pacmap==0.9.1
       - phate==2.0.0
       - pygsp==0.6.1
+      - pyhercules==1.0.2
       - pyparsing==3.3.2
       - tasklogger==1.2.0
       - trimap==1.1.5
       - wrapt==2.1.1
-prefix: /mnt/home/chidurah/.conda/envs/rapids-26.02
+prefix: /mnt/home/chidurah/.conda/envs/phate-env
