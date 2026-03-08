@@ -73,6 +73,16 @@ Download the datasets and place them inside `src/data/` within their respective 
 
 ## 5. Run the Demo
 
+The demo notebook will:
+
+- Load example data  
+- Generate embeddings  
+- Perform dimensionality reduction (PHATE, PCA, UMAP)  
+- Apply clustering  
+- Display a visualization figure
+
+This demo notebook is meant to ensure that all libraries needed for the full embedding -> dimensionality reduction -> hierarchical clustering pipeline have been installed and working as intended. 
+
 Start Jupyter:
 
 ```bash
@@ -87,13 +97,7 @@ notebooks/demo.ipynb
 
 Run all cells from top to bottom.
 
-The demo notebook will:
 
-- Load example data  
-- Generate embeddings  
-- Perform dimensionality reduction (PHATE, PCA, UMAP)  
-- Apply clustering  
-- Display a visualization figure  
 
 ---
 
