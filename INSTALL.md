@@ -45,13 +45,11 @@ This repository does **NOT** include community partner data due to privacy and N
 
 For testing purposes:
 
-- Example data is provided in the `data/` directory.
+- Example data is provided in the `src/data/` directory.
 - All file paths must remain **relative**.
-- If adding new datasets, place them inside the `data/` folder.
+- If adding new datasets, place them inside the `src/data/` folder.
 
 Do **not** use absolute paths.
-
----
 
 ## 5. Run the Demo
 

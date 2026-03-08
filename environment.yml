@@ -12,6 +12,8 @@ dependencies:
   - scipy
   - scikit-learn
   - jupyter
-  - phate
   - umap-learn
   - hdbscan
+  - pip
+  - pip:
+      - phate

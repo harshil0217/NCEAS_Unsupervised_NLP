@@ -7,6 +7,14 @@ The CMSE 495 data science capstone course is intended to provide students with a
 ## Objective
 The objective of the NCEAS_Unsupervised_NLP project is to support the development of improved methods for unsupervised analysis of unstructured textual data in the context of discourse and narratives surrounding US fisheries, particularly the ecologial and social dynamics concerning commericial fishing and government regulation.
 
+
+## Installation
+
+For full installation instructions and environment setup, see:
+
+[INSTALL.md](INSTALL.md)
+
+
 ## Key Components
 ### Text Scraping and Data Collection
 We will develop a Python API to scrape textfrom audio transcriptions of fisheries podcasts and related unstructured text from public forums related to US fisheries. The collected data will then be stored in a structured database for analysis.
@@ -20,6 +28,22 @@ Visualizations will play a crucial role in representing the analysis and communi
 ### Analysis and Quantification
 The team will apply a few standard and emerging methods for dimensionality reduction and hierarchical clustering to textual embeddings with the goal of advancing the state-of-the-art. The results will be compared through robust statistical analysis. Metrics will include the adjusted Rand index (ARI), mutual information (MI), the Fowlkes–Mallows index (FM), and others as identified by the team.
 
+## Demo
+After installing the environment, run:
+
+jupyter notebook
+
+Then open:
+
+notebooks/demo.ipynb
+
+This notebook demonstrates the full PHATE benchmark pipeline including:
+
+- loading example data
+- generating embeddings
+- dimensionality reduction
+- clustering
+- visualization
 
 ## Authors
 
