@@ -449,3 +449,4 @@ for embedding_model, df in scores_df.groupby("embedding_model"):
         plt.savefig(f"{embedding_model}_results/{metric}_scores_plot.png")
         plt.close()
 
+
