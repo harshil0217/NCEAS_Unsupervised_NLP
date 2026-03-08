@@ -31,13 +31,10 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 # ========================
 # Standard Libraries
 # ========================
-import ast
 import importlib
 import re
 import time
 import warnings
-import json
-from filelock import FileLock
 
 # ========================
 # Data Manipulation
@@ -48,45 +45,42 @@ import pandas as pd
 # ===============================
 # Machine Learning & Clustering
 # ===============================
-from sklearn.cluster import AgglomerativeClustering
-from sklearn.decomposition import PCA
-from sklearn.metrics import adjusted_rand_score, fowlkes_mallows_score, rand_score
-from sklearn.model_selection import ParameterGrid
-from scipy.cluster.hierarchy import fcluster
+from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
+from collections import defaultdict
+import torch
 
 # ===========================
 # Dimensionality Reduction
 # ===========================
 import phate
-from umap import UMAP
-from bertopic.dimensionality import BaseDimensionalityReduction
+import pacmap
+import trimap
 
-# ===================
-# Topic Modeling
-# ===================
-from bertopic import BERTopic
+# cuML GPU-accelerated dimensionality reduction
+import cuml
+from cuml.decomposition import PCA as cuPCA
+from cuml.manifold import TSNE as cuTSNE
+from cuml.manifold import UMAP as cuUMAP
 
 # ========================
-# Graph-based Clustering
+# Clustering
 # ========================
-from hdbscan import HDBSCAN
-
-# =============================
-# Diffusion Condensation
-# =============================
 from custom_packages.diffusion_condensation import DiffusionCondensation as dc
+
+# cuML GPU-accelerated clustering
+from cuml.cluster import AgglomerativeClustering as cuAgglomerativeClustering
+from cuml.cluster import HDBSCAN as cuHDBSCAN
 
 # ========================
 # NLP & Transformers
 # ========================
 from sentence_transformers import SentenceTransformer
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # ========================
 # Parallel Processing
 # ========================
-from joblib import Parallel, delayed
 from tqdm import tqdm
-from tqdm_joblib import tqdm_joblib
 
 # ========================
 # Evaluation Metrics
@@ -97,187 +91,143 @@ from custom_packages.fowlkes_mallows import FowlkesMallows
 # ===================
 # Global Config
 # ===================
-np.random.seed(42)
+np.random.seed(67)
 warnings.filterwarnings("ignore")
 importlib.reload(phate)
 
 # ===================
 # Embedding Functions
 # ===================
-def get_embeddings(texts, backend="gpt", model="text-embedding-3-small"):
-    if backend == "gpt":
-        batch_size = 100
-        embeddings = []
-        for i in tqdm(range(0, len(texts), batch_size), desc="Fetching GPT embeddings", unit="batch"):
-            batch = texts[i : i + batch_size]
-            response = client.embeddings.create(input=batch, model=model)
-            batch_embeddings = [entry.embedding for entry in response.data]
-            embeddings.extend(batch_embeddings)
-        return embeddings
+def get_embeddings(texts, model):
+    """
+    Fetches embeddings using sentence-transformers.
 
-    elif backend == "sentence-transformers":
-        model = SentenceTransformer(model, trust_remote_code=True)
-        return model.encode(texts, show_progress_bar=True, convert_to_numpy=True).tolist()
+    Args:
+        texts (list of str): List of text inputs.
+        model (str): Model name for sentence-transformers.
 
-    else:
-        raise ValueError(f"Unsupported backend '{backend}'.")
+    Returns:
+        numpy.ndarray: Array of embeddings.
+    """
+    print("Using device:", device)
+
+    model = SentenceTransformer(model, device=device)
+
+    print("Generating embeddings...")
+    embeddings = model.encode(
+        texts,
+        batch_size=32,
+        show_progress_bar=True,
+        convert_to_numpy=True,
+        normalize_embeddings=True
+    )
+
+    return embeddings
 
 # ===================
 # Utility Functions
 # ===================
-def format_params(params):
-    return "_".join(f"{k}{v}" for k, v in sorted(params.items()))
+def make_noise_labels_unique(labels):
+    """Convert HDBSCAN noise points (-1) to unique cluster labels."""
+    labels = np.asarray(labels).copy()
+    noise_mask = labels == -1
+    if not np.any(noise_mask):
+        return labels
 
-def compare_dicts(dict_str1, dict_str2):
-    try:
-        dict1 = ast.literal_eval(dict_str1)
-        dict2 = ast.literal_eval(dict_str2)
-        return dict1 == dict2
-    except:
-        return False
-    
-def compute_or_load_phate(data, path, reduction_params, wait_if_locked=True):
-    lock_path = path + ".lock"
+    if labels.size == 0:
+        return labels
 
-    # If embedding already exists, return it
-    if os.path.exists(path):
-        return np.load(path)
+    next_label = int(np.max(labels)) + 1
+    if next_label <= -1:
+        next_label = 0
 
-    # If lock exists
-    if os.path.exists(lock_path):
-        if wait_if_locked:
-            # Wait until the file is created by another process
-            while os.path.exists(lock_path):
-                time.sleep(5)
-                if os.path.exists(path):
-                    return np.load(path)
-        else:
-            # Skip computation for now
-            print(f"PHATE embedding for {path} is currently locked. Skipping.")
-            return None
-
-    try:
-        # Double-check again in case file was created while entering the try block
-        if os.path.exists(path):
-            return np.load(path)
-        
-        # Place lock
-        with open(lock_path, "w") as f:
-            f.write("locked")
-
-        # Compute embedding
-        print("Computing PHATE")
-        reducer_model = phate.PHATE(n_jobs=-2, random_state=42, n_pca=None, **reduction_params)
-        embed = reducer_model.fit_transform(data)
-        np.save(path, embed)
-        return embed
-    finally:
-        # Clean up lock
-        if os.path.exists(lock_path):
-            os.remove(lock_path)
+    noise_indices = np.where(noise_mask)[0]
+    labels[noise_indices] = np.arange(next_label, next_label + noise_indices.size)
+    return labels
 
 
 # ===================
-# Main BERTopic Runner
+# Clustering Runner
 # ===================
-def run_bertopic(reduction_method, cluster_method, reduction_params, cluster_params):
-    results = []
-    bertopic_file = f'{embedding_model}_results/results_all_methods_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}.csv'
+def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, cluster_levels, topic_dict):
+    """Run clustering on reduced embeddings and evaluate against ground truth."""
+    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": []}
+    try:
+        print(f"\n{'='*60}")
+        print(f"Processing Embedding Method: {embed_name}")
+        print(f"Clustering Method: {cluster_method}")
+        print(f"Embedding shape: {embed_data.shape}")
+        print(f"{'='*60}")
 
-    if os.path.exists(bertopic_file):
-        check_df = pd.read_csv(bertopic_file)
-        check_df['reduction_method'] = check_df['reduction_method'].fillna('None')
-        row_exists = ((check_df['reduction_method'].astype(str) == str(reduction_method)) &
-                      (check_df['cluster_method'].astype(str) == str(cluster_method)) &
-                      (check_df['reduction_params'].astype(str) ==str(reduction_params))&
-                      (check_df['cluster_params'].astype(str)== str(cluster_params))).any()
-                    #   check_df['reduction_params'].apply(lambda x: compare_dicts(x, str(reduction_params))) &
-                    #   check_df['cluster_params'].apply(lambda x: compare_dicts(x, str(cluster_params)))).any()
-        if row_exists:
-            return
+        for level in cluster_levels:
+            print(f"Testing cluster level: {level}")
 
-    if reduction_method == 'UMAP':
-        reducer = UMAP(random_state=42, **reduction_params)
-    elif reduction_method == 'PCA':
-        reducer = PCA(random_state=42, **reduction_params)
-    elif reduction_method == 'PHATE':
-        param_str = format_params(reduction_params)
-        if float(add_noise)>0:
-            phate_path = f"{embedding_model}_reduced_embeddings/phate_embedding_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_{param_str}.npy"
-        else:
-            phate_path = f"{embedding_model}_reduced_embeddings/phate_embedding_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_{param_str}.npy"
+            if cluster_method == "Agglomerative":
+                # Use cuML GPU-accelerated Agglomerative Clustering
+                print("Using cuML Agglomerative Clustering (GPU)...")
+                model = cuAgglomerativeClustering(n_clusters=level)
+                model.fit(embed_data)
+                # Convert GPU result to numpy
+                labels = model.labels_.to_output('numpy') if hasattr(model.labels_, 'to_output') else np.array(model.labels_)
+                print(f"Agglomerative clustering complete. Unique labels: {len(np.unique(labels))}")
 
-        embed_phate = compute_or_load_phate(data, phate_path, reduction_params,wait_if_locked=wait)
-        reducer = BaseDimensionalityReduction()
+            elif cluster_method == "HDBSCAN":
+                # Use cuML GPU-accelerated HDBSCAN
+                print("Using cuML HDBSCAN (GPU)...")
+                model = cuHDBSCAN(min_cluster_size=level, min_samples=1)
+                model.fit(embed_data)
+                # Convert GPU result to numpy
+                labels = model.labels_.to_output('numpy') if hasattr(model.labels_, 'to_output') else np.array(model.labels_)
 
-        if embed_phate is None:
-            return
+                # cuML HDBSCAN returns cluster labels directly, no need for single_linkage_tree
+                # If all points are noise (-1), assign unique labels
+                if np.all(labels == -1):
+                    print("WARNING: All points labeled as noise. Assigning unique labels.")
+                    labels = np.arange(len(labels))
 
-    elif reduction_method == "BASE-PHATE":
-        p_base = phate.PHATE(n_jobs=-2, random_state=42, n_pca=None, **reduction_params)
-        p_base.fit(data)
-        embed_phate = p_base.diff_potential
-        reducer = BaseDimensionalityReduction()
-    else:
-        reducer = BaseDimensionalityReduction()
-    for i in topic_dict.keys():
-        if cluster_method == 'HDBSCAN':
-            cluster_model = HDBSCAN(**cluster_params)
-        elif cluster_method == 'Diffusion Condensation':
-            cluster_model = dc(min_clusters=i, max_iterations=5000, **cluster_params)
-        else:
-            cluster_model = AgglomerativeClustering(n_clusters=i, **cluster_params)
+                print(f"HDBSCAN clustering complete. Unique labels: {len(np.unique(labels))}")
 
-        topic_model = BERTopic(hdbscan_model=cluster_model, umap_model=reducer)
+            elif cluster_method == "DC":
+                # Diffusion Condensation uses CPU implementation
+                print("Using CPU Diffusion Condensation...")
+                model = dc(min_clusters=level, max_iterations=5000, k=10, alpha=3)
+                model.fit(embed_data)
+                labels = model.labels_
+                print(f"DC clustering complete. Unique labels: {len(np.unique(labels))}")
 
-        embeddings_to_use = embed_phate if reduction_method in ["PHATE", "BASE-PHATE"] else data
-        topics, _ = topic_model.fit_transform(documents=topic_data['topic'], embeddings=embeddings_to_use)
+            # Find closest available ground truth level
+            available_levels = np.array(sorted(topic_dict.keys()))
+            closest_level = min(available_levels, key=lambda k: abs(k - level))
+            print(f"Ground truth: Using closest level {closest_level} (requested: {level})")
 
-        if cluster_method == 'HDBSCAN':
-            Z = cluster_model.single_linkage_tree_.to_numpy()
-            labels = fcluster(Z, i, criterion='maxclust')
-            labels[labels == -1] = labels.max() + 1
-        else:
-            labels = np.array(topics)
+            topic_series = topic_dict[closest_level]
+            valid_idx = (~pd.isna(topic_series))
+            target_lst = topic_series[valid_idx]
+            label_lst = labels[valid_idx]
 
-        NA_mask = pd.isna(topic_dict[i])
-        target_lst = topic_dict[i][~NA_mask]
-        bertopic_lst = labels[~NA_mask]
+            if cluster_method == "HDBSCAN":
+                label_lst = make_noise_labels_unique(label_lst)
 
-        fm = FowlkesMallows.Bk({i: target_lst}, {i: bertopic_lst})
-        rand = rand_score(target_lst, bertopic_lst)
-        ari = adjusted_rand_score(target_lst, bertopic_lst)
+            try:
+                fm_score = FowlkesMallows.Bk({level: target_lst}, {level: label_lst})[level]['FM']
+            except Exception:
+                fm_score = np.nan
+                print("WARNING: FM score computation failed!")
 
-        embed = (
-            topic_model.umap_model.embedding_ if reduction_method == 'UMAP' else
-            topic_model.umap_model.components_ if reduction_method == 'PCA' else
-            embed_phate if reduction_method in ['PHATE', 'BASE-PHATE'] else None
-        )
-        param_str = format_params(reduction_params)
-        cluster_file_name = f"{embedding_model}_clusterings/clustering{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_{param_str}_{reduction_method}_{cluster_method}_level_{i}.npy"
-        np.save(cluster_file_name, labels)
+            rand = rand_score(target_lst, label_lst)
+            ari = adjusted_rand_score(target_lst, label_lst)
+            ami = adjusted_mutual_info_score(target_lst, label_lst)
+            print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}")
 
-        if embed is not None:
-            embed_file_name = f"{embedding_model}_reduced_embeddings/{reduction_method}_embedding_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_{param_str}.npy"
-            np.save(embed_file_name, embed)
+            combo_scores["FM"].append(fm_score)
+            combo_scores["Rand"].append(rand)
+            combo_scores["ARI"].append(ari)
+            combo_scores["AMI"].append(ami)
 
-        results.append({
-            'reduction_method': reduction_method,
-            'cluster_method': cluster_method,
-            'level': i,
-            'reduction_params': reduction_params,
-            'cluster_params': cluster_params,
-            'FM': fm[i]['FM'],
-            'E_FM': fm[i]['E_FM'],
-            'V_FM': fm[i]['V_FM'],
-            'Rand': rand,
-            'ARI': ari,
-            'topics': topics,
-            'idx': shuffle_idx,
-            'embed': embed
-        })
-
-    return results
+        return embedding_model, embed_name, cluster_method, combo_scores
+    except Exception as e:
+        print(f"Error in combo ({embedding_model}, {embed_name}, {cluster_method}): {e}")
+        return embedding_model, embed_name, cluster_method, combo_scores
 
 # ====================
 # Setup & Execution
@@ -288,11 +238,8 @@ def noise_range(value):
         raise argparse.ArgumentTypeError("add_noise must be a float between 0 and 1.")
     return f
 
-from openai import OpenAI
-key = os.getenv('GPT_API_KEY')
-
-client = OpenAI(api_key=key)
 import argparse
+import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--theme", type=str, required=True)
@@ -303,7 +250,6 @@ parser.add_argument("--synonyms", type=int, required=True)
 parser.add_argument("--branching", type=str, required=True)
 parser.add_argument("--add_noise", type=noise_range, default=0.0,
                     help="Amount of noise to add (float between 0 and 1, default: 0.0)")
-
 parser.add_argument("--wait", type=str, choices=["True", "False"], default="False", help="Set wait to True or False")
 
 args = parser.parse_args()
@@ -315,114 +261,195 @@ depth = args.depth
 synonyms = args.synonyms
 branching = args.branching
 add_noise = args.add_noise
+wait = args.wait == "True"
 
-wait = args.wait == "True"  # Converts "True" to True, "False" to False
-
-
-
+# Load generated data
 filename = f'data_generation/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}.csv'
 
-
 print(f"Waiting for {filename} to be created...")
-while not os.path.exists(filename): time.sleep(1)
+while not os.path.exists(filename):
+    time.sleep(1)
 print(f"{filename} detected! Reading file...")
 
-topic_data = pd.read_csv(filename)
-num_seed_topics = len(topic_data['category 0'].unique())
-os.makedirs('gpt_embeddings', exist_ok=True)
+topic_data_original = pd.read_csv(filename)
 
-# Embeddings
-backend = 'gpt'
-embedding_model = "text-embedding-3-large"
-if float(add_noise)>0:
-    embed_file = f'gpt_embeddings/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{embedding_model}_embed.npy'
-else:
-    embed_file = f'gpt_embeddings/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{embedding_model}_embed.npy'
+# Embedding models to use (same as amazon.py)
+embedding_model_names = [
+    "Qwen/Qwen3-Embedding-0.6B",
+    "sentence-transformers/all-MiniLM-L6-v2",
+]
 
+embedding_models = {}  # Will store {model_name: {reduction_method: embeddings}}
 
-if not os.path.exists(embed_file):
-    embedding_list = get_embeddings(topic_data['topic'], backend=backend, model=embedding_model)
-    
-    np.save(embed_file, embedding_list)
-else:
-    embedding_list = np.load(embed_file)
-
-shuffle_idx = np.random.RandomState(seed=42).permutation(len(topic_data))
-topic_data = topic_data.iloc[shuffle_idx].reset_index(drop=True)
-data = np.array(embedding_list)[shuffle_idx]
+# Prepare data once (same shuffle for all embedding models)
+shuffle_idx = np.random.RandomState(seed=67).permutation(len(topic_data_original))
+topic_data = topic_data_original.iloc[shuffle_idx].reset_index(drop=True)
 reverse_idx = np.argsort(shuffle_idx)
 
-# Topic hierarchy dictionary
-topic_dict = {
-    len(topic_data[col].unique()): np.array(topic_data[col])
-    for col in topic_data.columns if re.match(r'^category \d+$', col)
-}
+# Build topic_dict from ground truth categories
+topic_dict = {}
+for col in topic_data.columns:
+    if re.match(r'^category \d+$', col):
+        unique_count = len(topic_data[col].unique())
+        topic_dict[unique_count] = np.array(topic_data[col])
 
-# Search space
-reduction_methods = ['UMAP', 'PCA', 'PHATE'] #'None', 'BASE-PHATE'
-cluster_methods = ['Diffusion Condensation', 'HDBSCAN', 'Agglomerative']
+# Determine cluster levels from hierarchy depth
+print(f"Depth: {depth}")
+print(f"Building cluster levels by counting unique categories at each level...\n")
 
-umap_params = {'n_components': [300],'min_dist':[.05,.1],'n_neighbors':[10,25]}
-pca_params = {'n_components': [300]} 
-phate_params = {'n_components': [300], 'decay': [10,20], 't': [7,'auto']}
-base_phate_params = {'t': ['auto', 7, 11]}
-hdbscan_params = {'cluster_selection_epsilon': [0], 'cluster_selection_method': ['eom']} 
-agg_params = {'linkage': ['ward']}
-diffusion_params = {'k': [10], 't': [3], 'alpha': [4], 'bandwidth_norm': ['max']}
+cluster_levels = []
+for i in reversed(range(0, depth)):
+    unique_count = len(topic_data[f'category {i}'].unique())
+    print(f"Level {i} (category {i}): {unique_count} unique categories")
+    cluster_levels.append(unique_count)
 
+print(f"\nFinal cluster_levels (from deepest to shallowest): {cluster_levels}\n")
 
-param_list = []
-for r_method in reduction_methods:
-    for c_method in cluster_methods:
-        r_grid = (
-            umap_params if r_method == 'UMAP' else
-            pca_params if r_method == 'PCA' else
-            phate_params if r_method == 'PHATE' else
-            base_phate_params if r_method == 'BASE-PHATE' else [{}]
-        )
-        c_grid = (
-            hdbscan_params if c_method == 'HDBSCAN' else
-            agg_params if c_method == 'Agglomerative' else
-            diffusion_params
-        )
-        for r_params in ParameterGrid(r_grid) if r_grid else [{}]:
-            for c_params in ParameterGrid(c_grid):
-                param_list.append((r_method, c_method, r_params, c_params))
+# Process each embedding model
+for embedding_model in embedding_model_names:
+    print(f"\n{'='*60}")
+    print(f"Processing embedding model: {embedding_model}")
+    print(f"{'='*60}\n")
 
-os.makedirs(f'{embedding_model}_results', exist_ok=True)
+    os.makedirs(f'{embedding_model}_results', exist_ok=True)
+    os.makedirs(f"{embedding_model}_embeddings", exist_ok=True)
 
-bertopic_file = f'{embedding_model}_results/results_all_methods_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}.csv'
+    # Generate or load embeddings
+    if float(add_noise) > 0:
+        embed_file = f'{embedding_model}_embeddings/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy'
+    else:
+        embed_file = f'{embedding_model}_embeddings/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy'
 
-lock_file = bertopic_file + '.lock'  # lock file to avoid write conflicts
-os.makedirs(f'{embedding_model}_reduced_embeddings', exist_ok=True)
-os.makedirs(f'{embedding_model}_clusterings', exist_ok=True)
-# Function that safely appends to CSV
-def safe_run_and_append(params, file_path, lock_path):
-    try:
-        result = run_bertopic(*params)
-        if isinstance(result, list):
-            result = [item for item in result if isinstance(item, dict)]
-        elif isinstance(result, dict):
-            result = [result]
-        else:
-            result = []
+    if not os.path.exists(embed_file):
+        embedding_list = get_embeddings(topic_data_original['topic'], model=embedding_model)
+        np.save(embed_file, embedding_list)
+    else:
+        embedding_list = np.load(embed_file)
 
-        if result:
-            df = pd.DataFrame(result)
-            with FileLock(lock_path):
-                # Only write header if file does not exist
-                write_header = not os.path.exists(file_path)
-                df.to_csv(file_path, mode='a', index=False, header=write_header)
-        return result
-    except Exception as e:
-        print(f"Error with params {params}: {e}")
-        return []
+    os.makedirs(f'{embedding_model}_reduced_embeddings', exist_ok=True)
 
-# Run parallel jobs and append results as they finish
-with tqdm_joblib(tqdm(desc="Processing", total=len(param_list))):
-    with Parallel(n_jobs=-4, backend="loky") as parallel:
-        all_results = parallel(delayed(safe_run_and_append)(
-            params,
-            file_path=bertopic_file,
-            lock_path=lock_file
-        ) for params in param_list)
+    # Shuffle embeddings with the same index as topic_data
+    data = np.array(embedding_list)[shuffle_idx]
+
+    # Apply dimensionality reduction methods (same as amazon.py)
+    embeddings = np.array(data)
+    embedding_methods_for_model = {}
+
+    # PHATE
+    print("Running PHATE...")
+    reducer_model = phate.PHATE(n_jobs=-2, random_state=67, n_components=300, decay=20, t="auto", n_pca=None)
+    embed_phate = reducer_model.fit_transform(data)
+    embedding_methods_for_model["PHATE"] = embed_phate
+    if float(add_noise) > 0:
+        np.save(f"{embedding_model}_reduced_embeddings/PHATE_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embed_phate)
+    else:
+        np.save(f"{embedding_model}_reduced_embeddings/PHATE_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embed_phate)
+
+    # PCA using cuML (GPU-accelerated)
+    print("Running PCA with cuML (GPU)...")
+    pca_model = cuPCA(n_components=300)
+    pca_result = pca_model.fit_transform(embeddings)
+    embedding_methods_for_model["PCA"] = pca_result.to_output('numpy') if hasattr(pca_result, 'to_output') else np.array(pca_result)
+    if float(add_noise) > 0:
+        np.save(f"{embedding_model}_reduced_embeddings/PCA_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embedding_methods_for_model["PCA"])
+    else:
+        np.save(f"{embedding_model}_reduced_embeddings/PCA_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["PCA"])
+
+    # UMAP using cuML (GPU-accelerated)
+    print("Running UMAP with cuML (GPU)...")
+    umap_model = cuUMAP(n_components=300, min_dist=.05, n_neighbors=10)
+    umap_result = umap_model.fit_transform(embeddings)
+    embedding_methods_for_model["UMAP"] = umap_result.to_output('numpy') if hasattr(umap_result, 'to_output') else np.array(umap_result)
+    if float(add_noise) > 0:
+        np.save(f"{embedding_model}_reduced_embeddings/UMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embedding_methods_for_model["UMAP"])
+    else:
+        np.save(f"{embedding_model}_reduced_embeddings/UMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["UMAP"])
+
+    # t-SNE using cuML (GPU-accelerated)
+    print("Running t-SNE with cuML (GPU)...")
+    tsne_model = cuTSNE(n_components=2)
+    tsne_result = tsne_model.fit_transform(embeddings)
+    embedding_methods_for_model["tSNE"] = tsne_result.to_output('numpy') if hasattr(tsne_result, 'to_output') else np.array(tsne_result)
+    if float(add_noise) > 0:
+        np.save(f"{embedding_model}_reduced_embeddings/tSNE_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embedding_methods_for_model["tSNE"])
+    else:
+        np.save(f"{embedding_model}_reduced_embeddings/tSNE_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["tSNE"])
+
+    # PaCMAP
+    print("Running PaCMAP...")
+    pac = pacmap.PaCMAP(n_components=300, random_state=67)
+    embedding_methods_for_model["PaCMAP"] = pac.fit_transform(embeddings)
+    if float(add_noise) > 0:
+        np.save(f"{embedding_model}_reduced_embeddings/PaCMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embedding_methods_for_model["PaCMAP"])
+    else:
+        np.save(f"{embedding_model}_reduced_embeddings/PaCMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["PaCMAP"])
+
+    # TriMAP
+    print("Running TriMAP...")
+    tr = trimap.TRIMAP(n_dims=300)
+    embedding_methods_for_model["TriMAP"] = tr.fit_transform(embeddings)
+    if float(add_noise) > 0:
+        np.save(f"{embedding_model}_reduced_embeddings/TriMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embedding_methods_for_model["TriMAP"])
+    else:
+        np.save(f"{embedding_model}_reduced_embeddings/TriMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["TriMAP"])
+
+    # Store the embedding methods for this model
+    embedding_models[embedding_model] = embedding_methods_for_model
+
+# Run clustering and evaluation
+scores_all = defaultdict(lambda: defaultdict(list))
+
+# Create combinations of all models, reduction methods, and clustering methods
+combo_params = [
+    (embedding_model, embed_name, cluster_method)
+    for embedding_model in embedding_models.keys()
+    for embed_name in embedding_models[embedding_model].keys()
+    for cluster_method in ["Agglomerative", "HDBSCAN", "DC"]
+]
+
+# Run each combo sequentially
+combo_results = []
+for embedding_model, embed_name, cluster_method in tqdm(combo_params, desc="Processing embedding-clustering combos"):
+    embed_data = embedding_models[embedding_model][embed_name]
+    result = safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, cluster_levels, topic_dict)
+    combo_results.append(result)
+
+# Collect results
+for embedding_model, embed_name, cluster_method, combo_scores in combo_results:
+    scores_all[(embedding_model, embed_name, cluster_method)]["FM"] = combo_scores["FM"]
+    scores_all[(embedding_model, embed_name, cluster_method)]["Rand"] = combo_scores["Rand"]
+    scores_all[(embedding_model, embed_name, cluster_method)]["ARI"] = combo_scores["ARI"]
+    scores_all[(embedding_model, embed_name, cluster_method)]["AMI"] = combo_scores["AMI"]
+
+print(f"\n{'='*60}")
+print("All clustering and evaluation complete!")
+print(f"{'='*60}")
+
+# Save results to CSV
+rows = []
+for (embedding_model, embed_name, cluster_method), score_dict in scores_all.items():
+    n_levels = len(score_dict["FM"])
+    for i in range(n_levels):
+        rows.append({
+            "embedding_model": embedding_model,
+            "reduction_method": embed_name,
+            "cluster_method": cluster_method,
+            "level": cluster_levels[i],
+            "FM": score_dict["FM"][i],
+            "Rand": score_dict["Rand"][i],
+            "ARI": score_dict["ARI"][i],
+            "AMI": score_dict["AMI"][i],
+        })
+
+# Create DataFrame and save
+scores_df = pd.DataFrame(rows)
+scores_df = scores_df.sort_values(by=["embedding_model", "reduction_method", "cluster_method", "level"]).reset_index(drop=True)
+
+os.makedirs("results", exist_ok=True)
+if float(add_noise) > 0:
+    output_file = f"results/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_clustering_scores.csv"
+else:
+    output_file = f"results/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_clustering_scores.csv"
+
+scores_df.to_csv(output_file, index=False)
+print(f"\nResults saved to: {output_file}")
