@@ -98,3 +98,64 @@ conda env create --prefix ./envs --file environment.yml
 ```
 
 If issues persist, ensure Conda is installed correctly and that you are running the commands from the project root directory.
+
+## Running Benchmark Experiments
+
+In addition to the demo notebook, the repository contains scripts for running
+benchmark experiments on real datasets.
+
+Supported benchmark datasets include:
+
+- arXiv
+- Amazon Reviews
+- DBPedia
+- Web of Science
+- RCV1
+
+Dataset files should be placed inside:
+
+src/data/
+
+Example structure:
+
+src/data/
+    arxiv/
+    amazon/
+    dbpedia/
+    wos/
+
+Once the dataset is placed in the correct folder, the benchmark pipeline
+can be executed using the scripts located in:
+
+src/run_models/
+
+Example command:
+
+python src/run_models/arxiv_benchmark.py
+
+
+## Benchmark Dataset Sources
+
+The benchmark datasets used in this project are publicly available:
+
+- arXiv metadata dataset:  
+https://www.kaggle.com/datasets/Cornell-University/arxiv
+
+- Amazon Product Reviews dataset:  
+https://nijianmo.github.io/amazon/index.html
+
+- DBpedia dataset:  
+https://github.com/le-scientifique/torchDatasets/tree/master/dbpedia_csv
+
+- Web of Science dataset:  
+https://github.com/kk7nc/Text_Classification
+
+- RCV1 dataset (scikit-learn loader):  
+https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_rcv1.html
+
+- EPA Public Comments dataset (Mirrulations AWS mirror):  
+https://registry.opendata.aws/mirrulations/
+
+Download the datasets and place them inside:
+
+src/data/
