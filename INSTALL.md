@@ -141,6 +141,11 @@ The benchmark datasets used in this project are publicly available:
 - arXiv metadata dataset:  
 https://www.kaggle.com/datasets/Cornell-University/arxiv
 
+
+- RCV1 dataset (scikit-learn loader):  
+https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_rcv1.html
+
+
 - Amazon Product Reviews dataset:  
 https://nijianmo.github.io/amazon/index.html
 
@@ -149,9 +154,6 @@ https://github.com/le-scientifique/torchDatasets/tree/master/dbpedia_csv
 
 - Web of Science dataset:  
 https://github.com/kk7nc/Text_Classification
-
-- RCV1 dataset (scikit-learn loader):  
-https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_rcv1.html
 
 - EPA Public Comments dataset (Mirrulations AWS mirror):  
 https://registry.opendata.aws/mirrulations/
