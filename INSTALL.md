@@ -41,15 +41,35 @@ This creates a fully reproducible environment using the provided `environment.ym
 
 ## 4. Data Instructions
 
-This repository does **NOT** include community partner data due to privacy and NDA constraints.
+This repository does **NOT** include benchmark datasets or synthetic data. 
 
-For testing purposes:
+Links to each data source can be found here 
 
-- Example data is provided in the `src/data/` directory.
-- All file paths must remain **relative**.
-- If adding new datasets, place them inside the `src/data/` folder.
+### Benchmark Dataset Sources
 
-Do **not** use absolute paths.
+The benchmark datasets used in this project are publicly available:
+
+- arXiv metadata dataset:  
+https://www.kaggle.com/datasets/Cornell-University/arxiv
+
+
+- RCV1 dataset (scikit-learn loader):  
+https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_rcv1.html
+
+
+- Amazon Product Reviews dataset:  
+https://nijianmo.github.io/amazon/index.html
+
+- DBpedia dataset:  
+https://github.com/le-scientifique/torchDatasets/tree/master/dbpedia_csv
+
+- Web of Science dataset:  
+https://github.com/kk7nc/Text_Classification
+
+- EPA Public Comments dataset (Mirrulations AWS mirror):  
+https://registry.opendata.aws/mirrulations/
+
+Download the datasets and place them inside `src/data/` within their respective folder
 
 ## 5. Run the Demo
 
@@ -134,30 +154,3 @@ Example command:
 python src/run_models/arxiv_benchmark.py
 
 
-## Benchmark Dataset Sources
-
-The benchmark datasets used in this project are publicly available:
-
-- arXiv metadata dataset:  
-https://www.kaggle.com/datasets/Cornell-University/arxiv
-
-
-- RCV1 dataset (scikit-learn loader):  
-https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_rcv1.html
-
-
-- Amazon Product Reviews dataset:  
-https://nijianmo.github.io/amazon/index.html
-
-- DBpedia dataset:  
-https://github.com/le-scientifique/torchDatasets/tree/master/dbpedia_csv
-
-- Web of Science dataset:  
-https://github.com/kk7nc/Text_Classification
-
-- EPA Public Comments dataset (Mirrulations AWS mirror):  
-https://registry.opendata.aws/mirrulations/
-
-Download the datasets and place them inside:
-
-src/data/
