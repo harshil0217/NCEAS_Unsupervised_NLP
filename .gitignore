@@ -211,5 +211,10 @@ __marimo__/
 *.npy
 *.xlsx
 *.lock
+*.json
 
+*.txt
 
+core.*
+
+Miniconda3-latest-Linux-x86_64.sh
