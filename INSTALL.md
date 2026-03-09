@@ -41,19 +41,47 @@ This creates a fully reproducible environment using the provided `environment.ym
 
 ## 4. Data Instructions
 
-This repository does **NOT** include community partner data due to privacy and NDA constraints.
+This repository does **NOT** include benchmark datasets or synthetic data. 
 
-For testing purposes:
+Links to each data source can be found here 
 
-- Example data is provided in the `data/` directory.
-- All file paths must remain **relative**.
-- If adding new datasets, place them inside the `data/` folder.
+### Benchmark Dataset Sources
 
-Do **not** use absolute paths.
+The benchmark datasets used in this project are publicly available:
 
----
+- arXiv metadata dataset:  
+https://www.kaggle.com/datasets/Cornell-University/arxiv
+
+
+- RCV1 dataset (scikit-learn loader):  
+https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_rcv1.html
+
+
+- Amazon Product Reviews dataset:  
+https://nijianmo.github.io/amazon/index.html
+
+- DBpedia dataset:  
+https://github.com/le-scientifique/torchDatasets/tree/master/dbpedia_csv
+
+- Web of Science dataset:  
+https://github.com/kk7nc/Text_Classification
+
+- EPA Public Comments dataset (Mirrulations AWS mirror):  
+https://registry.opendata.aws/mirrulations/
+
+Download the datasets and place them inside `src/data/` within their respective folder
 
 ## 5. Run the Demo
+
+The demo notebook will:
+
+- Load example data  
+- Generate embeddings  
+- Perform dimensionality reduction (PHATE, PCA, UMAP)  
+- Apply clustering  
+- Display a visualization figure
+
+This demo notebook is meant to ensure that all libraries needed for the full embedding -> dimensionality reduction -> hierarchical clustering pipeline have been installed and working as intended. 
 
 Start Jupyter:
 
@@ -69,13 +97,7 @@ notebooks/demo.ipynb
 
 Run all cells from top to bottom.
 
-The demo notebook will:
 
-- Load example data  
-- Generate embeddings  
-- Perform dimensionality reduction (PHATE, PCA, UMAP)  
-- Apply clustering  
-- Display a visualization figure  
 
 ---
 
@@ -100,3 +122,39 @@ conda env create --prefix ./envs --file environment.yml
 ```
 
 If issues persist, ensure Conda is installed correctly and that you are running the commands from the project root directory.
+
+## Running Benchmark Experiments
+
+In addition to the demo notebook, the repository contains scripts for running
+benchmark experiments on real datasets.
+
+Supported benchmark datasets include:
+
+- arXiv
+- Amazon Reviews
+- DBPedia
+- Web of Science
+- RCV1
+
+Dataset files should be placed inside:
+
+src/data/
+
+Example structure:
+
+src/data/
+    arxiv/
+    amazon/
+    dbpedia/
+    wos/
+
+Once the dataset is placed in the correct folder, the benchmark pipeline
+can be executed using the scripts located in:
+
+src/run_models/
+
+Example command:
+
+python src/run_models/arxiv_benchmark.py
+
+
