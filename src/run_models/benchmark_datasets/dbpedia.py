@@ -34,6 +34,11 @@ from pathlib import Path
 import warnings
 from collections import defaultdict
 import torch
+torch.cuda.empty_cache()
+import torch.nn.functional as F
+from torch.nn import DataParallel
+from torch import Tensor
+from transformers import AutoTokenizer, AutoModel
 
 # ===================
 # Data Manipulation
@@ -98,13 +103,19 @@ db = db.rename(columns={"text":"topic"})
 db = db.rename(columns={"l1":"category_0"})
 db = db.rename(columns={"l2":"category_1"})
 db = db.rename(columns={"l3":"category_2"})
-    
-
-db = pd.DataFrame(db)
 
 
+def clean_dbpedia(text):
+    text = re.sub(r'[^\x00-\x7F]+', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
 
-def get_embeddings(texts, model):
+db['topic'] = db['topic'].astype(str).apply(clean_dbpedia)
+print(db.iloc[0])
+
+
+
+def get_embeddings(texts, model_id):
     """
     Fetches embeddings using the specified backend: 'gpt' (OpenAI) or 'sentence-transformers'.
     
@@ -118,8 +129,13 @@ def get_embeddings(texts, model):
     """
     print("Using device:", device)
     
-    model = SentenceTransformer(model, device=device)
+    model = SentenceTransformer(
+        "Qwen/Qwen3-Embedding-0.6B",
+        model_kwargs={"attn_implementation": "sdpa", "device_map": "auto"},
+        tokenizer_kwargs={"padding_side": "left"}
+    )
     
+
     print("Generating embeddings...")
     embeddings = model.encode(
         texts,
@@ -171,74 +187,84 @@ for embedding_model in embedding_model_names:
     print(f"{'='*60}\n")
 
     os.makedirs(f'{embedding_model}_results', exist_ok=True)
-    os.makedirs(f"{embedding_model}_embeddings", exist_ok=True)
-    embedding_list = get_embeddings(db['topic'], model=embedding_model)
+    
+    reduction_dir = f"{embedding_model}_reduced_embeddings"
+    os.makedirs(reduction_dir, exist_ok=True)
 
-    np.save(f"{embedding_model}_embeddings/db_embed.npy", embedding_list)
 
-    embedding_list = np.load(f"{embedding_model}_embeddings/db_embed.npy")
+    embedding_list = []
+
+    if os.path.exists(f"{embedding_model}_embeddings/db_embed.npy"):
+        print(f"Loading existing embeddings")
+        embedding_list = np.load(f"{embedding_model}_embeddings/db_embed.npy")
+    else:
+        embedding_list = get_embeddings(db['topic'], model_id=embedding_model)
+        np.save(f"{embedding_model}_embeddings/db_embed.npy", embedding_list)
+
 
     os.makedirs(f'{embedding_model}_reduced_embeddings', exist_ok=True)
 
     # Shuffle embeddings with the same index as topic_data
     data = np.array(embedding_list)[shuffle_idx]
 
-    reducer_model = phate.PHATE(n_jobs=-2, random_state=67, n_components=300, decay=20, t="auto", n_pca=None)
-    embed_phate = reducer_model.fit_transform(data)
-    np.save(f"{embedding_model}_reduced_embeddings/PHATE_db_embed.npy", embed_phate)
+    #reducer_model = phate.PHATE(n_jobs=-2, random_state=67, n_components=300, decay=20, t="auto", n_pca=None)
+    #embed_phate = reducer_model.fit_transform(data)
+    #np.save(f"{embedding_model}_reduced_embeddings/PHATE_db_embed.npy", embed_phate)
 
-    embed_phate = np.load(f"{embedding_model}_reduced_embeddings/PHATE_wos_embed.npy")
-
-    import matplotlib.pyplot as plt
+    #embed_phate = np.load(f"{embedding_model}_reduced_embeddings/PHATE_db_embed.npy")
 
     # Load your embeddings
     embeddings = np.array(data)
     embedding_methods_for_model = {}  # Local dict for this embedding model
 
-    embedding_methods_for_model["PHATE"] = embed_phate
+    reduction_tasks = {
+    "PHATE": {
+        "path": f"{reduction_dir}/PHATE_db_embed.npy",
+        "run": lambda: phate.PHATE(n_jobs=-2, random_state=67, n_components=300, decay=20, t="auto", n_pca=None).fit_transform(embeddings)
+    },
+    "PCA": {
+        "path": f"{reduction_dir}/PCA_db_embed.npy",
+        "run": lambda: cuPCA(n_components=300).fit_transform(embeddings)
+    },
+    "UMAP": {
+        "path": f"{reduction_dir}/UMAP_db_embed_new.npy",
+        "run": lambda: cuUMAP(n_components=300, min_dist=.05, n_neighbors=10).fit_transform(embeddings)
+    },
+    "tSNE": {
+        "path": f"{reduction_dir}/tSNE_db_embed.npy",
+        "run": lambda: cuTSNE(n_components=2).fit_transform(embeddings)
+    },
+    "PaCMAP": {
+        "path": f"{reduction_dir}/PaCMAP_db_embed.npy",
+        "run": lambda: pacmap.PaCMAP(n_components=300, random_state=67).fit_transform(embeddings)
+    },
+    "TriMAP": {
+        "path": f"{reduction_dir}/TriMAP_db_embed.npy",
+        "run": lambda: trimap.TRIMAP(n_dims=300).fit_transform(embeddings)
+    }
+}
 
-    # Apply other dimensionality reduction methods
-    include_pca = True
-    include_umap = True
+for method_name, task in reduction_tasks.items():
+    if os.path.exists(task["path"]):
+        print(f"Loading cached {method_name} from {task['path']}...")
+        result = np.load(task["path"])
+    else:
+        print(f"Running {method_name}...")
+        result = task["run"]()
+        
+        # Handle cuML GPU to CPU conversion if necessary
+        if hasattr(result, 'to_output'):
+            result = result.to_output('numpy')
+        elif not isinstance(result, np.ndarray):
+            result = np.array(result)
+            
+        np.save(task["path"], result)
+        print(f"Saved {method_name} to {task['path']}")
+    
+    embedding_methods_for_model[method_name] = result
 
-    # PCA using cuML (GPU-accelerated)
-    if include_pca:
-        print("Running PCA with cuML (GPU)...")
-        pca_model = cuPCA(n_components=300)
-        pca_result = pca_model.fit_transform(embeddings)
-        # Convert from GPU to numpy
-        embedding_methods_for_model["PCA"] = pca_result.to_output('numpy') if hasattr(pca_result, 'to_output') else np.array(pca_result)
-        np.save(f"{embedding_model}_reduced_embeddings/PCA_db_embed.npy", embedding_methods_for_model["PCA"])
-
-    # UMAP using cuML (GPU-accelerated)
-    if include_umap:
-        print("Running UMAP with cuML (GPU)...")
-        umap_model = cuUMAP(n_components=300, min_dist=.05, n_neighbors=10)
-        umap_result = umap_model.fit_transform(embeddings)
-        # Convert from GPU to numpy
-        embedding_methods_for_model["UMAP"] = umap_result.to_output('numpy') if hasattr(umap_result, 'to_output') else np.array(umap_result)
-        np.save(f"{embedding_model}_reduced_embeddings/UMAP_db_embed_new.npy", embedding_methods_for_model["UMAP"])
-
-    # t-SNE using cuML (GPU-accelerated)
-    print("Running t-SNE with cuML (GPU)...")
-    tsne_model = cuTSNE(n_components=2)
-    tsne_result = tsne_model.fit_transform(embeddings)
-    # Convert from GPU to numpy
-    embedding_methods_for_model["tSNE"] = tsne_result.to_output('numpy') if hasattr(tsne_result, 'to_output') else np.array(tsne_result)
-    np.save(f"{embedding_model}_reduced_embeddings/tSNE_db_embed.npy", embedding_methods_for_model["tSNE"])
-
-    # # Fit to PaCMAP
-    pac = pacmap.PaCMAP(n_components=300, random_state=67)
-    embedding_methods_for_model["PaCMAP"] = pac.fit_transform(embeddings)
-    np.save(f"{embedding_model}_reduced_embeddings/PaCMAP_db_embed.npy", embedding_methods_for_model["PaCMAP"])
-
-    # # Fit to TriMAP
-    tr = trimap.TRIMAP(n_dims=300)
-    embedding_methods_for_model["TriMAP"] = tr.fit_transform(embeddings)
-    np.save(f"{embedding_model}_reduced_embeddings/TriMAP_db_embed.npy", embedding_methods_for_model["TriMAP"])
-
-    # Store the embedding methods for this model
-    embedding_models[embedding_model] = embedding_methods_for_model
+# Store the final dict for the global embedding_models
+embedding_models[embedding_model] = embedding_methods_for_model
 
     
 scores_all = defaultdict(lambda: defaultdict(list))
@@ -301,12 +327,29 @@ def safe_run_combo(embedding_model, embed_name, cluster_method):
                 print(f"HDBSCAN clustering complete. Unique labels: {len(np.unique(labels))}")
 
             elif cluster_method == "DC":
-                # Diffusion Condensation uses CPU implementation
-                print("Using CPU Diffusion Condensation...")
-                model = dc(min_clusters=level, max_iterations=5000, k=10, alpha=3)
-                model.fit(embed_data)
-                labels = model.labels_
-                print(f"DC clustering complete. Unique labels: {len(np.unique(labels))}")
+                # 1. Path setup: Organizing by Embedding Model and Reduction Method
+                # Example: Qwen3-Embedding_results/labels/DC_PHATE_level_142.npy
+                label_dir = f"{embedding_model}_results/db/labels"
+                os.makedirs(label_dir, exist_ok=True)
+                label_path = f"{label_dir}/{embed_name}_level_{level}.npy"
+
+                # 2. Check if this specific level has already been computed
+                if os.path.exists(label_path):
+                    print(f"Loading cached DC labels from {label_path}")
+                    labels = np.load(label_path)
+                else:
+                    print(f"Running CPU Diffusion Condensation for {embed_name} (Target Level: {level})")
+                    
+                    # Initialize and fit the model
+                    model = dc(min_clusters=level, max_iterations=5000, k=10, alpha=3)
+                    model.fit(embed_data)
+                    
+                    # 3. Direct assignment (since DC outputs NumPy arrays)
+                    labels = model.labels_
+                    
+                    # 4. Save to disk for future runs
+                    np.save(label_path, labels)
+                    print(f"DC complete. Saved {len(np.unique(labels))} unique labels to {label_path}")
 
 
             available_levels = np.array(sorted(topic_dict.keys()))

@@ -34,6 +34,7 @@ from pathlib import Path
 import warnings
 from collections import defaultdict
 import torch
+torch.cuda.empty_cache()
 
 # ===================
 # Data Manipulation
@@ -128,7 +129,7 @@ def get_embeddings(texts, model):
     print("Generating embeddings...")
     embeddings = model.encode(
         texts,
-        batch_size=32,
+        batch_size=64,
         show_progress_bar=True,
         convert_to_numpy=True,
         normalize_embeddings=True

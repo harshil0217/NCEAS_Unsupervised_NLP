@@ -6,9 +6,6 @@
 
 set -e  # Exit on error
 
-# Navigate to repository root (3 levels up from benchmark_datasets)
-cd ../../..
-
 echo "========================================="
 echo "Running Benchmark Dataset Experiments"
 echo "========================================="
@@ -33,7 +30,7 @@ fi
 echo "========================================="
 echo "1/3: Running Amazon benchmark..."
 echo "========================================="
-python src/run_models/benchmark_datasets/amazon.py
+python amazon.py
 echo "✓ Amazon benchmark completed"
 echo ""
 
@@ -41,7 +38,7 @@ echo ""
 echo "========================================="
 echo "2/3: Running DBpedia benchmark..."
 echo "========================================="
-python src/run_models/benchmark_datasets/dbpedia.py
+python dbpedia.py
 echo "✓ DBpedia benchmark completed"
 echo ""
 
@@ -49,7 +46,7 @@ echo ""
 echo "========================================="
 echo "3/3: Running Web of Science benchmark..."
 echo "========================================="
-python src/run_models/benchmark_datasets/WOS.py
+python WOS.py
 echo "✓ Web of Science benchmark completed"
 echo ""
 

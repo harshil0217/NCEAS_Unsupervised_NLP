@@ -126,8 +126,17 @@ def get_embeddings(texts, model):
         list: List of embeddings.
     """
     print("Using device:", device)
+    print(len(texts))
     
     model = SentenceTransformer(model, device=device)
+
+    tok = model.tokenizer(texts.tolist(), truncation=False, padding=False)
+
+    lens = [len(x) for x in tok['input_ids']]
+
+    print(f"Total tokens: {sum(lens):,}")
+    print(f"Avg tokens: {sum(lens)/len(lens):.1f}")
+    print(f"Max tokens: {max(lens)}")
     
     print("Generating embeddings...")
     embeddings = model.encode(
