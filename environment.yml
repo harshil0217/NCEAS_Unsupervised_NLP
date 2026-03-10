@@ -280,6 +280,5 @@ dependencies:
       - pyhercules==1.0.2
       - pyparsing==3.3.2
       - tasklogger==1.2.0
-      - trimap==1.1.5
       - wrapt==2.1.1
 prefix: /mnt/home/chidurah/.conda/envs/phate-env

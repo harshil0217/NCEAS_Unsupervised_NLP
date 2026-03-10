@@ -238,10 +238,13 @@ for embedding_model in embedding_model_names:
     embedding_methods_for_model["PaCMAP"] = pac.fit_transform(embeddings)
     np.save(f"{embedding_model}_reduced_embeddings/PaCMAP_wos_embed.npy", embedding_methods_for_model["PaCMAP"])
 
+
+    '''
     # # Fit to TriMAP
     tr = trimap.TRIMAP(n_dims=300)
     embedding_methods_for_model["TriMAP"] = tr.fit_transform(embeddings)
     np.save(f"{embedding_model}_reduced_embeddings/TriMAP_wos_embed.npy", embedding_methods_for_model["TriMAP"])
+    '''
 
     # Store the embedding methods for this model
     embedding_models[embedding_model] = embedding_methods_for_model
