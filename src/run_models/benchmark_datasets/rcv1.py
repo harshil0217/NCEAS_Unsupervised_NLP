@@ -34,6 +34,7 @@ from pathlib import Path
 import warnings
 from collections import defaultdict
 import torch
+torch.cuda.empty_cache()
 import matplotlib.pyplot as plt
 
 # ===================
@@ -90,18 +91,10 @@ warnings.filterwarnings("ignore")
 # Reload modules if needed
 importlib.reload(phate)
 
-
-
-
-rcv1 = pd.read_csv('data/rcv1/rcv1_data.csv')
+rcv1 = pd.read_csv('data/rcv1/rcv1.csv')
 
 rcv1 = rcv1.drop_duplicates(subset='topic', keep=False).reset_index(drop=True)
 rcv1 = rcv1.drop_duplicates(subset='item_id', keep=False).reset_index(drop=True)
-
-rcv1 = rcv1.rename(columns={'Title': 'topic'})
-rcv1 = rcv1.rename(columns={'Cat1': 'category_0'})
-rcv1 = rcv1.rename(columns={'Cat2': 'category_1'})
-rcv1 = rcv1.rename(columns={'Cat3': 'category_2'})
 
 
 
@@ -140,7 +133,7 @@ def get_embeddings(texts, model):
     print("Generating embeddings...")
     embeddings = model.encode(
         texts,
-        batch_size=32,
+        batch_size=8,
         show_progress_bar=True,
         convert_to_numpy=True,
         normalize_embeddings=True
@@ -169,7 +162,7 @@ for col in topic_data.columns:
         topic_dict[unique_count] = np.array(topic_data[col])
 
 # Determine cluster levels from hierarchy depth
-depth = 3
+depth = 2
 print(f"Depth: {depth}")
 print(f"Building cluster levels by counting unique categories at each level...\n")
 
@@ -212,27 +205,21 @@ for embedding_model in embedding_model_names:
 
     embedding_methods_for_model["PHATE"] = embed_phate
 
-    # Apply other dimensionality reduction methods
-    include_pca = True
-    include_umap = True
-
     # PCA using cuML (GPU-accelerated)
-    if include_pca:
-        print("Running PCA with cuML (GPU)...")
-        pca_model = cuPCA(n_components=300)
-        pca_result = pca_model.fit_transform(embeddings)
-        # Convert from GPU to numpy
-        embedding_methods_for_model["PCA"] = pca_result.to_output('numpy') if hasattr(pca_result, 'to_output') else np.array(pca_result)
-        np.save(f"{embedding_model}_reduced_embeddings/PCA_rcv1_embed.npy", embedding_methods_for_model["PCA"])
+    print("Running PCA with cuML (GPU)...")
+    pca_model = cuPCA(n_components=300)
+    pca_result = pca_model.fit_transform(embeddings)
+    # Convert from GPU to numpy
+    embedding_methods_for_model["PCA"] = pca_result.to_output('numpy') if hasattr(pca_result, 'to_output') else np.array(pca_result)
+    np.save(f"{embedding_model}_reduced_embeddings/PCA_rcv1_embed.npy", embedding_methods_for_model["PCA"])
 
     # UMAP using cuML (GPU-accelerated)
-    if include_umap:
-        print("Running UMAP with cuML (GPU)...")
-        umap_model = cuUMAP(n_components=300, min_dist=.05, n_neighbors=10)
-        umap_result = umap_model.fit_transform(embeddings)
-        # Convert from GPU to numpy
-        embedding_methods_for_model["UMAP"] = umap_result.to_output('numpy') if hasattr(umap_result, 'to_output') else np.array(umap_result)
-        np.save(f"{embedding_model}_reduced_embeddings/UMAP_rcv1_embed.npy", embedding_methods_for_model["UMAP"])
+    print("Running UMAP with cuML (GPU)...")
+    umap_model = cuUMAP(n_components=300, min_dist=.05, n_neighbors=10)
+    umap_result = umap_model.fit_transform(embeddings)
+    # Convert from GPU to numpy
+    embedding_methods_for_model["UMAP"] = umap_result.to_output('numpy') if hasattr(umap_result, 'to_output') else np.array(umap_result)
+    np.save(f"{embedding_model}_reduced_embeddings/UMAP_rcv1_embed.npy", embedding_methods_for_model["UMAP"])
 
     # t-SNE using cuML (GPU-accelerated)
     print("Running t-SNE with cuML (GPU)...")
@@ -243,18 +230,22 @@ for embedding_model in embedding_model_names:
     np.save(f"{embedding_model}_reduced_embeddings/tSNE_rcv1_embed.npy", embedding_methods_for_model["tSNE"])
 
     # # Fit to PaCMAP
-    pac = pacmap.PaCMAP(n_components=300, random_state=67)
+    print("Running PaCMAP with CPU...")
+    pac = pacmap.PaCMAP(n_components=2, random_state=67)
     embedding_methods_for_model["PaCMAP"] = pac.fit_transform(embeddings)
     np.save(f"{embedding_model}_reduced_embeddings/PaCMAP_rcv1_embed.npy", embedding_methods_for_model["PaCMAP"])
 
     # # Fit to TriMAP
+    
+    '''
+    print("Running TriMAP with CPU")
     tr = trimap.TRIMAP(n_dims=300)
     embedding_methods_for_model["TriMAP"] = tr.fit_transform(embeddings)
     np.save(f"{embedding_model}_reduced_embeddings/TriMAP_rcv1_embed.npy", embedding_methods_for_model["TriMAP"])
-
+    '''
     # Store the embedding methods for this model
     embedding_models[embedding_model] = embedding_methods_for_model
-
+    
     
 scores_all = defaultdict(lambda: defaultdict(list))
 
@@ -403,11 +394,15 @@ for (embedding_model, embed_name, cluster_method), score_dict in scores_all.item
 scores_df = pd.DataFrame(rows)
 
 
+
+
+
 # Optional: sort for easier viewing
 scores_df = scores_df.sort_values(by=["embedding_model", "reduction_method", "cluster_method", "level"]).reset_index(drop=True)
 os.makedirs("results", exist_ok=True)
 scores_df.to_csv(f"results/rcv1_clustering_scores.csv", index=False)
 
+'''
 combo_color_map = {
     ("PHATE", "Agglomerative"): "tab:blue",
     ("PHATE", "HDBSCAN"): "deepskyblue",
@@ -459,3 +454,4 @@ for embedding_model, df in scores_df.groupby("embedding_model"):
         plt.savefig(f"{embedding_model}_results/{metric}_scores_plot.png")
         plt.close()
 
+'''
