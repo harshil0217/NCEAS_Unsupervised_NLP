@@ -10,6 +10,8 @@ plotly
 scikit-learn
 scipy
 phate
+pacmap
+trimap
 umap-learn
 bertopic
 hdbscan
