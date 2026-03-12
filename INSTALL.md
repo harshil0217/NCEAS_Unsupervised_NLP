@@ -69,7 +69,7 @@ src/data/wos/
 Download the datasets and place them inside `src/data/` within their respective folders.
 
 ---
-
+The benchmark datasets used in this project are publicly available:
 ## arXiv Dataset
 
 The original arXiv dataset contains over **1.7 million papers**, which is too large to include directly in this repository.  
@@ -116,24 +116,37 @@ Documents
 This file can be used directly by the benchmark scripts and evaluation notebooks.
 
 ## Option 2 — Recreate the Dataset (Full Reproducibility)
+
 The dataset can also be recreated from the original arXiv metadata.
+
+### Step 1 — Download the Dataset
+
 Download the dataset from Kaggle:
+
 https://www.kaggle.com/datasets/Cornell-University/arxiv
-Place the file:
+
+### Step 2 — Place the File in the Project Folder
+
+After downloading, place the file in:
+
 src/data/arxiv/arxiv-metadata-oai-snapshot.json
 
-3. Run the preprocessing notebook:
+### Step 3 — Run the Preprocessing Notebook
+
+Open and run the notebook:
+
 src/data/arxiv/01_download_arxiv_dataset.ipynb
+
 This notebook will:
-Stream the large JSON dataset
-Filter papers to Computer Science and Physics categories
-Combine title + abstract
-Randomly sample 30,000 papers
-Save the dataset as arxiv_30k_clean.csv
 
+- Stream the large JSON dataset
+- Filter papers to Computer Science and Physics categories
+- Combine the **title and abstract** text fields
+- Randomly sample **30,000 papers**
+- Save the processed dataset as:
+
+src/data/arxiv/arxiv_30k_clean.csv
 ---
-The benchmark datasets used in this project are publicly available:
-
 
 ### RCV1 Dataset
 
