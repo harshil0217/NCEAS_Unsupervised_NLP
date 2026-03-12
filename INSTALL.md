@@ -168,28 +168,79 @@ Documents
             └── rcv1_v2
 
 
-# 2. Fastest Way to Access the Dataset reference Material (Teams Folder)
-Additional documentation about the RCV1 dataset is available in the NCEAS Teams Data folder:
+# 2. Fastest Way to Access the Dataset (Teams Folder)
+
+Additional documentation and processed files for the RCV1 dataset are available in the NCEAS Teams Data folder:
+
 Documents
 └── NCEAS
     └── Team_Management_Files
         └── Data
             └── rcv1_v2
                 ├── Lewis_2004_JMLR_RCV1v2.pdf
+                ├── rcv1_qwen_metadata.csv
                 └── README.md
 
-
+The rcv1_qwen_metadata.csv file contains the processed metadata and labels used in the evaluation pipeline.
 
 Other Benchmark Dataset Sources:
 
 - Amazon Product Reviews dataset:  
 https://nijianmo.github.io/amazon/index.html
 
+Amazon Dataset
+Files available in the NCEAS Teams folder:
+Documents
+└── NCEAS
+    └── Team_Management_Files
+        └── Data
+            └── Amazon
+                ├── train_40k.csv.zip
+                └── val_10k.csv.zip
+Download these files and place them in:
+
+src/data/amazon/
+Example structure:
+src/data/
+└── amazon/
+    ├── train_40k.csv.zip
+    └── val_10k.csv.zip
+
+
+
 - DBpedia dataset:  
 https://github.com/le-scientifique/torchDatasets/tree/master/dbpedia_csv
 
+Files available in the Teams folder:
+Documents
+└── NCEAS
+    └── Team_Management_Files
+        └── Data
+            └── DBpedia
+                └── DBPEDIA_test.csv
+Place the file in:src/data/dbpedia/
+Example:
+src/data/
+└── dbpedia/
+    └── DBPEDIA_test.csv
+
 - Web of Science dataset:  
 https://github.com/kk7nc/Text_Classification
+
+Web of Science Dataset
+Files available in the Teams folder:
+Documents
+└── NCEAS
+    └── Team_Management_Files
+        └── Data
+            └── WebOfScience
+                └── Data.xlsx
+Place the file in:src/data/wos/
+Example:
+src/data/
+└── wos/
+    └── Data.xlsx
+    
 
 - EPA Public Comments dataset (Mirrulations AWS mirror):  
 https://registry.opendata.aws/mirrulations/
