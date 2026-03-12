@@ -44,6 +44,7 @@ This notebook demonstrates the full PHATE benchmark pipeline including:
 - clustering
 - visualization
 
+```bash
 Project Structure
 NCEAS_Unsupervised_NLP/
 │
@@ -67,7 +68,7 @@ NCEAS_Unsupervised_NLP/
 ├── environment.yml          # Reproducible conda environment
 ├── INSTALL.md               # Installation instructions
 └── README.md                # Project overview
-
+```
 ## Authors
 
 [Jisha Goyal](https://github.com/goyaljis)

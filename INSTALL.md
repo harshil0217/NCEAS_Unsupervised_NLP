@@ -96,11 +96,12 @@ Download the file and place it in:
 src/data/arxiv/
 
 Expected Folder Structure
+```bash
 src/
 └── data/
     └── arxiv/
         └── arxiv_30k_clean.csv
-
+```
 
 Example:
 
@@ -205,6 +206,7 @@ https://nijianmo.github.io/amazon/index.html
 
 Amazon Dataset
 Files available in the NCEAS Teams folder:
+```bash
 Documents
 └── NCEAS
     └── Team_Management_Files
@@ -212,6 +214,7 @@ Documents
             └── Amazon
                 ├── train_40k.csv.zip
                 └── val_10k.csv.zip
+```
 Download these files and place them in:
 
 src/data/amazon/
@@ -254,12 +257,14 @@ https://github.com/kk7nc/Text_Classification
 
 Web of Science Dataset
 Files available in the Teams folder:
+```bash
 Documents
 └── NCEAS
     └── Team_Management_Files
         └── Data
             └── WebOfScience
                 └── Data.xlsx
+```
 Place the file in:
 src/data/wos/
 
