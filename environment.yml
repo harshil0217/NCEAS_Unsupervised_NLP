@@ -3,6 +3,7 @@ channels:
   - rapidsai
   - conda-forge
 dependencies:
+  - python<=3.11
   - _openmp_mutex=4.5=7_kmp_llvm
   - _python_abi3_support=1.0=hd8ed1ab_2
   - accelerate=1.13.0=pyhcf101f3_0
@@ -33,7 +34,6 @@ dependencies:
   - cachetools=7.0.1=pyhd8ed1ab_0
   - certifi=2026.2.25=pyhd8ed1ab_0
   - charset-normalizer=3.4.4=pyhd8ed1ab_0
-  - cpython=3.11.15=py311hd8ed1ab_0
   - cuda-bindings=12.9.5=py311hff0572f_0
   - cuda-cccl_linux-64=12.9.27=ha770c72_0
   - cuda-core=0.6.0=cuda12_py311hc26999e_0
@@ -216,7 +216,6 @@ dependencies:
   - pylibcudf=26.02.01=cuda12_py311_260205_5b9658c4
   - pylibraft=26.02.00=cuda12_py311_260204_c212ab9b
   - pysocks=1.7.1=pyha55dd90_7
-  - python=3.11.15=hd63d673_0_cpython
   - python-dateutil=2.9.0.post0=pyhe01879c_2
   - python-gil=3.11.15=hd8ed1ab_0
   - python-tzdata=2025.3=pyhd8ed1ab_0
