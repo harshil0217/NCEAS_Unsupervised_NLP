@@ -10,8 +10,7 @@ These instructions allow instructors, classmates, and community partners to repr
 ```bash
 git clone https://github.com/harshil0217/NCEAS_Unsupervised_NLP.git
 cd NCEAS_Unsupervised_NLP
----
-
+```
 ## 2. Install Conda (If Not Installed)
 
 Download and install **Miniconda** for your operating system:
@@ -65,11 +64,8 @@ src/data/amazon/
 src/data/dbpedia/
 src/data/wos/
 
-Download the datasets and place them inside the repository:
+Download the datasets and place them inside `src/data/` within their respective folders.
 
-```bash
-src/data/
-Main Benchmark Dataset Sources:
 ---
 
 ## arXiv Dataset
@@ -90,8 +86,11 @@ Documents
         └── Data
             └── arxiv
                 └── arxiv_30k_clean.csv
+```
 
-Download the file and place it in:src/data/arxiv/
+
+Download the file and place it in:
+
 src/data/arxiv/
 
 Expected Folder Structure
@@ -100,13 +99,26 @@ src/
     └── arxiv/
         └── arxiv_30k_clean.csv
 
+
+Example:
+
+```bash
+Documents
+└── NCEAS
+    └── Team_Management_Files
+        └── Data
+            └── arxiv
+                └── arxiv_30k_clean.csv
+```
+
 This file can be used directly by the benchmark scripts and evaluation notebooks.
 
 ## Option 2 — Recreate the Dataset (Full Reproducibility)
 The dataset can also be recreated from the original arXiv metadata.
 Download the dataset from Kaggle:
 https://www.kaggle.com/datasets/Cornell-University/arxiv
-Place the file:src/data/arxiv/arxiv-metadata-oai-snapshot.json
+Place the file:
+src/data/arxiv/arxiv-metadata-oai-snapshot.json
 
 3. Run the preprocessing notebook:
 src/data/arxiv/01_download_arxiv_dataset.ipynb
@@ -116,19 +128,6 @@ Filter papers to Computer Science and Physics categories
 Combine title + abstract
 Randomly sample 30,000 papers
 Save the dataset as arxiv_30k_clean.csv
-
----
-
-Change this:
-
-to:
-
-```markdown
-Dataset files should be placed inside:
-
-```bash
-src/data/
----
 
 ---
 The benchmark datasets used in this project are publicly available:
@@ -144,6 +143,7 @@ The **RCV1 dataset** is automatically downloaded using the scikit-learn dataset 
 ```python
 from sklearn.datasets import fetch_rcv1
 rcv1 = fetch_rcv1()
+```
 The dataset initially loads as a CSR (sparse) matrix containing over 800,000 news documents and 103 topic categories.
 The text is then embedded using the Qwen3-Embedding-0.6B model, converting each document into a 1024-dimensional semantic vector for clustering and evaluation.
 These embeddings are later reduced using dimensionality reduction methods such as:
@@ -152,7 +152,6 @@ PHATE (trajectory-based manifold mapping)
 UMAP (topological manifold learning)
 Clustering algorithms such as HDBSCAN and Agglomerative Clustering are applied to the reduced space, and performance is evaluated using the Adjusted Rand Index (ARI) against the ground-truth Reuters topic labels.
 
-But your version above is **perfectly acceptable for the project** 
 
 Location:
 
@@ -166,9 +165,9 @@ Documents
             ├── dbpedia
             ├── wos
             └── rcv1_v2
+```
 
-
-# 2. Fastest Way to Access the Dataset (Teams Folder)
+### RCV1 Files in the Teams Folder
 
 Additional documentation and processed files for the RCV1 dataset are available in the NCEAS Teams Data folder:
 
@@ -218,7 +217,9 @@ Documents
         └── Data
             └── DBpedia
                 └── DBPEDIA_test.csv
-Place the file in:src/data/dbpedia/
+Place the file in:
+src/data/dbpedia/
+
 Example:
 src/data/
 └── dbpedia/
@@ -235,17 +236,19 @@ Documents
         └── Data
             └── WebOfScience
                 └── Data.xlsx
-Place the file in:src/data/wos/
+Place the file in:
+src/data/wos/
+
 Example:
 src/data/
 └── wos/
     └── Data.xlsx
-    
+
 
 - EPA Public Comments dataset (Mirrulations AWS mirror):  
 https://registry.opendata.aws/mirrulations/
 
-Download the datasets and place them inside `src/data/` within their respective folder
+Download the datasets and place them inside `src/data/` within their respective folders
 
 ## 5. Run the Demo
 
@@ -327,3 +330,5 @@ src/run_models/
 Example command:
 
 python src/run_models/arxiv_benchmark.py
+
+All experiments in this project follow the Safe, Portable, Reproducible, and Robust software guidelines described in the CMSE capstone course.
