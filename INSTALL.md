@@ -345,13 +345,13 @@ Dataset files should be placed inside:
 src/data/
 
 Example structure:
-
+```bash
 src/data/
     arxiv/
     amazon/
     dbpedia/
     wos/
-
+```
 Once the dataset is placed in the correct folder, the benchmark pipeline
 can be executed using the scripts located in:
 
