@@ -48,6 +48,7 @@ Preprocessed datasets used in this project are available in the **NCEAS Teams Da
 
 Location:
 
+```bash
 Documents  
 └── NCEAS  
   └── Team_Management_Files  
@@ -57,6 +58,7 @@ Documents
       ├── dbpedia  
       ├── wos  
       └── rcv1_v2  
+```
 
 Example:
 src/data/arxiv/
@@ -171,6 +173,7 @@ Documents
 
 Additional documentation and processed files for the RCV1 dataset are available in the NCEAS Teams Data folder:
 
+```bash
 Documents
 └── NCEAS
     └── Team_Management_Files
@@ -179,7 +182,7 @@ Documents
                 ├── Lewis_2004_JMLR_RCV1v2.pdf
                 ├── rcv1_qwen_metadata.csv
                 └── README.md
-
+```
 The rcv1_qwen_metadata.csv file contains the processed metadata and labels used in the evaluation pipeline.
 
 Other Benchmark Dataset Sources:
@@ -199,31 +202,39 @@ Documents
 Download these files and place them in:
 
 src/data/amazon/
+
 Example structure:
+```bash
+Documents
 src/data/
 └── amazon/
     ├── train_40k.csv.zip
     └── val_10k.csv.zip
-
+```
 
 
 - DBpedia dataset:  
 https://github.com/le-scientifique/torchDatasets/tree/master/dbpedia_csv
 
 Files available in the Teams folder:
+```bash
 Documents
 └── NCEAS
     └── Team_Management_Files
         └── Data
             └── DBpedia
                 └── DBPEDIA_test.csv
+```
 Place the file in:
 src/data/dbpedia/
 
 Example:
 src/data/
+```bash
+Documents
 └── dbpedia/
     └── DBPEDIA_test.csv
+```
 
 - Web of Science dataset:  
 https://github.com/kk7nc/Text_Classification
@@ -240,10 +251,11 @@ Place the file in:
 src/data/wos/
 
 Example:
+```bash
 src/data/
 └── wos/
     └── Data.xlsx
-
+```
 
 - EPA Public Comments dataset (Mirrulations AWS mirror):  
 https://registry.opendata.aws/mirrulations/
