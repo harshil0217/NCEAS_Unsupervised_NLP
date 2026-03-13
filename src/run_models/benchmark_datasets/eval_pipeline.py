@@ -20,25 +20,20 @@ import json
 import argparse
 load_dotenv()
 
-# Set the target folder name you want to reach
 target_folder = "src"
 
-# Get the current working directory
-current_dir = os.getcwd()
+# Use __file__ to get the script's actual location, not the terminal's CWD
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Loop to move up the directory tree until we reach the target folder
 while os.path.basename(current_dir) != target_folder:
     parent_dir = os.path.abspath(os.path.join(current_dir, ".."))
     if parent_dir == current_dir:
-        # If we reach the root directory and haven't found the target, exit
         raise FileNotFoundError(f"{target_folder} not found in the directory tree.")
     current_dir = parent_dir
 
-# Change the working directory to the folder where "phate-for-text" is found
 os.chdir(current_dir)
-
-# Add the "phate-for-text" directory to sys.path
 sys.path.insert(0, current_dir)
+
 
 # ===================
 # Standard Libraries
@@ -73,7 +68,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # ==========================
 import phate
 import pacmap
-import trimap
+#import trimap
 
 # cuML GPU-accelerated dimensionality reduction
 import cuml
@@ -85,10 +80,12 @@ from cuml.manifold import UMAP as cuUMAP
 # Clustering
 # ========================
 from custom_packages.diffusion_condensation import DiffusionCondensation as dc
+import hdbscan
+from scipy.cluster.hierarchy import fcluster
 
 # cuML GPU-accelerated clustering
 from cuml.cluster import AgglomerativeClustering as cuAgglomerativeClustering
-from cuml.cluster import HDBSCAN as cuHDBSCAN
+
 
 # ======================
 # Evaluation Metrics
@@ -207,47 +204,42 @@ DATASET_CONFIGS = {
     "amazon": {
         "load_function": load_amazon,
         "depth": 3,
-        "embedding_filename": "amz_embed",
+        "short": "amz",
         "results_filename": "amazon_clustering_scores.csv",
-        "dc_label_subdir": 'amz',
         "batch_size": 32,
         "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
     },
     "dbpedia": {
         "load_function": load_dbpedia,
         "depth": 3,
-        "embedding_filename": "db_embed",
+        "short": "db",
         "results_filename": "db_clustering_scores.csv",
-        "dc_label_subdir": "db",
         "batch_size": 32,
         "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
     },
     "arxiv": {
         "load_function": load_arxiv,
         "depth": 2,  # arXiv only has 2 levels despite depth=3 in original
-        "embedding_filename": "arx_embed",
+        "short": "arx",
         "results_filename": "arxiv_clustering_scores.csv",
-        "dc_label_subdir": "arxiv",
         "batch_size": 32,
         "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],  # No TriMAP
     },
     "rcv1": {
         "load_function": load_rcv1,
         "depth": 2,
-        "embedding_filename": "rcv1_embed",
+        "short": "rcv1",
         "results_filename": "rcv1_clustering_scores.csv",
-        "dc_label_subdir": None,
         "batch_size": 8,
         "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],  # No TriMAP
     },
     "wos": {
         "load_function": load_wos,
         "depth": 2,
-        "embedding_filename": "wos_embed",
+        "short": "wos",
         "results_filename": "wos_clustering_scores.csv",
-        "dc_label_subdir": None,
         "batch_size": 64,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],  # No TriMAP
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"], 
     },
 }
 
@@ -322,7 +314,7 @@ def apply_dimensionality_reduction(embeddings, reduction_dir, embed_filename, re
             "run": lambda: cuPCA(n_components=300).fit_transform(embeddings)
         },
         "UMAP": {
-            "path": f"{reduction_dir}/UMAP_{embed_filename}_new.npy",
+            "path": f"{reduction_dir}/UMAP_{embed_filename}.npy",
             "run": lambda: cuUMAP(n_components=300, min_dist=.05, n_neighbors=10).fit_transform(embeddings)
         },
         "tSNE": {
@@ -392,7 +384,7 @@ def make_noise_labels_unique(labels):
 
 
 def safe_run_combo(embedding_model, embed_name, cluster_method, embedding_models,
-                   cluster_levels, topic_dict, dc_label_subdir=None):
+                   cluster_levels, topic_dict, label_dir, short):
     """
     Run a single embedding-clustering combination and evaluate.
 
@@ -431,30 +423,34 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embedding_models
                 print(f"Agglomerative clustering complete. Unique labels: {len(np.unique(labels))}")
 
             elif cluster_method == "HDBSCAN":
-                # Use cuML GPU-accelerated HDBSCAN
-                print("Using cuML HDBSCAN (GPU)...")
-                model = cuHDBSCAN(min_cluster_size=level, min_samples=1)
-                model.fit(embed_data)
-                # Convert GPU result to numpy
-                labels = model.labels_.to_output('numpy') if hasattr(model.labels_, 'to_output') else np.array(model.labels_)
+                # Use CPU (GPU Variant exists but lacks single_linkage_tree method)
+                #label subdir
+                label_path = f"{label_dir}/{short}/{embed_name}/{cluster_method}_labels.npy"
 
-                # cuML HDBSCAN returns cluster labels directly
-                # If all points are noise (-1), assign unique labels
-                if np.all(labels == -1):
-                    print("WARNING: All points labeled as noise. Assigning unique labels.")
-                    labels = np.arange(len(labels))
+                if os.path.exists(label_path):
+                    print("Loading Existing HDBSCAN Labels")
+                    print(f"Loading cached DC labels from {label_path}")
+                    labels = np.load(label_path)
+                else:
+                    print("Using cuML HDBSCAN (CPU)...")
+                    model = hdbscan.HDBSCAN(min_cluster_size=5)
+                    model.fit(embed_data)
+                    labels = model.labels_
+                    Z = model.single_linkage_tree_.to_numpy()
+                    labels = fcluster(Z, level, criterion='maxclust')
+                    labels = make_noise_labels_unique(labels)
 
-                print(f"HDBSCAN clustering complete. Unique labels: {len(np.unique(labels))}")
+                    # If all points are noise (-1), assign unique labels
+                    if np.all(labels == -1):
+                        print("WARNING: All points labeled as noise. Assigning unique labels.")
+                        labels = np.arange(len(labels))
+
+                    os.makedirs(os.path.dirname(label_path), exist_ok=True)
+                    print(f"HDBSCAN clustering complete. Unique labels: {len(np.unique(labels))}")
 
             elif cluster_method == "DC":
                 # Diffusion Condensation with optional subdirectory
-                if dc_label_subdir:
-                    label_dir = f"{embedding_model}_results/{dc_label_subdir}/labels"
-                else:
-                    label_dir = f"{embedding_model}_results/labels"
-
-                os.makedirs(label_dir, exist_ok=True)
-                label_path = f"{label_dir}/{embed_name}_level_{level}.npy"
+                label_path = f"{label_dir}/{short}/{embed_name}/{cluster_method}_labels.npy"
 
                 # Check if this specific level has already been computed
                 if os.path.exists(label_path):
@@ -471,6 +467,7 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embedding_models
                     labels = model.labels_
 
                     # Save to disk for future runs
+                    os.makedirs(os.path.dirname(label_path), exist_ok=True)
                     np.save(label_path, labels)
                     print(f"DC complete. Saved {len(np.unique(labels))} unique labels to {label_path}")
 
@@ -580,7 +577,7 @@ def run_pipeline(dataset_name):
         embedding_dir = f"{embedding_model}_embeddings"
         os.makedirs(embedding_dir, exist_ok=True)
 
-        embedding_path = f"{embedding_dir}/{config['embedding_filename']}.npy"
+        embedding_path = f"{embedding_dir}/{config['short']}.npy"
 
         # Generate or load embeddings
         if os.path.exists(embedding_path):
@@ -603,7 +600,7 @@ def run_pipeline(dataset_name):
         embedding_methods_for_model = apply_dimensionality_reduction(
             embeddings=embeddings,
             reduction_dir=reduction_dir,
-            embed_filename=config["embedding_filename"],
+            embed_filename=config["short"],
             reduction_methods=config["reduction_methods"]
         )
 
@@ -620,6 +617,9 @@ def run_pipeline(dataset_name):
         for cluster_method in ["Agglomerative", "HDBSCAN", "DC"]
     ]
 
+    label_dir = f"{embedding_model}_labels"
+    os.makedirs(label_dir, exist_ok=True)
+
     # Run each combo sequentially
     combo_results = []
     for embedding_model, embed_name, cluster_method in tqdm(combo_params, desc="Processing embedding-clustering combos"):
@@ -630,7 +630,8 @@ def run_pipeline(dataset_name):
             embedding_models,
             cluster_levels,
             topic_dict,
-            dc_label_subdir=config["dc_label_subdir"]
+            label_dir,
+            short = config["short"]
         )
         combo_results.append(result)
 

@@ -9,8 +9,14 @@
 # Available datasets: amazon, dbpedia, arxiv, rcv1, wos
 #
 # Examples:
-#   ./run_eval_pipeline.sh dbpedia
-#   ./run_eval_pipeline.sh amazon
+#   bash run_eval_pipeline.sh dbpedia
+#   bash run_eval_pipeline.sh amazon
+#
+# Compute Config:
+#   8 Cores
+#   96 GB RAM
+#   1 x A100 GPU
+
 
 # Check if dataset argument is provided
 if [ $# -eq 0 ]; then
@@ -23,7 +29,7 @@ if [ $# -eq 0 ]; then
     echo "  dbpedia   - DBpedia topics (3 levels)"
     echo "  arxiv     - arXiv paper categories (2 levels)"
     echo "  rcv1      - Reuters RCV1 news categories (2 levels)"
-    echo "  wos       - Web of Science publications (2 levels)"
+    echo "  wos       - Web of Science (2 levels)"
     echo ""
     echo "Example:"
     echo "  ./run_eval_pipeline.sh dbpedia"
@@ -51,13 +57,3 @@ cd "$(dirname "$0")/../../.."
 # Run the pipeline
 python src/run_models/benchmark_datasets/eval_pipeline.py --dataset "$DATASET"
 
-# Check exit status
-if [ $? -eq 0 ]; then
-    echo ""
-    echo "Pipeline completed successfully for dataset: $DATASET"
-    echo "Results saved to: results/${DATASET}_clustering_scores.csv"
-else
-    echo ""
-    echo "Error: Pipeline failed for dataset: $DATASET"
-    exit 1
-fi
