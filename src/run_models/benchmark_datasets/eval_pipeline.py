@@ -74,7 +74,7 @@ import pacmap
 import cuml
 from cuml.decomposition import PCA as cuPCA
 from cuml.manifold import TSNE as cuTSNE
-from cuml.manifold import UMAP as cuUMAP
+from cuml.manifold import UMAP as cuUMAP 
 
 # ========================
 # Clustering
@@ -85,6 +85,7 @@ from scipy.cluster.hierarchy import fcluster
 
 # cuML GPU-accelerated clustering
 from cuml.cluster import AgglomerativeClustering as cuAgglomerativeClustering
+from cuml.cluster import HDBSCAN as cuHDBSCAN
 
 
 # ======================
@@ -385,21 +386,6 @@ def make_noise_labels_unique(labels):
 
 def safe_run_combo(embedding_model, embed_name, cluster_method, embedding_models,
                    cluster_levels, topic_dict, label_dir, short):
-    """
-    Run a single embedding-clustering combination and evaluate.
-
-    Args:
-        embedding_model: Name of the embedding model
-        embed_name: Name of the reduction method
-        cluster_method: Clustering algorithm name
-        embedding_models: Dictionary of embeddings
-        cluster_levels: List of cluster levels to test
-        topic_dict: Ground truth topic dictionary
-        dc_label_subdir: Subdirectory for DC labels
-
-    Returns:
-        Tuple of (embedding_model, embed_name, cluster_method, combo_scores)
-    """
     embed_data = embedding_models[embedding_model][embed_name]
     combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": []}
 
@@ -414,59 +400,61 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embedding_models
             print(f"Testing cluster level: {level}")
 
             if cluster_method == "Agglomerative":
-                # Use cuML GPU-accelerated Agglomerative Clustering
                 print("Using cuML Agglomerative Clustering (GPU)...")
                 model = cuAgglomerativeClustering(n_clusters=level)
                 model.fit(embed_data)
-                # Convert GPU result to numpy
-                labels = model.labels_.to_output('numpy') if hasattr(model.labels_, 'to_output') else np.array(model.labels_)
+                labels = (
+                    model.labels_.to_output('numpy')
+                    if hasattr(model.labels_, 'to_output')
+                    else np.array(model.labels_)
+                )
                 print(f"Agglomerative clustering complete. Unique labels: {len(np.unique(labels))}")
 
             elif cluster_method == "HDBSCAN":
-                # Use CPU (GPU Variant exists but lacks single_linkage_tree method)
-                #label subdir
-                label_path = f"{label_dir}/{short}/{embed_name}/{cluster_method}_labels.npy"
+                # Keep the same label_path variable as requested
+                label_path = os.path.join(
+                    f"{embedding_model}_labels", short, embed_name,
+                    f"HDB_{level}_labels.npy"
+                )
 
                 if os.path.exists(label_path):
-                    print("Loading Existing HDBSCAN Labels")
-                    print(f"Loading cached DC labels from {label_path}")
+                    print(f"Loading cached HDBSCAN labels from {label_path}")
                     labels = np.load(label_path)
                 else:
-                    print("Using cuML HDBSCAN (CPU)...")
-                    model = hdbscan.HDBSCAN(min_cluster_size=5)
+                    print("Using cuML HDBSCAN (GPU)...")
+                    model = cuHDBSCAN(min_cluster_size=5, min_samples=1)
                     model.fit(embed_data)
-                    labels = model.labels_
+                    # Convert GPU result to numpy
                     Z = model.single_linkage_tree_.to_numpy()
+
+                    # 3. Slice the tree at the requested level using SciPy
                     labels = fcluster(Z, level, criterion='maxclust')
+                    
+                    # Keep your custom noise handling
                     labels = make_noise_labels_unique(labels)
 
-                    # If all points are noise (-1), assign unique labels
                     if np.all(labels == -1):
                         print("WARNING: All points labeled as noise. Assigning unique labels.")
                         labels = np.arange(len(labels))
 
                     os.makedirs(os.path.dirname(label_path), exist_ok=True)
-                    print(f"HDBSCAN clustering complete. Unique labels: {len(np.unique(labels))}")
+                    np.save(label_path, labels)
+                    print(f"GPU-accelerated HDBSCAN fcluster cut at {level}. Unique labels: {len(np.unique(labels))}")
 
             elif cluster_method == "DC":
-                # Diffusion Condensation with optional subdirectory
-                label_path = f"{label_dir}/{short}/{embed_name}/{cluster_method}_labels.npy"
+                label_path = os.path.join(
+                    f"{embedding_model}_labels", short, embed_name,
+                    f"DC_{level}_labels.npy"
+                )
 
-                # Check if this specific level has already been computed
                 if os.path.exists(label_path):
                     print(f"Loading cached DC labels from {label_path}")
                     labels = np.load(label_path)
                 else:
-                    print(f"Running CPU Diffusion Condensation for {embed_name} (Target Level: {level})")
-
-                    # Initialize and fit the model
+                    print(f"Running Diffusion Condensation for {embed_name} (Target Level: {level})")
                     model = dc(min_clusters=level, max_iterations=5000, k=10, alpha=3)
                     model.fit(embed_data)
-
-                    # Direct assignment (since DC outputs NumPy arrays)
                     labels = model.labels_
-
-                    # Save to disk for future runs
                     os.makedirs(os.path.dirname(label_path), exist_ok=True)
                     np.save(label_path, labels)
                     print(f"DC complete. Saved {len(np.unique(labels))} unique labels to {label_path}")
@@ -484,7 +472,6 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embedding_models
             if cluster_method == "HDBSCAN":
                 label_lst = make_noise_labels_unique(label_lst)
 
-            # Compute evaluation metrics
             try:
                 fm_score = FowlkesMallows.Bk({level: target_lst}, {level: label_lst})[level]['FM']
             except Exception:
