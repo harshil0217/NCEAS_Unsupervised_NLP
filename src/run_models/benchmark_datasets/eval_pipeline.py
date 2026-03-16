@@ -384,7 +384,7 @@ def make_noise_labels_unique(labels):
     return labels
 
 
-def safe_run_combo(embedding_model, embed_name, cluster_method, embedding_models,
+def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
                    cluster_levels, topic_dict, label_dir, short):
     embed_data = embedding_models[embedding_model][embed_name]
     combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": []}
@@ -610,7 +610,7 @@ def run_pipeline(dataset_name):
     # Run each combo sequentially
     combo_results = []
     for embedding_model, embed_name, cluster_method in tqdm(combo_params, desc="Processing embedding-clustering combos"):
-        result = safe_run_combo(
+        result = cluster_combo(
             embedding_model,
             embed_name,
             cluster_method,
@@ -672,18 +672,18 @@ def main():
         description="Run benchmark evaluation pipeline on specified dataset",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-Available datasets:
-  amazon    - Amazon product categories (3 levels)
-  dbpedia   - DBpedia ontology topics (3 levels)
-  arxiv     - arXiv paper categories (2 levels)
-  rcv1      - Reuters RCV1 news categories (2 levels)
-  wos       - Web of Science publications (2 levels)
+            Available datasets:
+            amazon    - Amazon product categories (3 levels)
+            dbpedia   - DBpedia ontology topics (3 levels)
+            arxiv     - arXiv paper categories (2 levels)
+            rcv1      - Reuters RCV1 news categories (2 levels)
+            wos       - Web of Science publications (2 levels)
 
-Example usage:
-  python eval_pipeline.py --dataset dbpedia
-  python eval_pipeline.py --dataset amazon
-        """
-    )
+            Example usage:
+            python eval_pipeline.py --dataset dbpedia
+            python eval_pipeline.py --dataset amazon
+                    """
+                )
 
     parser.add_argument(
         '--dataset',
