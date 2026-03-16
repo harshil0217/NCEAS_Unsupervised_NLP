@@ -34,6 +34,7 @@ from pathlib import Path
 import warnings
 from collections import defaultdict
 import torch
+import argparse
 
 torch.cuda.empty_cache()
 
@@ -258,7 +259,7 @@ def get_sentence_transformer_embeddings(texts: list[str], model_name: str = "all
     if not texts:
         return np.array([])
 
-    model = SentenceTransformer(model_name)
+    model = SentenceTransformer(model_name, device=device)
 
     try:
         # encode() handles the list input and returns a numpy array by default
@@ -276,7 +277,6 @@ def get_sentence_transformer_embeddings(texts: list[str], model_name: str = "all
 
     except Exception as e:
         print(f"Error during embedding generation with '{model_name}': {e}")
-        return dummy_text_embedding(texts)
     
 
 
@@ -299,7 +299,7 @@ def run_pipeline(dataset_name):
         "sentence-transformers/all-MiniLM-L6-v2",
     ]
 
-    data = config['load_function']
+    data = config['load_function']()
 
     # Prepare data once (same for all embedding models)
     shuffle_idx = np.random.RandomState(seed=67).permutation(len(data))
@@ -314,7 +314,7 @@ def run_pipeline(dataset_name):
             topic_dict[unique_count] = np.array(topic_data[col])
             
     # Determine cluster levels from hierarchy depth
-    depth = config[depth]
+    depth = config['depth']
     print(f"Depth: {depth}")
     print(f"Building cluster levels by counting unique categories at each level...\n")
 
@@ -333,8 +333,6 @@ def run_pipeline(dataset_name):
     rep_mode = 'direct'
     for model_name in embedding_model_names:
         torch.cuda.empty_cache()
-
-        combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": []}
         
         hercules = Hercules(
         level_cluster_counts=cluster_levels,
@@ -371,10 +369,11 @@ def run_pipeline(dataset_name):
             print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}")
             ami = adjusted_mutual_info_score(target_lst, label_lst)
 
-        scores_all[model_name] = [fm_score, rand, ari, ami]
+        scores_all[model_name] = [np.mean(fm_score), np.mean(rand), np.mean(ari), np.mean(ami)]
         
     # Convert scores_all to a DataFrame and save to csv
     scores_df = pd.DataFrame.from_dict(scores_all, orient = 'index')
+    scores_df.reset_index(inplace=True)
     scores_df.columns = ['Embedding Model Name', 'FM', 'Rand', 'ARI', 'AMI']
 
     scores_df = scores_df.explode(['FM', 'Rand', 'ARI', 'AMI'])
