@@ -155,13 +155,8 @@ def load_dbpedia():
 
 def load_arxiv():
     """Load and preprocess arXiv dataset."""
-    arx = pd.read_csv("data/arxiv/arxiv_raw_30k.csv")
-    arx["topic"] = arx["text"]
-    arx["category_0"] = arx["label"].apply(lambda x: x.split(".")[0])
-    arx["category_1"] = arx["label"].apply(lambda x: x.split(".")[1])
-
+    arx = pd.read_csv("data/arxiv/arxiv_clean.csv")
     arx = arx.dropna().reset_index(drop=True)
-
     return arx
 
 
