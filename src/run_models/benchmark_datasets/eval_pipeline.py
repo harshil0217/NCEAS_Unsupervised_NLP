@@ -68,7 +68,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # ==========================
 import phate
 import pacmap
-#import trimap
+import trimap
 
 # cuML GPU-accelerated dimensionality reduction
 import cuml
@@ -203,7 +203,7 @@ DATASET_CONFIGS = {
         "short": "amz",
         "results_filename": "amazon_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
     },
     "dbpedia": {
         "load_function": load_dbpedia,
@@ -211,15 +211,15 @@ DATASET_CONFIGS = {
         "short": "db",
         "results_filename": "db_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
     },
     "arxiv": {
         "load_function": load_arxiv,
-        "depth": 2,  # arXiv only has 2 levels despite depth=3 in original
+        "depth": 2,
         "short": "arx",
         "results_filename": "arxiv_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],  # No TriMAP
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
     },
     "rcv1": {
         "load_function": load_rcv1,
@@ -227,7 +227,7 @@ DATASET_CONFIGS = {
         "short": "rcv1",
         "results_filename": "rcv1_clustering_scores.csv",
         "batch_size": 8,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],  # No TriMAP
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
     },
     "wos": {
         "load_function": load_wos,
@@ -235,7 +235,7 @@ DATASET_CONFIGS = {
         "short": "wos",
         "results_filename": "wos_clustering_scores.csv",
         "batch_size": 64,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"], 
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
     },
 }
 
