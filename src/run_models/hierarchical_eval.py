@@ -1,161 +1,128 @@
 # ========================
 # Environment
-# ========================g
+# ========================
 import os
 import warnings
 import numpy as np
 import pandas as pd
+import ast
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 warnings.filterwarnings("ignore")
 
-# ========================
-# Hierarchical tools
-# ========================
-from scipy.cluster.hierarchy import linkage, fcluster
+print("Starting hierarchical evaluation...")
+print("Current working directory:", os.getcwd())
 
 # ========================
-# Paths
+# Paths (SAFE)
 # ========================
-mini_dir = "all-MiniLM-L6-v2_reduced_embeddings"
-qwen_dir = "Qwen3-Embedding-0.6B_reduced_embeddings"
+BASE_DIR = os.getcwd()
 
-results_dir = "hierarchical_results"
+eval_dir = os.path.join(BASE_DIR, "evaluation_results")
+results_dir = os.path.join(BASE_DIR, "hierarchical_results")
+
 os.makedirs(results_dir, exist_ok=True)
+
+print("Evaluation dir:", eval_dir)
+print("Results dir:", results_dir)
 
 # ========================
 # Datasets
 # ========================
-datasets = {
-    "arxiv": "arxiv_30k_clean.csv",
-    "rcv1": "rcv1_clean.csv",
-    "amazon": "amazon_clean.csv",
-    "wos": "wos_clean.csv"
-}
+datasets = ["arxiv"]
 
 # ========================
-# Embeddings
+# Dendrogram Purity
 # ========================
-embeddings = {
-    "MiniLM": mini_dir,
-    "Qwen": qwen_dir
-}
+def dendrogram_purity(true_labels, pred_labels):
 
-# ========================
-# Reductions
-# ========================
-reductions = ["PCA", "PHATE", "UMAP"]
+    # remove HDBSCAN noise (-1)
+    valid_mask = pred_labels != -1
+    true_labels = true_labels[valid_mask]
+    pred_labels = pred_labels[valid_mask]
 
-# ========================
-# Load embedding
-# ========================
-def load_embedding(folder, reduction, dataset):
-    path = f"{folder}/{reduction}_{dataset}_embed.npy"
+    if len(true_labels) == 0:
+        return np.nan
 
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"Missing embedding file: {path}")
-
-    return np.load(path)
-
-
-# ========================
-# Dendrogram Purity (simple version)
-# ========================
-def dendrogram_purity(Z, labels_true, k):
-    """
-    Approximate dendrogram purity by cutting tree at k clusters
-    """
-    pred = fcluster(Z, t=k, criterion='maxclust')
-
+    total = len(true_labels)
     purity = 0
-    total = len(labels_true)
 
-    for cluster_id in np.unique(pred):
-        mask = pred == cluster_id
-        true_labels = labels_true[mask]
+    for cluster in np.unique(pred_labels):
+        mask = pred_labels == cluster
+        labels = true_labels[mask]
 
-        if len(true_labels) == 0:
+        if len(labels) == 0:
             continue
 
-        counts = np.bincount(pd.factorize(true_labels)[0])
-        purity += np.max(counts)
+        counts = pd.Series(labels).value_counts()
+        purity += counts.iloc[0]
 
     return purity / total
 
 
 # ========================
-# Placeholder LCA-F1
+# Run Evaluation
 # ========================
-def lca_f1_placeholder(Z, labels_true):
-    """
-    TEMP placeholder — replace with HERCULES implementation later
-    """
-    return np.nan
-
-
-# ========================
-# Run Experiments
-# ========================
-for dataset_name, dataset_file in datasets.items():
+for dataset in datasets:
 
     print("\n========================")
-    print(f"Running dataset: {dataset_name}")
+    print(f"Running dataset: {dataset}")
     print("========================")
 
-    if not os.path.exists(dataset_file):
-        print(f"Dataset not found: {dataset_file}, skipping...")
+    eval_file = os.path.join(eval_dir, f"{dataset}_FULL.csv")
+    print("Looking for file:", eval_file)
+
+    # 🚨 check file exists
+    if not os.path.exists(eval_file):
+        print(f"❌ Missing file: {eval_file}")
         continue
 
-    df = pd.read_csv(dataset_file)
+    print("✅ File found, loading...")
 
-    if "label" not in df.columns:
-        print("No label column found, skipping...")
-        continue
-
-    labels_true = df["label"].fillna("None").values
-    true_cluster_count = len(np.unique(labels_true))
+    df = pd.read_csv(eval_file)
+    print("Rows in file:", len(df))
 
     results = []
 
-    for embed_name, folder in embeddings.items():
+    for i, row in df.iterrows():
 
-        for reduction in reductions:
+        try:
+            # ========================
+            # Safe parsing
+            # ========================
+            true_labels = np.array(ast.literal_eval(str(row["true_labels"])))
+            pred_labels = np.array(ast.literal_eval(str(row["pred_labels"])))
 
-            print(f"\nLoading {embed_name} + {reduction}")
-
-            try:
-                embed = load_embedding(folder, reduction, dataset_name)
-                print("Embedding shape:", embed.shape)
-
-            except Exception as e:
-                print("Missing embedding:", e)
+            # ========================
+            # Length check
+            # ========================
+            if len(true_labels) != len(pred_labels):
+                print(f"⚠️ Row {i}: length mismatch → skipping")
                 continue
 
-            try:
-                # ========================
-                # Build hierarchical tree
-                # ========================
-                Z = linkage(embed, method="ward")
+            # ========================
+            # Compute purity
+            # ========================
+            purity = dendrogram_purity(true_labels, pred_labels)
 
-                # ========================
-                # Metrics
-                # ========================
-                purity = dendrogram_purity(Z, labels_true, true_cluster_count)
-                lca_f1 = lca_f1_placeholder(Z, labels_true)
+            results.append({
+                "dataset": dataset,
+                "embedding": row.get("embedding", "unknown"),
+                "reduction": row.get("reduction", "unknown"),
+                "cluster_method": row.get("cluster_method", "unknown"),
+                "dendrogram_purity": purity,
+                "lca_f1": np.nan
+            })
 
-                results.append({
-                    "dataset": dataset_name,
-                    "embedding": embed_name,
-                    "reduction": reduction,
+            # print progress every few rows
+            if i % 5 == 0:
+                print(
+                    f"[{i}] {row.get('embedding')} + {row.get('reduction')} + {row.get('cluster_method')} "
+                    f"→ Purity: {purity:.4f}"
+                )
 
-                    "dendrogram_purity": purity,
-                    "lca_f1": lca_f1
-                })
-
-                print(f"Purity: {purity:.4f}")
-
-            except Exception as e:
-                print("Error:", e)
+        except Exception as e:
+            print(f"❌ Error at row {i}:", e)
 
     # ========================
     # Save results
@@ -164,12 +131,25 @@ for dataset_name, dataset_file in datasets.items():
 
         results_df = pd.DataFrame(results)
 
-        output_file = f"{results_dir}/{dataset_name}_hierarchical.csv"
+        # raw results
+        output_file = os.path.join(results_dir, f"{dataset}_hierarchical.csv")
         results_df.to_csv(output_file, index=False)
 
-        print("\nSaved results to:", output_file)
+        print("✅ Saved raw results:", output_file)
+
+        # ========================
+        # SUMMARY (VERY IMPORTANT)
+        # ========================
+        summary_df = results_df.groupby(
+            ["embedding", "reduction", "cluster_method"]
+        )["dendrogram_purity"].mean().reset_index()
+
+        summary_file = os.path.join(results_dir, f"{dataset}_hierarchical_summary.csv")
+        summary_df.to_csv(summary_file, index=False)
+
+        print("✅ Saved summary:", summary_file)
 
     else:
-        print("No results produced for this dataset.")
+        print("❌ No valid results computed.")
 
-print("\nAll datasets finished.")
+print("\n🎉 All datasets finished.")
