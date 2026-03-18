@@ -46,7 +46,7 @@ datasets = {
 }
 
 # ========================
-# Embedding folders
+# Embeddings
 # ========================
 embeddings = {
     "MiniLM": mini_dir,
@@ -54,7 +54,7 @@ embeddings = {
 }
 
 # ========================
-# Dimensionality reductions
+# Reductions
 # ========================
 reductions = ["PCA", "PHATE", "UMAP"]
 
@@ -122,34 +122,41 @@ def run_clustering(embed, cluster_name, true_cluster_count):
 
 
 # ========================
-# Evaluation (FIXED)
+# Evaluation
 # ========================
 def evaluate(labels_true, labels_pred):
 
     labels_true = np.array(labels_true)
     labels_pred = np.array(labels_pred)
 
-    # 🔥 HDBSCAN fix: remove noise (-1)
+    # 🔥 HDBSCAN fix: remove noise
     valid_mask = labels_pred != -1
 
     if valid_mask.sum() == 0:
-        return np.nan, np.nan, np.nan, np.nan
+        return np.nan, np.nan, np.nan, np.nan, labels_true, labels_pred
 
-    labels_true = labels_true[valid_mask]
-    labels_pred = labels_pred[valid_mask]
+    labels_true_clean = labels_true[valid_mask]
+    labels_pred_clean = labels_pred[valid_mask]
 
-    true_cluster_count = len(np.unique(labels_true))
+    true_cluster_count = len(np.unique(labels_true_clean))
 
     fm = FowlkesMallows.Bk(
-        {true_cluster_count: labels_true},
-        {true_cluster_count: labels_pred}
+        {true_cluster_count: labels_true_clean},
+        {true_cluster_count: labels_pred_clean}
     )
 
-    rand = rand_score(labels_true, labels_pred)
-    ari = adjusted_rand_score(labels_true, labels_pred)
-    ami = adjusted_mutual_info_score(labels_true, labels_pred)  # ✅ NEW
+    rand = rand_score(labels_true_clean, labels_pred_clean)
+    ari = adjusted_rand_score(labels_true_clean, labels_pred_clean)
+    ami = adjusted_mutual_info_score(labels_true_clean, labels_pred_clean)
 
-    return fm[true_cluster_count]["FM"], rand, ari, ami
+    return (
+        fm[true_cluster_count]["FM"],
+        rand,
+        ari,
+        ami,
+        labels_true_clean,
+        labels_pred_clean
+    )
 
 
 # ========================
@@ -171,7 +178,7 @@ for dataset_name, dataset_file in datasets.items():
         print("No label column found, skipping...")
         continue
 
-    labels_true = df["label"].values
+    labels_true = df["label"].fillna("None").values
     true_cluster_count = len(np.unique(labels_true))
 
     results = []
@@ -201,17 +208,25 @@ for dataset_name, dataset_file in datasets.items():
                         true_cluster_count
                     )
 
-                    fm, rand, ari, ami = evaluate(labels_true, labels_pred)
+                    fm, rand, ari, ami, y_true_clean, y_pred_clean = evaluate(
+                        labels_true,
+                        labels_pred
+                    )
 
                     results.append({
                         "dataset": dataset_name,
                         "embedding": embed_name,
                         "reduction": reduction,
                         "cluster_method": cluster,
+
                         "FM": fm,
                         "Rand": rand,
                         "ARI": ari,
-                        "AMI": ami   # ✅ NEW
+                        "AMI": ami,
+
+                        # 🔥 NEW (CRITICAL)
+                        "true_labels": y_true_clean.tolist(),
+                        "pred_labels": y_pred_clean.tolist()
                     })
 
                 except Exception as e:
@@ -224,7 +239,7 @@ for dataset_name, dataset_file in datasets.items():
 
         results_df = pd.DataFrame(results)
 
-        output_file = f"{results_dir}/{dataset_name}_comparison.csv"
+        output_file = f"{results_dir}/{dataset_name}_FULL.csv"
 
         results_df.to_csv(output_file, index=False)
 
