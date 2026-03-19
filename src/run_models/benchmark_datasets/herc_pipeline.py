@@ -190,7 +190,7 @@ DATASET_CONFIGS = {
     },
     "arxiv": {
         "load_function": load_arxiv,
-        "depth": 2,  # arXiv only has 2 levels despite depth=3 in original
+        "depth": 2, 
         "short": "arx",
         "results_filename": "arxiv_herc_clustering_scores.csv",
         "topic_seed": "arxiv abstracts",
@@ -283,7 +283,6 @@ def get_sentence_transformer_embeddings(texts: list[str], model_name: str = "all
 def run_pipeline(dataset_name):
 
 
-
     if dataset_name not in DATASET_CONFIGS:
         raise ValueError(f"Unknown dataset: {dataset_name}. Available: {list(DATASET_CONFIGS.keys())}")
 
@@ -332,22 +331,44 @@ def run_pipeline(dataset_name):
 
     rep_mode = 'direct'
     for model_name in embedding_model_names:
-        torch.cuda.empty_cache()
-        
-        hercules = Hercules(
-        level_cluster_counts=cluster_levels,
-        representation_mode=rep_mode,
-        text_embedding_client=get_sentence_transformer_embeddings,
-        llm_client=qwen_caller,
-        verbose=2,
-        llm_initial_batch_size=32
-        )
-        
-        # 3. Run clustering
-        top_clusters = hercules.cluster(data['topic'].tolist(), topic_seed=config['topic_seed'])
+        save_path = f"../../hercules_run/{config['short']}/{rep_mode}"
+        hercules = None
 
+        if os.path.exists(save_path):
+            print(f"Loading existing model from {save_path}...")
+            hercules = Hercules.load_model(filepath=save_path, 
+                                            text_embedding_client=get_sentence_transformer_embeddings,
+                                            llm_client = quen_caller)[0]
+        else:
+            torch.cuda.empty_cache()
+            hercules = Hercules(
+                level_cluster_counts=cluster_levels,
+                representation_mode=rep_mode,
+                text_embedding_client=get_sentence_transformer_embeddings,
+                llm_client=qwen_caller,
+                verbose=2,
+                llm_initial_batch_size=32
+            )
+            
+            # 3. Run clustering
+            top_clusters = hercules.cluster(data['topic'].tolist(), topic_seed=config['topic_seed'])
+
+
+            # Save model
+            hercules.save_model(filepath=save_path, top_clusters=top_clusters)
 
         #get labels
+        
+        cluster_df = hercules.get_cluster_membership_dataframe(include_l0_details=data['topic'].tolist())
+
+        print("printing number of l1 labels")
+        print(np.unique(cluster_df['L1_cluster_title']))
+
+        print("printing number of l2 labels")
+        print(np.unique(cluster_df['L2_cluster_title']))
+
+        os.makedirs(os.path.dirname(f"results/cluster_assignments/{config['short']}_{rep_mode}.csv"), exist_ok=True)
+        cluster_df.to_csv(f"results/cluster_assignments/{config['short']}_{rep_mode}.csv", index = False)
 
         for i, cluster_level in enumerate(cluster_levels):
             labels = hercules.get_level_assignments(level=i+1)[0]
@@ -375,11 +396,7 @@ def run_pipeline(dataset_name):
     scores_df = pd.DataFrame.from_dict(scores_all, orient = 'index')
     scores_df.reset_index(inplace=True)
     scores_df.columns = ['Embedding Model Name', 'FM', 'Rand', 'ARI', 'AMI']
-
-    scores_df = scores_df.explode(['FM', 'Rand', 'ARI', 'AMI'])
-    scores_df['Level'] = cluster_levels * 2
-    scores_df = scores_df.reset_index(drop=True)
-    scores_df.to_csv(config["results_filename"], index=False)
+    scores_df.to_csv(f"results/{config['results_filename']}", index=False)
 
 def main():
     parser = argparse.ArgumentParser(
