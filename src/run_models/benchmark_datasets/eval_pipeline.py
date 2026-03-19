@@ -68,7 +68,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # ==========================
 import phate
 import pacmap
-import trimap
+#import trimap
 
 # cuML GPU-accelerated dimensionality reduction
 import cuml
@@ -155,8 +155,13 @@ def load_dbpedia():
 
 def load_arxiv():
     """Load and preprocess arXiv dataset."""
-    arx = pd.read_csv("data/arxiv/arxiv_clean.csv")
+    arx = pd.read_csv("data/arxiv/arxiv_raw_30k.csv")
+    arx["topic"] = arx["text"]
+    arx["category_0"] = arx["label"].apply(lambda x: x.split(".")[0])
+    arx["category_1"] = arx["label"].apply(lambda x: x.split(".")[1])
+
     arx = arx.dropna().reset_index(drop=True)
+
     return arx
 
 
@@ -203,7 +208,7 @@ DATASET_CONFIGS = {
         "short": "amz",
         "results_filename": "amazon_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
     },
     "dbpedia": {
         "load_function": load_dbpedia,
@@ -211,15 +216,15 @@ DATASET_CONFIGS = {
         "short": "db",
         "results_filename": "db_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
     },
     "arxiv": {
         "load_function": load_arxiv,
-        "depth": 2,
+        "depth": 2,  # arXiv only has 2 levels despite depth=3 in original
         "short": "arx",
         "results_filename": "arxiv_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],  # No TriMAP
     },
     "rcv1": {
         "load_function": load_rcv1,
@@ -227,7 +232,7 @@ DATASET_CONFIGS = {
         "short": "rcv1",
         "results_filename": "rcv1_clustering_scores.csv",
         "batch_size": 8,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],  # No TriMAP
     },
     "wos": {
         "load_function": load_wos,
@@ -235,7 +240,7 @@ DATASET_CONFIGS = {
         "short": "wos",
         "results_filename": "wos_clustering_scores.csv",
         "batch_size": 64,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"], 
     },
 }
 
