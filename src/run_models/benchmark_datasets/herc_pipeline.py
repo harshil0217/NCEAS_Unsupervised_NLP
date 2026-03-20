@@ -34,6 +34,7 @@ from pathlib import Path
 import warnings
 from collections import defaultdict
 import torch
+import argparse
 
 torch.cuda.empty_cache()
 
@@ -175,41 +176,41 @@ DATASET_CONFIGS = {
         "load_function": load_amazon,
         "depth": 3,
         "short": "amz",
-        "results_filename": "amazon_clustering_scores.csv",
+        "results_filename": "amazon_herc_clustering_scores.csv",
+        "topic_seed": "Amazon Product Reviews",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
     },
     "dbpedia": {
         "load_function": load_dbpedia,
         "depth": 3,
         "short": "db",
-        "results_filename": "db_clustering_scores.csv",
+        "results_filename": "db_herc_clustering_scores.csv",
+        "topic_seed": 'Wikipedia Summaries',
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
     },
     "arxiv": {
         "load_function": load_arxiv,
-        "depth": 2,  # arXiv only has 2 levels despite depth=3 in original
+        "depth": 2, 
         "short": "arx",
-        "results_filename": "arxiv_clustering_scores.csv",
+        "results_filename": "arxiv_herc_clustering_scores.csv",
+        "topic_seed": "arxiv abstracts",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],  # No TriMAP
     },
     "rcv1": {
         "load_function": load_rcv1,
         "depth": 2,
         "short": "rcv1",
-        "results_filename": "rcv1_clustering_scores.csv",
+        "results_filename": "rcv1_herc_clustering_scores.csv",
+        "topic_seed": "reuters headlines",
         "batch_size": 8,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],  # No TriMAP
     },
     "wos": {
         "load_function": load_wos,
         "depth": 2,
         "short": "wos",
-        "results_filename": "wos_clustering_scores.csv",
+        "results_filename": "wos_herc_clustering_scores.csv",
+        "topic_seed": "web of science articles",
         "batch_size": 64,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"], 
     },
 }
 
@@ -250,43 +251,6 @@ def qwen_caller(prompt: str) -> str:
     
     print(content)
     return content
-    
-    
-embedding_model_names = [
-    "Qwen/Qwen3-Embedding-0.6B",
-    "sentence-transformers/all-MiniLM-L6-v2",
-]
-
-# Prepare data once (same for all embedding models)
-shuffle_idx = np.random.RandomState(seed=67).permutation(len(amz))
-topic_data = amz.iloc[shuffle_idx].reset_index(drop=True)
-reverse_idx = np.argsort(shuffle_idx)
-
-# Build topic_dict from ground truth categories
-topic_dict = {}
-for col in topic_data.columns:
-    if re.match(r'^category_\d+$', col):
-        unique_count = len(topic_data[col].unique())
-        topic_dict[unique_count] = np.array(topic_data[col])
-        
-# Determine cluster levels from hierarchy depth
-depth = 3
-print(f"Depth: {depth}")
-print(f"Building cluster levels by counting unique categories at each level...\n")
-
-cluster_levels = []
-for i in reversed(range(0, depth)):
-    unique_count = len(topic_data[f'category_{i}'].unique())
-    print(f"Level {i} (category_{i}): {unique_count} unique categories")
-    cluster_levels.append(unique_count)
-
-print(f"\nFinal cluster_levels (from deepest to shallowest): {cluster_levels}\n")
-
-
-scores_all = defaultdict(lambda: defaultdict(list))
-
-
-
 
 def get_sentence_transformer_embeddings(texts: list[str], model_name: str = "all-MiniLM-L6-v2") -> np.ndarray:
     """
@@ -295,7 +259,7 @@ def get_sentence_transformer_embeddings(texts: list[str], model_name: str = "all
     if not texts:
         return np.array([])
 
-    model = SentenceTransformer(model_name)
+    model = SentenceTransformer(model_name, device=device)
 
     try:
         # encode() handles the list input and returns a numpy array by default
@@ -313,57 +277,158 @@ def get_sentence_transformer_embeddings(texts: list[str], model_name: str = "all
 
     except Exception as e:
         print(f"Error during embedding generation with '{model_name}': {e}")
-        return dummy_text_embedding(texts)
-
-
-rep_mode = 'direct'
-for model_name in embedding_model_names:
-    torch.cuda.empty_cache()
-
-    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": []}
     
-    hercules = Hercules(
-    level_cluster_counts=cluster_levels,
-    representation_mode=rep_mode,
-    text_embedding_client=get_sentence_transformer_embeddings,
-    llm_client=qwen_caller,
-    verbose=2,
-    llm_initial_batch_size=32
+
+
+def run_pipeline(dataset_name):
+
+
+    if dataset_name not in DATASET_CONFIGS:
+        raise ValueError(f"Unknown dataset: {dataset_name}. Available: {list(DATASET_CONFIGS.keys())}")
+
+    config = DATASET_CONFIGS[dataset_name]
+
+
+    print(f"\n{'='*80}")
+    print(f"Running pipeline for dataset: {dataset_name.upper()}")
+    print(f"{'='*80}\n")
+
+    embedding_model_names = [
+        "Qwen/Qwen3-Embedding-0.6B",
+        "sentence-transformers/all-MiniLM-L6-v2",
+    ]
+
+    data = config['load_function']()
+
+    # Prepare data once (same for all embedding models)
+    shuffle_idx = np.random.RandomState(seed=67).permutation(len(data))
+    topic_data = data.iloc[shuffle_idx].reset_index(drop=True)
+    reverse_idx = np.argsort(shuffle_idx)
+
+    # Build topic_dict from ground truth categories
+    topic_dict = {}
+    for col in topic_data.columns:
+        if re.match(r'^category_\d+$', col):
+            unique_count = len(topic_data[col].unique())
+            topic_dict[unique_count] = np.array(topic_data[col])
+            
+    # Determine cluster levels from hierarchy depth
+    depth = config['depth']
+    print(f"Depth: {depth}")
+    print(f"Building cluster levels by counting unique categories at each level...\n")
+
+    cluster_levels = []
+    for i in reversed(range(0, depth)):
+        unique_count = len(topic_data[f'category_{i}'].unique())
+        print(f"Level {i} (category_{i}): {unique_count} unique categories")
+        cluster_levels.append(unique_count)
+
+    print(f"\nFinal cluster_levels (from deepest to shallowest): {cluster_levels}\n")
+
+
+    scores_all = defaultdict(lambda: defaultdict(list))
+
+
+    rep_mode = 'direct'
+    for model_name in embedding_model_names:
+        save_path = f"../../hercules_run/{config['short']}/{rep_mode}"
+        hercules = None
+
+        if os.path.exists(save_path):
+            print(f"Loading existing model from {save_path}...")
+            hercules = Hercules.load_model(filepath=save_path, 
+                                            text_embedding_client=get_sentence_transformer_embeddings,
+                                            llm_client = quen_caller)[0]
+        else:
+            torch.cuda.empty_cache()
+            hercules = Hercules(
+                level_cluster_counts=cluster_levels,
+                representation_mode=rep_mode,
+                text_embedding_client=get_sentence_transformer_embeddings,
+                llm_client=qwen_caller,
+                verbose=2,
+                llm_initial_batch_size=32
+            )
+            
+            # 3. Run clustering
+            top_clusters = hercules.cluster(data['topic'].tolist(), topic_seed=config['topic_seed'])
+
+
+            # Save model
+            hercules.save_model(filepath=save_path, top_clusters=top_clusters)
+
+        #get labels
+        
+        cluster_df = hercules.get_cluster_membership_dataframe(include_l0_details=data['topic'].tolist())
+
+        print("printing number of l1 labels")
+        print(np.unique(cluster_df['L1_cluster_title']))
+
+        print("printing number of l2 labels")
+        print(np.unique(cluster_df['L2_cluster_title']))
+
+        os.makedirs(os.path.dirname(f"results/cluster_assignments/{config['short']}_{rep_mode}.csv"), exist_ok=True)
+        cluster_df.to_csv(f"results/cluster_assignments/{config['short']}_{rep_mode}.csv", index = False)
+
+        for i, cluster_level in enumerate(cluster_levels):
+            labels = hercules.get_level_assignments(level=i+1)[0]
+            print(labels)
+
+            topic_series = topic_dict[cluster_level]
+            valid_idx = ~pd.isna(topic_series)
+            target_lst = topic_series[valid_idx]
+            label_lst = labels[valid_idx]
+
+            try:
+                fm_score = FowlkesMallows.Bk({cluster_level: target_lst}, {cluster_level: label_lst})[cluster_level]['FM']
+            except Exception:
+                fm_score = np.nan
+                print("WARNING: FM score computation failed!")
+
+            rand = rand_score(target_lst, label_lst)
+            ari = adjusted_rand_score(target_lst, label_lst)
+            print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}")
+            ami = adjusted_mutual_info_score(target_lst, label_lst)
+
+        scores_all[model_name] = [np.mean(fm_score), np.mean(rand), np.mean(ari), np.mean(ami)]
+        
+    # Convert scores_all to a DataFrame and save to csv
+    scores_df = pd.DataFrame.from_dict(scores_all, orient = 'index')
+    scores_df.reset_index(inplace=True)
+    scores_df.columns = ['Embedding Model Name', 'FM', 'Rand', 'ARI', 'AMI']
+    scores_df.to_csv(f"results/{config['results_filename']}", index=False)
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Run benchmark evaluation pipeline on specified dataset",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+            Available datasets:
+            amazon    - Amazon product categories (3 levels)
+            dbpedia   - DBpedia ontology topics (3 levels)
+            arxiv     - arXiv paper categories (2 levels)
+            rcv1      - Reuters RCV1 news categories (2 levels)
+            wos       - Web of Science publications (2 levels)
+
+            Example usage:
+            python herc_pipeline.py --dataset dbpedia
+            python herc_pipeline.py --dataset amazon
+                    """
+                )
+
+    parser.add_argument(
+        '--dataset',
+        type=str,
+        required=True,
+        choices=list(DATASET_CONFIGS.keys()),
+        help='Dataset to process'
     )
-    
-    # 3. Run clustering
-    top_clusters = hercules.cluster(amz['topic'].tolist(), topic_seed="amazon reviews")
+
+    args = parser.parse_args()
+
+    # Run pipeline for specified dataset
+    run_pipeline(args.dataset)
 
 
-    #get labels
-
-    for i, cluster_level in enumerate(cluster_levels):
-        labels = hercules.get_level_assignments(level=i+1)[0]
-        print(labels)
-
-        topic_series = topic_dict[cluster_level]
-        valid_idx = ~pd.isna(topic_series)
-        target_lst = topic_series[valid_idx]
-        label_lst = labels[valid_idx]
-
-        try:
-            fm_score = FowlkesMallows.Bk({cluster_level: target_lst}, {cluster_level: label_lst})[cluster_level]['FM']
-        except Exception:
-            fm_score = np.nan
-            print("WARNING: FM score computation failed!")
-
-        rand = rand_score(target_lst, label_lst)
-        ari = adjusted_rand_score(target_lst, label_lst)
-        print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}")
-        ami = adjusted_mutual_info_score(target_lst, label_lst)
-
-    scores_all[model_name] = [fm_score, rand, ari, ami]
-    
-# Convert scores_all to a DataFrame and save to csv
-scores_df = pd.DataFrame.from_dict(scores_all, orient = 'index')
-scores_df.columns = ['Embedding Model Name', 'FM', 'Rand', 'ARI', 'AMI']
-
-scores_df = scores_df.explode(['FM', 'Rand', 'ARI', 'AMI'])
-scores_df['Level'] = cluster_levels * 2
-scores_df = scores_df.reset_index(drop=True)
-scores_df.to_csv(f"results/amazon_herc_scores_{rep_mode}.csv", index=False)
+if __name__ == "__main__":
+    main()

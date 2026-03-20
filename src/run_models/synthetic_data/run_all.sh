@@ -2,7 +2,7 @@
 
 # Define the themes and parameter sets directly in the script
 #"Energy, Ecosystems, and Humans" 
-themes=("Energy, Ecosystems, and Humans" "Offshore energy impacts on fisheries")
+themes=("Energy_Ecosystems_and_Humans" "Offshore_energy_impacts_on_fisheries")
 # parameter_sets=(
 #   '{"t": 1.0, "max_sub": 3, "depth": 5, "synonyms": 0, "branching": "random","add_noise":.25}'
 #   '{"t": 1.0, "max_sub": 5, "depth": 3, "synonyms": 0, "branching": "random","add_noise":.25}'
@@ -33,7 +33,7 @@ for theme in "${themes[@]}"; do
         
 
     echo "Generating with params -> t: $t, max_sub: $max_sub, depth: $depth, synonyms: $synonyms, branching: $branching, add_noise: $add_noise"
-    python "data_generation/generate.py" --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise"
+    python "../../data_generation/generate.py" --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise"
 
 
 
@@ -42,10 +42,7 @@ for theme in "${themes[@]}"; do
     
     # Run with wait=True
     echo "Running with wait=False..."
-    python run_models/eval_script.py --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise" --wait False
+    python eval_script.py --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise" --wait False
     
-    # Run with wait=False
-    echo "Running with wait=True..."
-    python run_models/eval_script.py --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise" --wait True
   done
 done
