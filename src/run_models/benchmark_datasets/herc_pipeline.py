@@ -280,7 +280,7 @@ def get_sentence_transformer_embeddings(texts: list[str], model_name: str = "all
     
 
 
-def run_pipeline(dataset_name):
+def run_pipeline(dataset_name, rep_mode):
 
 
     if dataset_name not in DATASET_CONFIGS:
@@ -329,7 +329,6 @@ def run_pipeline(dataset_name):
     scores_all = defaultdict(lambda: defaultdict(list))
 
 
-    rep_mode = 'direct'
     for model_name in embedding_model_names:
         save_path = f"../../hercules_run/{config['short']}/{rep_mode}"
         hercules = None
@@ -396,7 +395,8 @@ def run_pipeline(dataset_name):
     scores_df = pd.DataFrame.from_dict(scores_all, orient = 'index')
     scores_df.reset_index(inplace=True)
     scores_df.columns = ['Embedding Model Name', 'FM', 'Rand', 'ARI', 'AMI']
-    scores_df.to_csv(f"results/{config['results_filename']}", index=False)
+    results_filename = config['results_filename'].replace('.csv', f'_{rep_mode}.csv')
+    scores_df.to_csv(f"results/{results_filename}", index=False)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -411,8 +411,8 @@ def main():
             wos       - Web of Science publications (2 levels)
 
             Example usage:
-            python herc_pipeline.py --dataset dbpedia
-            python herc_pipeline.py --dataset amazon
+            python herc_pipeline.py --dataset dbpedia --rep_mode direct
+            python herc_pipeline.py --dataset amazon --rep_mode description
                     """
                 )
 
@@ -424,10 +424,18 @@ def main():
         help='Dataset to process'
     )
 
+    parser.add_argument(
+        '--rep_mode',
+        type=str,
+        required=True,
+        choices=['direct', 'description'],
+        help='Hercules representation mode: "direct" uses raw text, "description" uses LLM-generated cluster descriptions'
+    )
+
     args = parser.parse_args()
 
     # Run pipeline for specified dataset
-    run_pipeline(args.dataset)
+    run_pipeline(args.dataset, args.rep_mode)
 
 
 if __name__ == "__main__":
