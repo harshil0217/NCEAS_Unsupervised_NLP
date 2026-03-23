@@ -2,7 +2,7 @@
 NCEAS Project for SS26 Data Science Capstone
 
 ## Project Video 
-[![Video Thumbnail]([https://img.youtube.com/vi/VIDEO_ID/0.jpg])(https://www.youtube.com/watch?v=YqY4ENxIY1E)
+[![Video Thumbnail](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=YqY4ENxIY1E)
 
 
 
