@@ -408,7 +408,7 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
             elif cluster_method == "HDBSCAN":
                 # Keep the same label_path variable as requested
                 label_path = os.path.join(
-                    f"{embedding_model}_labels", short, embed_name,
+                    f"intermediate_data/{embedding_model}_labels", short, embed_name,
                     f"HDB_{level}_labels.npy"
                 )
 
@@ -438,7 +438,7 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
 
             elif cluster_method == "DC":
                 label_path = os.path.join(
-                    f"{embedding_model}_labels", short, embed_name,
+                    f"intermediate_data/{embedding_model}_labels", short, embed_name,
                     f"DC_{level}_labels.npy"
                 )
 
@@ -551,12 +551,12 @@ def run_pipeline(dataset_name):
         print(f"Processing embedding model: {embedding_model}")
         print(f"{'='*60}\n")
 
-        os.makedirs(f'{embedding_model}_results', exist_ok=True)
+        os.makedirs(f'intermediate_data/{embedding_model}_results', exist_ok=True)
 
-        reduction_dir = f"{embedding_model}_reduced_embeddings"
+        reduction_dir = f"intermediate_data/{embedding_model}_reduced_embeddings"
         os.makedirs(reduction_dir, exist_ok=True)
 
-        embedding_dir = f"{embedding_model}_embeddings"
+        embedding_dir = f"intermediate_data/{embedding_model}_embeddings"
         os.makedirs(embedding_dir, exist_ok=True)
 
         embedding_path = f"{embedding_dir}/{config['short']}.npy"
@@ -599,7 +599,7 @@ def run_pipeline(dataset_name):
         for cluster_method in ["Agglomerative", "HDBSCAN", "DC"]
     ]
 
-    label_dir = f"{embedding_model}_labels"
+    label_dir = f"intermediate_data/{embedding_model}_labels"
     os.makedirs(label_dir, exist_ok=True)
 
     # Run each combo sequentially

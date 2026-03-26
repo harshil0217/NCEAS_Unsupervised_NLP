@@ -149,7 +149,7 @@ def make_noise_labels_unique(labels):
 # ===================
 # Clustering Runner
 # ===================
-def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, cluster_levels, topic_dict):
+def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, cluster_levels, topic_dict, theme, t, max_sub, depth, synonyms, branching, add_noise):
     """Run clustering on reduced embeddings and evaluate against ground truth."""
     combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": []}
     try:
@@ -172,28 +172,55 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
                 print(f"Agglomerative clustering complete. Unique labels: {len(np.unique(labels))}")
 
             elif cluster_method == "HDBSCAN":
-                # Use cuML GPU-accelerated HDBSCAN
-                print("Using cuML HDBSCAN (GPU)...")
-                model = cuHDBSCAN(min_cluster_size=level, min_samples=1)
-                model.fit(embed_data)
-                # Convert GPU result to numpy
-                labels = model.labels_.to_output('numpy') if hasattr(model.labels_, 'to_output') else np.array(model.labels_)
+                # Create label path for caching
+                if float(add_noise) > 0:
+                    label_path = f"intermediate_data/{embedding_model}_labels/{theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}/{embed_name}/HDB_{level}_labels.npy"
+                else:
+                    label_path = f"intermediate_data/{embedding_model}_labels/{theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}/{embed_name}/HDB_{level}_labels.npy"
 
-                # cuML HDBSCAN returns cluster labels directly, no need for single_linkage_tree
-                # If all points are noise (-1), assign unique labels
-                if np.all(labels == -1):
-                    print("WARNING: All points labeled as noise. Assigning unique labels.")
-                    labels = np.arange(len(labels))
+                if os.path.exists(label_path):
+                    print(f"Loading cached HDBSCAN labels from {label_path}")
+                    labels = np.load(label_path)
+                else:
+                    # Use cuML GPU-accelerated HDBSCAN
+                    print("Using cuML HDBSCAN (GPU)...")
+                    model = cuHDBSCAN(min_cluster_size=level, min_samples=1)
+                    model.fit(embed_data)
+                    # Convert GPU result to numpy
+                    labels = model.labels_.to_output('numpy') if hasattr(model.labels_, 'to_output') else np.array(model.labels_)
 
-                print(f"HDBSCAN clustering complete. Unique labels: {len(np.unique(labels))}")
+                    # cuML HDBSCAN returns cluster labels directly, no need for single_linkage_tree
+                    # If all points are noise (-1), assign unique labels
+                    if np.all(labels == -1):
+                        print("WARNING: All points labeled as noise. Assigning unique labels.")
+                        labels = np.arange(len(labels))
+
+                    # Cache the labels
+                    os.makedirs(os.path.dirname(label_path), exist_ok=True)
+                    np.save(label_path, labels)
+                    print(f"HDBSCAN clustering complete. Unique labels: {len(np.unique(labels))}")
 
             elif cluster_method == "DC":
-                # Diffusion Condensation uses CPU implementation
-                print("Using CPU Diffusion Condensation...")
-                model = dc(min_clusters=level, max_iterations=5000, k=10, alpha=3)
-                model.fit(embed_data)
-                labels = model.labels_
-                print(f"DC clustering complete. Unique labels: {len(np.unique(labels))}")
+                # Create label path for caching
+                if float(add_noise) > 0:
+                    label_path = f"intermediate_data/{embedding_model}_labels/{theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}/{embed_name}/DC_{level}_labels.npy"
+                else:
+                    label_path = f"intermediate_data/{embedding_model}_labels/{theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}/{embed_name}/DC_{level}_labels.npy"
+
+                if os.path.exists(label_path):
+                    print(f"Loading cached DC labels from {label_path}")
+                    labels = np.load(label_path)
+                else:
+                    # Diffusion Condensation uses CPU implementation
+                    print("Using CPU Diffusion Condensation...")
+                    model = dc(min_clusters=level, max_iterations=5000, k=10, alpha=3)
+                    model.fit(embed_data)
+                    labels = model.labels_
+
+                    # Cache the labels
+                    os.makedirs(os.path.dirname(label_path), exist_ok=True)
+                    np.save(label_path, labels)
+                    print(f"DC clustering complete. Unique labels: {len(np.unique(labels))}")
 
             # Find closest available ground truth level
             available_levels = np.array(sorted(topic_dict.keys()))
@@ -326,7 +353,7 @@ for embedding_model in embedding_model_names:
     else:
         embedding_list = np.load(embed_file)
 
-    os.makedirs(f'{embedding_model}_reduced_embeddings', exist_ok=True)
+    os.makedirs(f'intermediate_data/{embedding_model}_reduced_embeddings', exist_ok=True)
 
     # Shuffle embeddings with the same index as topic_data
     data = np.array(embedding_list)[shuffle_idx]
@@ -412,7 +439,7 @@ combo_params = [
 combo_results = []
 for embedding_model, embed_name, cluster_method in tqdm(combo_params, desc="Processing embedding-clustering combos"):
     embed_data = embedding_models[embedding_model][embed_name]
-    result = safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, cluster_levels, topic_dict)
+    result = safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, cluster_levels, topic_dict, theme, t, max_sub, depth, synonyms, branching, add_noise)
     combo_results.append(result)
 
 # Collect results
