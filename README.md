@@ -62,6 +62,18 @@ This notebook demonstrates the full pipeline including loading data, generating 
 
 ---
 
+## Reproducibility
+
+Instructions to reproduce the Shepard Diagram figures from our final report are in:
+
+```
+NCEAS_Reproducibility.ipynb
+```
+
+This notebook loads precomputed embeddings from the NCEAS Teams Data folder and generates Shepard Diagrams for PCA, UMAP, PHATE, and PaCMAP on the RCV1 dataset.
+
+---
+
 ## Running Benchmark Experiments
 
 Once datasets are in place (see INSTALL.md), run:
