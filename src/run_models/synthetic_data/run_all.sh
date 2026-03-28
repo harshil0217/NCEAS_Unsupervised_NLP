@@ -32,17 +32,19 @@ for theme in "${themes[@]}"; do
     add_noise=$(echo "$param_set" | jq -r '.add_noise')
         
 
-    echo "Generating with params -> t: $t, max_sub: $max_sub, depth: $depth, synonyms: $synonyms, branching: $branching, add_noise: $add_noise"
-    python "../../data_generation/generate.py" --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise"
+    #echo "Generating with params -> t: $t, max_sub: $max_sub, depth: $depth, synonyms: $synonyms, branching: $branching, add_noise: $add_noise"
+    #python "../../data_generation/generate.py" --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise"
 
 
 
     # Print the extracted parameters for verification
     echo "Running with params -> t: $t, max_sub: $max_sub, depth: $depth, synonyms: $synonyms, branching: $branching"
     
-    # Run with wait=True
+    # Run with wait=False
     echo "Running with wait=False..."
-    python eval_script.py --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise" --wait False
-    
+    # python eval_script.py --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise" --wait False
+    python synth_herc_pipeline.py --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise" --rep_mode "direct"
+
+
   done
 done

@@ -1,0 +1,25 @@
+name: phate-env
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.10
+  - cuda-version=12
+  - cudf=26.02
+  - cuml=26.02
+  - networkx
+  - nx-cugraph=26.02
+  - pytorch[build=*cuda*]
+  - cuda-cudart
+  - bioconda::trimap
+  - pacmap
+  - python-dotenv
+  - groq
+  - matplotlib
+  - bioconda::phate
+  - tqdm
+  - sentence-transformers
+  - ipykernel
+  - conda-forge::accelerate
+  - jupyter
+prefix: /mnt/home/chidurah/.conda/envs/phate-env

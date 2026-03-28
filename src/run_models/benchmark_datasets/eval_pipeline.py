@@ -68,7 +68,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # ==========================
 import phate
 import pacmap
-import trimap
+#import trimap
 
 # cuML GPU-accelerated dimensionality reduction
 import cuml
@@ -80,7 +80,6 @@ from cuml.manifold import UMAP as cuUMAP
 # Clustering
 # ========================
 from custom_packages.diffusion_condensation import DiffusionCondensation as dc
-import hdbscan
 from scipy.cluster.hierarchy import fcluster
 
 # cuML GPU-accelerated clustering
@@ -219,7 +218,7 @@ DATASET_CONFIGS = {
         "short": "arx",
         "results_filename": "arxiv_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
     },
     "rcv1": {
         "load_function": load_rcv1,
@@ -227,7 +226,7 @@ DATASET_CONFIGS = {
         "short": "rcv1",
         "results_filename": "rcv1_clustering_scores.csv",
         "batch_size": 8,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
     },
     "wos": {
         "load_function": load_wos,
@@ -235,7 +234,7 @@ DATASET_CONFIGS = {
         "short": "wos",
         "results_filename": "wos_clustering_scores.csv",
         "batch_size": 64,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
     },
 }
 
@@ -320,13 +319,13 @@ def apply_dimensionality_reduction(embeddings, reduction_dir, embed_filename, re
         "PaCMAP": {
             "path": f"{reduction_dir}/PaCMAP_{embed_filename}.npy",
             "run": lambda: pacmap.PaCMAP(n_components=300, random_state=67).fit_transform(embeddings)
-        },
-        "TriMAP": {
-            "path": f"{reduction_dir}/TriMAP_{embed_filename}.npy",
-            "run": lambda: trimap.TRIMAP(n_dims=300).fit_transform(embeddings)
         }
+        
+        #"TriMAP": {
+        #    "path": f"{reduction_dir}/TriMAP_{embed_filename}.npy",
+        #    "run": lambda: trimap.TRIMAP(n_dims=300).fit_transform(embeddings)
+        #}      
     }
-
     # Filter to only requested methods
     reduction_tasks = {k: v for k, v in all_reduction_tasks.items() if k in reduction_methods}
 
