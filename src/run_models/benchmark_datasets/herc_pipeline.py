@@ -152,7 +152,7 @@ def load_rcv1():
 
 def load_wos():
     """Load and preprocess Web of Science dataset."""
-    wos = pd.read_excel('data/WebOfScience/Meta-data/Data.xlsx')
+    wos = pd.read_excel('data/WebOfScience/Data.xlsx')
 
     new = []
     for i, row in wos.iterrows():
