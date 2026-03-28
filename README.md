@@ -37,7 +37,7 @@ Documents are embedded using two models: `Qwen3-Embedding-0.6B` and `all-MiniLM-
 We compare five reduction methods: PHATE, PCA, UMAP, t-SNE, and PaCMAP. GPU-accelerated implementations (cuML) are used where available.
 
 ### Clustering
-Four clustering methods are applied at multiple hierarchy levels: Agglomerative Clustering, HDBSCAN, and Diffusion Condensation, Hercules
+Four clustering methods are applied at multiple hierarchy levels: Agglomerative Clustering, HDBSCAN, Diffusion Condensation, and Hercules
 
 ### Evaluation
 Clustering quality is measured against ground truth labels using FM index, Adjusted Rand Index (ARI), Adjusted Mutual Information (AMI), and Rand Index.
