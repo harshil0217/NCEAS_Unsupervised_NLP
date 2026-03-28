@@ -1,7 +1,9 @@
-# Installation Instructions  
+# Installation Instructions
 NCEAS Unsupervised NLP – PHATE Benchmark Pipeline
 
-These instructions allow instructors, classmates, and community partners to reproduce the project environment and run a working demo.
+These instructions allow instructors, classmates, and community partners to reproduce the project environment and run the benchmark pipeline on a Linux system with CUDA support.
+
+> **Note:** This project requires a Linux system with a CUDA-compatible GPU. All experiments are designed to run on an HPC cluster (e.g., MSU HPCC). The pipeline uses GPU-accelerated libraries (cuML, cuPCA, cuUMAP) that are not available on macOS or Windows.
 
 ---
 
@@ -11,15 +13,16 @@ These instructions allow instructors, classmates, and community partners to repr
 git clone https://github.com/harshil0217/NCEAS_Unsupervised_NLP.git
 cd NCEAS_Unsupervised_NLP
 ```
+
+---
+
 ## 2. Install Conda (If Not Installed)
 
-Download and install **Miniconda** for your operating system:
+Download and install **Miniconda** for Linux:
 
 https://docs.conda.io/en/latest/miniconda.html
 
-Follow the default installation instructions.
-
-After installation, open a new terminal.
+Follow the default installation instructions and open a new terminal after installation.
 
 ---
 
@@ -28,271 +31,170 @@ After installation, open a new terminal.
 From the root project directory:
 
 ```bash
-conda env create --prefix ./envs --file environment.yml
-conda activate ./envs
+conda env create -f environment.yml
+conda activate phate-env
 ```
 
-This creates a fully reproducible environment using the provided `environment.yml` file.
-
----
-## 4. Data Instructions
-
-This repository does **not include benchmark datasets**.  
-Datasets must be downloaded separately and placed in the correct folders.
+This creates a fully reproducible environment using the provided `environment.yml` file, including all CUDA-accelerated packages.
 
 ---
 
-### Fastest Option — Use the NCEAS Teams Data Folder
+## 4. Data Setup
 
-Preprocessed datasets used in this project are available in the **NCEAS Teams Data folder**.
+This repository does **not include benchmark datasets**. Datasets must be downloaded separately and placed in the correct folders.
 
-Location:
+### Required Folder Structure
 
 ```bash
-Documents  
-└── NCEAS  
-  └── Team_Management_Files  
-    └── Data  
-      ├── arxiv  
-      ├── amazon  
-      ├── dbpedia  
-      ├── wos  
-      └── rcv1_v2  
+src/data/
+├── arxiv/
+│   └── arxiv_clean.csv
+├── amazon/
+│   ├── train_40k.csv
+│   └── val_10k.csv
+├── dbpedia/
+│   └── DBPEDIA_test.csv
+├── rcv1/
+│   └── rcv1.csv
+└── WebOfScience/
+    └── Data.xlsx
 ```
-
-Example:
-src/data/arxiv/
-src/data/amazon/
-src/data/dbpedia/
-src/data/wos/
-
-Download the datasets and place them inside `src/data/` within their respective folders.
 
 ---
-The benchmark datasets used in this project are publicly available:
-## arXiv Dataset
 
-The original arXiv dataset contains over **1.7 million papers**, which is too large to include directly in this repository.  
-For our experiments, we use a **30,000 paper subset** generated from the full dataset.
+### arXiv Dataset
 
-## Option 1 — Use the Preprocessed Dataset (Quick Setup from Teams)
+The arXiv dataset used in this project is a **30,000 paper subset** of the full arXiv metadata.
 
-For convenience, the processed dataset used in this project is available in the **NCEAS Teams Data folder**.
+**Option 1: Use the preprocessed dataset (recommended)**
 
-### Location
+1. Download `arxiv_30k_clean.csv` from the NCEAS Teams Data folder:
+   ```
+   Documents/NCEAS/Team_Management_Files/Data/arxiv/arxiv_30k_clean.csv
+   ```
 
-```bash
-Documents
-└── NCEAS
-    └── Team_Management_Files
-        └── Data
-            └── arxiv
-                └── arxiv_30k_clean.csv
+2. Place it at:
+   ```bash
+   src/data/arxiv/arxiv_30k_clean.csv
+   ```
+
+3. Run the cleaning notebook to generate `arxiv_clean.csv`:
+   ```
+   src/data/arxiv/clean_arxiv.ipynb
+   ```
+   This will save the cleaned file to `src/data/arxiv/arxiv_clean.csv`, which is what the pipeline loads.
+
+**Option 2: Download from source**
+
+1. Download the full arXiv metadata from Kaggle:
+   https://www.kaggle.com/datasets/Cornell-University/arxiv
+
+2. Subset to 30,000 papers and save as:
+   ```bash
+   src/data/arxiv/arxiv_30k_clean.csv
+   ```
+
+3. Run the cleaning notebook to generate `arxiv_clean.csv`:
+   ```
+   src/data/arxiv/clean_arxiv.ipynb
+   ```
+
+---
+
+### Amazon Dataset
+
+**Option 1: Use the preprocessed dataset (recommended)**
+
+Available in the NCEAS Teams Data folder:
+
+```
+Documents/NCEAS/Team_Management_Files/Data/Amazon/
+├── train_40k.csv.zip
+└── val_10k.csv.zip
 ```
 
-
-Download the file and place it in:
-
-src/data/arxiv/
-
-Expected Folder Structure
-```bash
-src/
-└── data/
-    └── arxiv/
-        └── arxiv_30k_clean.csv
-```
-
-Example:
+Download and unzip both files, then place the extracted CSVs at:
 
 ```bash
-Documents
-└── NCEAS
-    └── Team_Management_Files
-        └── Data
-            └── arxiv
-                └── arxiv_30k_clean.csv
+src/data/amazon/train_40k.csv
+src/data/amazon/val_10k.csv
 ```
 
-This file can be used directly by the benchmark scripts and evaluation notebooks.
+**Option 2: Download from source**
 
-## Option 2 — Recreate the Dataset (Full Reproducibility)
+https://nijianmo.github.io/amazon/index.html
 
-The dataset can also be recreated from the original arXiv metadata.
+---
 
-### Step 1 — Download the Dataset
+### DBpedia Dataset
 
-Download the dataset from Kaggle:
+**Option 1: Use the preprocessed dataset (recommended)**
 
-https://www.kaggle.com/datasets/Cornell-University/arxiv
+Available in the NCEAS Teams Data folder:
 
-### Step 2 — Place the File in the Project Folder
+```
+Documents/NCEAS/Team_Management_Files/Data/DBpedia/DBPEDIA_test.csv
+```
 
-After downloading, place the file in:
+Place it at:
 
-src/data/arxiv/arxiv-metadata-oai-snapshot.json
+```bash
+src/data/dbpedia/DBPEDIA_test.csv
+```
 
-### Step 3 — Run the Preprocessing Notebook
+**Option 2: Download from source**
 
-Open and run the notebook:
+https://github.com/le-scientifique/torchDatasets/tree/master/dbpedia_csv
 
-src/data/arxiv/01_download_arxiv_dataset.ipynb
-
-This notebook will:
-
-- Stream the large JSON dataset
-- Filter papers to Computer Science and Physics categories
-- Combine the **title and abstract** text fields
-- Randomly sample **30,000 papers**
-- Save the processed dataset as:
-
-src/data/arxiv/arxiv_30k_clean.csv
 ---
 
 ### RCV1 Dataset
 
-- RCV1 dataset (scikit-learn loader):  
+**Option 1: Use the preprocessed dataset (recommended)**
+
+Available in the NCEAS Teams Data folder:
+
+```
+Documents/NCEAS/Team_Management_Files/Data/rcv1_v2/rcv1.csv
+```
+
+Place it at:
+
+```bash
+src/data/rcv1/rcv1.csv
+```
+
+**Option 2: Download from source**
+
 https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_rcv1.html
 
-The **RCV1 dataset** is automatically downloaded using the scikit-learn dataset loader when running the benchmark scripts.
+---
 
-```python
-from sklearn.datasets import fetch_rcv1
-rcv1 = fetch_rcv1()
+### Web of Science Dataset
+
+**Option 1: Use the preprocessed dataset (recommended)**
+
+Available in the NCEAS Teams Data folder:
+
 ```
-The dataset initially loads as a CSR (sparse) matrix containing over 800,000 news documents and 103 topic categories.
-The text is then embedded using the Qwen3-Embedding-0.6B model, converting each document into a 1024-dimensional semantic vector for clustering and evaluation.
-These embeddings are later reduced using dimensionality reduction methods such as:
-PCA (linear projection baseline)
-PHATE (trajectory-based manifold mapping)
-UMAP (topological manifold learning)
-Clustering algorithms such as HDBSCAN and Agglomerative Clustering are applied to the reduced space, and performance is evaluated using the Adjusted Rand Index (ARI) against the ground-truth Reuters topic labels.
+Documents/NCEAS/Team_Management_Files/Data/WebOfScience/Data.xlsx
+```
 
-
-Location:
+Place it at:
 
 ```bash
-Documents
-└── NCEAS
-    └── Team_Management_Files
-        └── Data
-            ├── arxiv
-            ├── amazon
-            ├── dbpedia
-            ├── wos
-            └── rcv1_v2
+src/data/WebOfScience/Data.xlsx
 ```
 
-### RCV1 Files in the Teams Folder
+**Option 2: Download from source**
 
-Additional documentation and processed files for the RCV1 dataset are available in the NCEAS Teams Data folder:
-
-```bash
-Documents
-└── NCEAS
-    └── Team_Management_Files
-        └── Data
-            └── rcv1_v2
-                ├── Lewis_2004_JMLR_RCV1v2.pdf
-                ├── rcv1_qwen_metadata.csv
-                └── README.md
-```
-The rcv1_qwen_metadata.csv file contains the processed metadata and labels used in the evaluation pipeline.
-
-Other Benchmark Dataset Sources:
-
-- Amazon Product Reviews dataset:  
-https://nijianmo.github.io/amazon/index.html
-
-Amazon Dataset
-Files available in the NCEAS Teams folder:
-```bash
-Documents
-└── NCEAS
-    └── Team_Management_Files
-        └── Data
-            └── Amazon
-                ├── train_40k.csv.zip
-                └── val_10k.csv.zip
-```
-Download these files and place them in:
-
-src/data/amazon/
-
-Example structure:
-```bash
-Documents
-src/data/
-└── amazon/
-    ├── train_40k.csv.zip
-    └── val_10k.csv.zip
-```
-
-
-- DBpedia dataset:  
-https://github.com/le-scientifique/torchDatasets/tree/master/dbpedia_csv
-
-Files available in the Teams folder:
-```bash
-Documents
-└── NCEAS
-    └── Team_Management_Files
-        └── Data
-            └── DBpedia
-                └── DBPEDIA_test.csv
-```
-Place the file in:
-src/data/dbpedia/
-
-Example:
-src/data/
-```bash
-Documents
-└── dbpedia/
-    └── DBPEDIA_test.csv
-```
-
-- Web of Science dataset:  
 https://github.com/kk7nc/Text_Classification
 
-Web of Science Dataset
-Files available in the Teams folder:
-```bash
-Documents
-└── NCEAS
-    └── Team_Management_Files
-        └── Data
-            └── WebOfScience
-                └── Data.xlsx
-```
-Place the file in:
-src/data/wos/
-
-Example:
-```bash
-src/data/
-└── wos/
-    └── Data.xlsx
-```
-
-- EPA Public Comments dataset (Mirrulations AWS mirror):  
-https://registry.opendata.aws/mirrulations/
-
-Download the datasets and place them inside `src/data/` within their respective folders
+---
 
 ## 5. Run the Demo
 
-The demo notebook will:
-
-- Load example data  
-- Generate embeddings  
-- Perform dimensionality reduction (PHATE, PCA, UMAP)  
-- Apply clustering  
-- Display a visualization figure
-
-This demo notebook is meant to ensure that all libraries needed for the full embedding -> dimensionality reduction -> hierarchical clustering pipeline have been installed and working as intended. 
-
-Start Jupyter:
+Start Jupyter and open the demo notebook:
 
 ```bash
 jupyter notebook
@@ -304,61 +206,52 @@ Open:
 notebooks/demo.ipynb
 ```
 
-Run all cells from top to bottom.
-## 6. Verify Installation
-
-The installation is successful if:
-
-- The notebook runs without errors  
-- A clustering visualization is generated  
-- No missing package errors occur  
+Run all cells from top to bottom. This notebook verifies that the full pipeline (embeddings, dimensionality reduction, clustering, and visualization) is working correctly.
 
 ---
 
-## 7. Troubleshooting
+## 6. Run Benchmark Experiments
+
+Once datasets are in place, run the evaluation pipeline for any supported dataset:
+
+```bash
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset arxiv
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset amazon
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset dbpedia
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset rcv1
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset wos
+```
+
+Results are saved to:
+
+```bash
+results/{dataset}_clustering_scores.csv
+```
+
+---
+
+## 7. Verify Installation
+
+Installation is successful if:
+
+- The demo notebook runs without errors
+- A clustering visualization is generated
+- No missing package errors occur
+
+---
+
+## 8. Troubleshooting
 
 If environment creation fails:
 
 ```bash
 conda deactivate
-rm -rf ./envs
-conda env create --prefix ./envs --file environment.yml
+conda remove -n phate-env --all
+conda env create -f environment.yml
 ```
 
-If issues persist, ensure Conda is installed correctly and that you are running the commands from the project root directory.
+If issues persist, ensure Conda is installed correctly and that you are running commands from the project root directory.
 
-## Running Benchmark Experiments
-
-In addition to the demo notebook, the repository contains scripts for running
-benchmark experiments on real datasets.
-
-Supported benchmark datasets include:
-
-- arXiv
-- Amazon Reviews
-- DBPedia
-- Web of Science
-- RCV1
-
-Dataset files should be placed inside:
-
-src/data/
-
-Example structure:
-```bash
-src/data/
-    arxiv/
-    amazon/
-    dbpedia/
-    wos/
-```
-Once the dataset is placed in the correct folder, the benchmark pipeline
-can be executed using the scripts located in:
-
-src/run_models/
-
-Example command:
-
-python src/run_models/arxiv_benchmark.py
+---
 
 All experiments in this project follow the Safe, Portable, Reproducible, and Robust software guidelines described in the CMSE capstone course.
