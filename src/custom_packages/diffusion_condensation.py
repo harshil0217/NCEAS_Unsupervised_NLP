@@ -47,6 +47,7 @@ class DiffusionCondensation:
         self.cluster_tree = None
         self.tree_ = None
         self.node_list_ = None
+        self.n_samples_ = None  # Store original number of data points
 
 
     def diffusion_operator(self, data):
@@ -158,6 +159,7 @@ class DiffusionCondensation:
 
     def fit(self, data, prev_cluster_tree=None, prev_data=None):
         n = data.shape[0]
+        self.n_samples_ = n  # Store original number of data points
 
         if prev_cluster_tree is not None and prev_data is not None:
             self.cluster_tree = prev_cluster_tree
@@ -280,12 +282,12 @@ class DiffusionCondensation:
         """
         if self.tree_ is None:
             # No tree built, each point is its own cluster
-            n = len(self.node_list_) if self.node_list_ else 0
+            n = self.n_samples_ if self.n_samples_ else 0
             self.labels_ = np.arange(n)
             return
 
-        # Get number of leaf nodes
-        n = self.tree_.count
+        # Use stored number of original data points
+        n = self.n_samples_
 
         if n_clusters is None:
             # Return finest level - each point is its own cluster

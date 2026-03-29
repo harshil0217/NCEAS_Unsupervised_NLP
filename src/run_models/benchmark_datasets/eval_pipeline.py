@@ -411,7 +411,8 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
 
     elif cluster_method == "DC":
         print(f"Running Diffusion Condensation for {embed_name}")
-        dc_model = dc(min_clusters=min(cluster_levels), max_iterations=5000, k=10, alpha=3)
+        # Set min_clusters=1 to force complete dendrogram that can be cut at any level
+        dc_model = dc(min_clusters=1, max_iterations=5000, k=10, alpha=3)
         dc_model.fit(embed_data)
 
         # DC builds ClusterNode tree directly (no linkage matrix needed)
