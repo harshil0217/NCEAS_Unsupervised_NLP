@@ -45,6 +45,8 @@ class DiffusionCondensation:
         self.epsilon = None
         self.labels_ = None
         self.cluster_tree = None
+        self.tree_ = None
+        self.node_list_ = None
 
 
     def diffusion_operator(self, data):
@@ -201,8 +203,8 @@ class DiffusionCondensation:
             num_clusters = data.shape[0]
             iterations += 1
 
-        # Build linkage matrix by iterating backwards through cluster_tree
-        self._build_linkage_matrix(n)
+        # Build ClusterNode tree by iterating backwards through cluster_tree
+        self._build_cluster_tree(n)
             
     def interpolate_param(self, start, end, iteration, max_iterations):
         if end is None:
@@ -212,64 +214,115 @@ class DiffusionCondensation:
         eased_progress = 1 - np.exp(-5 * progress)  # The constant (5) controls steepness
         return start + (end - start) * eased_progress
 
-    def _build_linkage_matrix(self, n):
+    def _build_cluster_tree(self, n):
         """
-        Build scipy-compatible linkage matrix by iterating backwards through cluster_tree.
+        Build scipy ClusterNode tree directly from cluster_tree by iterating backwards.
 
         The cluster_tree stores merge events as tuples:
             (cluster_a, cluster_b, new_cluster_id, distance, size)
 
         Leaf nodes are indices 0 to n-1 (preserved original indices).
-        Merged clusters get indices n, n+1, n+2, ... in order of creation.
+        Merged clusters have unique indices n, n+1, n+2, ...
 
         Args:
             n: number of original data points (leaf nodes)
         """
+        from scipy.cluster.hierarchy import ClusterNode
+
         if not self.cluster_tree:
-            self.linkage_matrix_ = np.array([]).reshape(0, 4)
+            self.tree_ = None
+            self.node_list_ = None
             return
 
-        # Iterate backwards through cluster_tree from end to beginning
-        # and collect merge information in reverse order
-        Z = []
-        for i in range(len(self.cluster_tree) - 1, -1, -1):
-            cluster_a, cluster_b, new_id, dist, size = self.cluster_tree[i]
-            Z.append([cluster_a, cluster_b, dist, size])
+        # Build lookup from new_id to merge info for backwards traversal
+        merge_lookup = {}
+        for cluster_a, cluster_b, new_id, dist, size in self.cluster_tree:
+            merge_lookup[new_id] = (cluster_a, cluster_b, dist, size)
 
-        # Reverse to restore chronological order (cluster n first, then n+1, etc.)
-        # This ensures Z[i] corresponds to creating cluster n+i
-        Z.reverse()
+        # Storage for all nodes (for node_list_ output)
+        nodes = {}
 
-        self.linkage_matrix_ = np.array(Z, dtype=float)
+        def build_node(cluster_id):
+            """Recursively build ClusterNode tree by iterating backwards from root."""
+            if cluster_id in nodes:
+                return nodes[cluster_id]
+
+            if cluster_id < n:
+                # Leaf node - original data point (indices 0 to n-1 preserved)
+                node = ClusterNode(id=cluster_id, left=None, right=None, dist=0, count=1)
+            else:
+                # Internal node - merged cluster with unique index >= n
+                cluster_a, cluster_b, dist, size = merge_lookup[cluster_id]
+                # Recursively build children (iterating backwards through tree structure)
+                left = build_node(cluster_a)
+                right = build_node(cluster_b)
+                node = ClusterNode(id=cluster_id, left=left, right=right, dist=dist, count=size)
+
+            nodes[cluster_id] = node
+            return node
+
+        # Start from the root (last merge in cluster_tree) and iterate backwards
+        root_id = self.cluster_tree[-1][2]
+        self.tree_ = build_node(root_id)
+
+        # Build node_list sorted by id (compatible with scipy's to_tree rd=True output)
+        self.node_list_ = [nodes[i] for i in sorted(nodes.keys())]
 
     def get_labels(self, n_clusters=None):
         """
         Retrieves cluster labels for all original data points at a given granularity.
 
         Args:
-            n_clusters: number of clusters desired (if None, uses all merges)
+            n_clusters: number of clusters desired (if None, returns finest level)
 
         Returns:
             Sets self.labels_ to array of cluster assignments for each original point
         """
-        if not self.cluster_tree:
-            # No merges occurred, each point is its own cluster
-            self.labels_ = np.arange(len(self.labels_) if self.labels_ is not None else 0)
+        if self.tree_ is None:
+            # No tree built, each point is its own cluster
+            n = len(self.node_list_) if self.node_list_ else 0
+            self.labels_ = np.arange(n)
             return
 
-        # Determine how many merges to apply based on desired n_clusters
-        n = int(self.linkage_matrix_[-1, 3]) if len(self.linkage_matrix_) > 0 else 0
-        if n == 0:
+        # Get number of leaf nodes
+        n = self.tree_.count
+
+        if n_clusters is None:
+            # Return finest level - each point is its own cluster
+            self.labels_ = np.arange(n)
             return
 
-        # Use scipy's fcluster to cut the dendrogram at the appropriate level
-        from scipy.cluster.hierarchy import fcluster
+        # Cut tree at desired number of clusters
+        labels = np.zeros(n, dtype=int)
 
-        if n_clusters is not None:
-            self.labels_ = fcluster(self.linkage_matrix_, n_clusters, criterion='maxclust')
-        else:
-            # Return labels at the coarsest level (all points in one cluster)
-            self.labels_ = np.zeros(n, dtype=int)
+        def assign_leaf_labels(node, cluster_id):
+            """Assign all leaves under this node to the same cluster."""
+            if node.is_leaf():
+                labels[node.id] = cluster_id
+            else:
+                assign_leaf_labels(node.left, cluster_id)
+                assign_leaf_labels(node.right, cluster_id)
+
+        # Start with root as single cluster, expand until we have n_clusters
+        clusters = [self.tree_]
+        while len(clusters) < n_clusters:
+            # Find the cluster with largest count to split
+            clusters.sort(key=lambda x: -x.count)
+            to_split = None
+            for c in clusters:
+                if not c.is_leaf():
+                    to_split = c
+                    break
+            if to_split is None:
+                break  # All clusters are leaves, can't split further
+            clusters.remove(to_split)
+            clusters.extend([to_split.left, to_split.right])
+
+        # Assign labels based on final clusters
+        for cluster_id, cluster_node in enumerate(clusters):
+            assign_leaf_labels(cluster_node, cluster_id)
+
+        self.labels_ = labels
 
     def predict(self):
         return None
