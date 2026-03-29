@@ -196,7 +196,10 @@ class DiffusionCondensation:
             num_clusters = data.shape[0]
             iterations += 1
 
-        self.linkage_matrix_ = np.array(all_linkage_rows, dtype=float)
+        Z = np.array(all_linkage_rows, dtype=float)
+        Z = Z[Z[:, 2].argsort()] 
+        self.linkage_matrix_ = Z
+        
         self.get_labels()
         return data
     
