@@ -413,15 +413,6 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
 
                     # 3. Slice the tree at the requested level using SciPy
                     labels = fcluster(Z, level, criterion='maxclust')
-                    
-                    
-                    if np.all(labels == -1):
-                        print("WARNING: All points labeled as noise. Assigning unique labels.")
-                        labels = np.arange(len(labels))
-                        
-                    # Keep your custom noise handling
-                    labels = make_noise_labels_unique(labels)
-
 
                     os.makedirs(os.path.dirname(label_path), exist_ok=True)
                     np.save(label_path, labels)
