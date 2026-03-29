@@ -81,7 +81,7 @@ from cuml.manifold import UMAP as cuUMAP
 # ========================
 from custom_packages.diffusion_condensation import DiffusionCondensation as dc
 import hdbscan
-from scipy.cluster.hierarchy import fcluster
+from scipy.cluster.hierarchy import fcluster, to_tree
 
 # cuML GPU-accelerated clustering
 from cuml.cluster import AgglomerativeClustering as cuAgglomerativeClustering
@@ -356,7 +356,7 @@ def apply_dimensionality_reduction(embeddings, reduction_dir, embed_filename, re
 def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
                    cluster_levels, topic_dict, label_dir, short):
     embed_data = embedding_models[embedding_model][embed_name]
-    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": []}
+    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": [], "Dendrogram Purity": []}
 
     try:
         print(f"\n{'='*60}")
@@ -365,34 +365,88 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
         print(f"Embedding shape: {embed_data.shape}")
         print(f"{'='*60}")
 
-        for level in cluster_levels:
-            print(f"Testing cluster level: {level}")
+        # Build the tree once per embedding-clustering method combination
+        tree = None
+        Z = None
 
-            if cluster_method == "Agglomerative":
-                print("Using cuML Agglomerative Clustering (GPU)...")
-                model = cuAgglomerativeClustering(n_clusters=1)
+        if cluster_method == "Agglomerative":
+            print("Using cuML Agglomerative Clustering (GPU)...")
+            model = cuAgglomerativeClustering(n_clusters=1)
+            model.fit(embed_data)
+
+            # Generate Linkage Matrix
+            Z = model.single_linkage_tree_.to_numpy()
+
+            # Save linkage matrix
+            linkage_dir = os.path.join(f"intermediate_data/{embedding_model}_linkage", short, embed_name)
+            os.makedirs(linkage_dir, exist_ok=True)
+            linkage_path = os.path.join(linkage_dir, f"Agglomerative_linkage.npy")
+            np.save(linkage_path, Z)
+            print(f"Saved linkage matrix to {linkage_path}")
+
+            # Create NodeCluster Tree for dendrogram purity calculation
+            tree, node_list = to_tree(Z, rd=True)
+
+        elif cluster_method == "HDBSCAN":
+            linkage_path = os.path.join(
+                f"intermediate_data/{embedding_model}_linkage", short, embed_name,
+                f"HDBSCAN_linkage.npy"
+            )
+
+            if os.path.exists(linkage_path):
+                print(f"Loading cached HDBSCAN linkage from {linkage_path}")
+                Z = np.load(linkage_path)
+                tree, node_list = to_tree(Z, rd=True)
+            else:
+                print("Using cuML HDBSCAN (GPU)...")
+                model = cuHDBSCAN(min_cluster_size=5, min_samples=1)
                 model.fit(embed_data)
 
-
-                # Generate Linkage Tree
+                # Convert GPU result to numpy
                 Z = model.single_linkage_tree_.to_numpy()
+
+                # Save linkage matrix
+                os.makedirs(os.path.dirname(linkage_path), exist_ok=True)
+                np.save(linkage_path, Z)
+                print(f"Saved linkage matrix to {linkage_path}")
 
                 # Create NodeCluster Tree for dendrogram purity calculation
                 tree, node_list = to_tree(Z, rd=True)
 
-                # 3. Slice the dendrogram at the requested level using SciPy
-                labels = fcluster(Z, level, criterion='maxclust')
+        elif cluster_method == "DC":
+            linkage_path = os.path.join(
+                f"intermediate_data/{embedding_model}_linkage", short, embed_name,
+                f"DC_linkage.npy"
+            )
 
-                
-                labels = (
-                    model.labels_.to_output('numpy')
-                    if hasattr(model.labels_, 'to_output')
-                    else np.array(model.labels_)
-                )
+            if os.path.exists(linkage_path):
+                print(f"Loading cached DC linkage from {linkage_path}")
+                Z = np.load(linkage_path)
+                tree, node_list = to_tree(Z, rd=True)
+            else:
+                print(f"Running Diffusion Condensation for {embed_name}")
+                model = dc(min_clusters=min(cluster_levels), max_iterations=5000, k=10, alpha=3)
+                model.fit(embed_data)
+                Z = model.linkage_matrix_
+
+                # Save linkage matrix
+                os.makedirs(os.path.dirname(linkage_path), exist_ok=True)
+                np.save(linkage_path, Z)
+                print(f"Saved linkage matrix to {linkage_path}")
+
+                # Create NodeCluster Tree for dendrogram purity calculation
+                tree, node_list = to_tree(Z, rd=True)
+
+        # Now iterate through cluster levels
+        for level in cluster_levels:
+            print(f"Testing cluster level: {level}")
+
+            if cluster_method == "Agglomerative":
+                # Slice the dendrogram at the requested level using SciPy
+                labels = fcluster(Z, level, criterion='maxclust')
                 print(f"Agglomerative clustering complete. Unique labels: {len(np.unique(labels))}")
 
             elif cluster_method == "HDBSCAN":
-                # Keep the same label_path variable as requested
                 label_path = os.path.join(
                     f"intermediate_data/{embedding_model}_labels", short, embed_name,
                     f"HDB_{level}_labels.npy"
@@ -402,21 +456,12 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
                     print(f"Loading cached HDBSCAN labels from {label_path}")
                     labels = np.load(label_path)
                 else:
-                    print("Using cuML HDBSCAN (GPU)...")
-                    model = cuHDBSCAN(min_cluster_size=5, min_samples=1)
-                    model.fit(embed_data)
-                    # Convert GPU result to numpy
-                    Z = model.single_linkage_tree_.to_numpy()
-
-                    # Create NodeCluster Tree for dendrogram purity calculation
-                    tree, node_list = to_tree(Z, rd=True)
-
-                    # 3. Slice the tree at the requested level using SciPy
+                    # Slice the tree at the requested level using SciPy
                     labels = fcluster(Z, level, criterion='maxclust')
 
                     os.makedirs(os.path.dirname(label_path), exist_ok=True)
                     np.save(label_path, labels)
-                    print(f"GPU-accelerated HDBSCAN fcluster cut at {level}. Unique labels: {len(np.unique(labels))}")
+                    print(f"HDBSCAN fcluster cut at {level}. Unique labels: {len(np.unique(labels))}")
 
             elif cluster_method == "DC":
                 label_path = os.path.join(
@@ -428,15 +473,12 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
                     print(f"Loading cached DC labels from {label_path}")
                     labels = np.load(label_path)
                 else:
-                    print(f"Running Diffusion Condensation for {embed_name} (Target Level: {level})")
-                    model = dc(min_clusters=level, max_iterations=5000, k=10, alpha=3)
-                    model.fit(embed_data)
-                    Z = model.single_matrix_
-                    tree, node_list = to_tree(Z, rd=True)
+                    # Slice the tree at the requested level using SciPy
+                    labels = fcluster(Z, level, criterion='maxclust')
 
                     os.makedirs(os.path.dirname(label_path), exist_ok=True)
                     np.save(label_path, labels)
-                    print(f"DC complete. Saved {len(np.unique(labels))} unique labels to {label_path}")
+                    print(f"DC fcluster cut at {level}. Unique labels: {len(np.unique(labels))}")
 
             # Match to closest ground truth level
             available_levels = np.array(sorted(topic_dict.keys()))
@@ -611,6 +653,7 @@ def run_pipeline(dataset_name):
         scores_all[(embedding_model, embed_name, cluster_method)]["Rand"] = combo_scores["Rand"]
         scores_all[(embedding_model, embed_name, cluster_method)]["ARI"] = combo_scores["ARI"]
         scores_all[(embedding_model, embed_name, cluster_method)]["AMI"] = combo_scores["AMI"]
+        scores_all[(embedding_model, embed_name, cluster_method)]["Dendrogram Purity"] = combo_scores["Dendrogram Purity"]
 
     print(f"\n{'='*60}")
     print("All clustering and evaluation complete!")
@@ -631,6 +674,7 @@ def run_pipeline(dataset_name):
                 "Rand": score_dict["Rand"][i],
                 "ARI": score_dict["ARI"][i],
                 "AMI": score_dict["AMI"][i],
+                "Dendrogram_Purity": score_dict["Dendrogram Purity"][i],
             })
 
     # Create DataFrame

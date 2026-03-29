@@ -125,9 +125,10 @@ class DiffusionCondensation:
             if min_dist < self.merge_threshold:
                 new_merges = True
                 # Merge with closest index
-                cluster_mapping[j] = np.argmin(distance_matrix[j, :j])
+                target = np.argmin(distance_matrix[j, :j])
+                cluster_mapping[j] = target
 
-                a = self.uf.find(self.translation[j])            
+                a = self.uf.find(self.translation[j])
                 b = self.uf.find(self.translation[target])       
                 if a != b:                                         
                     linkage_rows.append([a, b, min_dist,          

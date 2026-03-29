@@ -1,10 +1,21 @@
+import numpy as np
+from scipy.cluster.hierarchy import to_tree
+
 def dendrogram_purity(tree, true_labels):
     def get_leaves(node):
         if node.is_leaf():
             return [node.id]
         return get_leaves(node.left) + get_leaves(node.right)
 
-    from scipy.cluster.hierarchy import to_tree
+    def build_node_map(root, node_map=None):
+        """Build a mapping from node id to node object."""
+        if node_map is None:
+            node_map = {}
+        node_map[root.id] = root
+        if not root.is_leaf():
+            build_node_map(root.left, node_map)
+            build_node_map(root.right, node_map)
+        return node_map
 
     def get_root_to_leaf_path(root, target_id):
         """Returns list of node ids from root down to the target leaf."""
@@ -12,17 +23,19 @@ def dendrogram_purity(tree, true_labels):
             return None
         if root.id == target_id:
             return [root.id]
-        
+
         # Try left subtree
-        left_path = get_root_to_leaf_path(root.left, target_id)
-        if left_path is not None:
-            return [root.id] + left_path
-        
+        if root.left is not None:
+            left_path = get_root_to_leaf_path(root.left, target_id)
+            if left_path is not None:
+                return [root.id] + left_path
+
         # Try right subtree
-        right_path = get_root_to_leaf_path(root.right, target_id)
-        if right_path is not None:
-            return [root.id] + right_path
-        
+        if root.right is not None:
+            right_path = get_root_to_leaf_path(root.right, target_id)
+            if right_path is not None:
+                return [root.id] + right_path
+
         return None
 
     def find_lca(root, i, j):
@@ -38,6 +51,9 @@ def dendrogram_purity(tree, true_labels):
                 break
 
         return lca_id  # returns the node id
+
+    # Build node id to node object mapping
+    node_map = build_node_map(tree)
 
     # get true cluster assignments
     true_clusters = np.unique(true_labels)
@@ -63,8 +79,9 @@ def dendrogram_purity(tree, true_labels):
         i, j = np.random.choice(cluster_idx, size=2, replace=False)
 
         # find lowest common ancestor of i and j in the dendrogram
-        lca = find_lca(parent, i, j)
-        lca_leaves = get_leaves(lca)
+        lca_id = find_lca(tree, i, j)
+        lca_node = node_map[lca_id]
+        lca_leaves = get_leaves(lca_node)
 
         # purity = fraction of LCA's subtree that belongs to the same true cluster
         purity = np.sum(true_labels[lca_leaves] == c) / len(lca_leaves)
