@@ -9,6 +9,27 @@ from cuml.metrics import pairwise_distances
 import cupy
 import cupyx
 
+class UnionFind:
+    def __init__(self, n):
+        self.parent = -1 * np.ones(2 * n - 1, dtype=np.intp)
+        self.size = np.hstack([np.ones(n, dtype=np.intp), np.zeros(n - 1, dtype=np.intp)])
+        self.next_label = n
+
+    def union(self, a, b):
+        self.size[self.next_label] = self.size[a] + self.size[b]
+        self.parent[a] = self.next_label
+        self.parent[b] = self.next_label
+        self.next_label += 1
+
+    def find(self, n):
+        p = n
+        while self.parent[n] != -1:
+            n = self.parent[n]
+        while self.parent[p] != n:
+            p, self.parent[p] = self.parent[p], n
+        return n
+
+    
 class DiffusionCondensation:
     def __init__(self,
                  k=5,
@@ -96,6 +117,7 @@ class DiffusionCondensation:
         cluster_mapping = {i: i for i in range(numpoints)}
         indices_to_keep = list(set(range(numpoints)))
         new_merges = False
+        linkage_rows = []                                       
 
         # Iterate over data labels starting with highest number to push labels to lower values
         for j in np.arange(numpoints - 1, 0, -1):
@@ -104,6 +126,14 @@ class DiffusionCondensation:
                 new_merges = True
                 # Merge with closest index
                 cluster_mapping[j] = np.argmin(distance_matrix[j, :j])
+
+                a = self.uf.find(self.translation[j])            
+                b = self.uf.find(self.translation[target])       
+                if a != b:                                         
+                    linkage_rows.append([a, b, min_dist,          
+                        self.uf.size[a] + self.uf.size[b]])       
+                    self.uf.union(a, b)                            
+
                 # Discard datapoint in future condensation iterations
                 indices_to_keep.remove(j)
                 for i in np.arange(numpoints - 1, j, -1):
@@ -114,14 +144,26 @@ class DiffusionCondensation:
                     elif cluster_mapping[i] > j:
                         cluster_mapping[i] -= 1
 
+         # NEW — rebuild translation for compacted indices
+        self.translation = {new_idx: self.translation[old_idx]
+                        for new_idx, old_idx in enumerate(indices_to_keep)}
+        
         new_data = data[indices_to_keep]
 
         if new_merges:
-            return new_data, cluster_mapping
+            return new_data, cluster_mapping, linkage_rows
         else:
             # No need to pass cluster mapping if no merges occur
-            return new_data, None
+            return new_data, None, []
+
+
     def fit(self, data, prev_cluster_tree=None, prev_data=None):
+        n = data.shape[0]
+        self.translation = {i: i for i in range(n)}               
+        self.uf = UnionFind(n)                                    
+        all_linkage_rows = []                                      
+
+
         if prev_cluster_tree is not None and prev_data is not None:
             self.cluster_tree = prev_cluster_tree
             data = prev_data
@@ -142,7 +184,8 @@ class DiffusionCondensation:
             self.merge_threshold = self.interpolate_param(self.merge_threshold, self.merge_threshold_end, iterations, self.max_iterations)
             
             data = self.diffusion_condensation(data)
-            data, mapping = self.merge_data_points(data)
+            data, mapping, linkage_rows = self.merge_data_points(data)
+            all_linkage_rows.extend(linkage_rows)
             if mapping is not None:
                 self.cluster_tree.append({
                     "clusters": data.shape[0],
@@ -152,6 +195,7 @@ class DiffusionCondensation:
             num_clusters = data.shape[0]
             iterations += 1
 
+        self.linkage_matrix_ = np.array(all_linkage_rows, dtype=float)
         self.get_labels()
         return data
     

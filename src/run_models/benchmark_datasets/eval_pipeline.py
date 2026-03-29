@@ -92,6 +92,7 @@ from cuml.cluster import HDBSCAN as cuHDBSCAN
 # Evaluation Metrics
 # ======================
 from custom_packages.fowlkes_mallows import FowlkesMallows
+from custom_packages.dendrogram_purity import dendrogram_purity
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
 
 from tqdm import tqdm
@@ -352,33 +353,6 @@ def apply_dimensionality_reduction(embeddings, reduction_dir, embed_filename, re
     return embedding_methods
 
 
-def make_noise_labels_unique(labels):
-    """
-    Convert HDBSCAN noise labels (-1) to unique cluster IDs.
-
-    Args:
-        labels: Cluster labels with potential -1 (noise) values
-
-    Returns:
-        Labels with unique IDs for noise points
-    """
-    labels = np.asarray(labels).copy()
-    noise_mask = labels == -1
-    if not np.any(noise_mask):
-        return labels
-
-    if labels.size == 0:
-        return labels
-
-    next_label = int(np.max(labels)) + 1
-    if next_label <= -1:
-        next_label = 0
-
-    noise_indices = np.where(noise_mask)[0]
-    labels[noise_indices] = np.arange(next_label, next_label + noise_indices.size)
-    return labels
-
-
 def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
                    cluster_levels, topic_dict, label_dir, short):
     embed_data = embedding_models[embedding_model][embed_name]
@@ -398,11 +372,17 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
                 print("Using cuML Agglomerative Clustering (GPU)...")
                 model = cuAgglomerativeClustering(n_clusters=1)
                 model.fit(embed_data)
-                
+
+
+                # Generate Linkage Tree
                 Z = model.single_linkage_tree_.to_numpy()
 
-                # 3. Slice the tree at the requested level using SciPy
+                # Create NodeCluster Tree for dendrogram purity calculation
+                tree, node_list = to_tree(Z, rd=True)
+
+                # 3. Slice the dendrogram at the requested level using SciPy
                 labels = fcluster(Z, level, criterion='maxclust')
+
                 
                 labels = (
                     model.labels_.to_output('numpy')
@@ -427,6 +407,9 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
                     model.fit(embed_data)
                     # Convert GPU result to numpy
                     Z = model.single_linkage_tree_.to_numpy()
+
+                    # Create NodeCluster Tree for dendrogram purity calculation
+                    tree, node_list = to_tree(Z, rd=True)
 
                     # 3. Slice the tree at the requested level using SciPy
                     labels = fcluster(Z, level, criterion='maxclust')
@@ -457,7 +440,9 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
                     print(f"Running Diffusion Condensation for {embed_name} (Target Level: {level})")
                     model = dc(min_clusters=level, max_iterations=5000, k=10, alpha=3)
                     model.fit(embed_data)
-                    labels = model.labels_
+                    Z = model.single_matrix_
+                    tree, node_list = to_tree(Z, rd=True)
+
                     os.makedirs(os.path.dirname(label_path), exist_ok=True)
                     np.save(label_path, labels)
                     print(f"DC complete. Saved {len(np.unique(labels))} unique labels to {label_path}")
@@ -484,12 +469,17 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
             rand = rand_score(target_lst, label_lst)
             ari = adjusted_rand_score(target_lst, label_lst)
             ami = adjusted_mutual_info_score(target_lst, label_lst)
-            print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}")
+
+            #compute dendrogam purity using tree object
+            dp = dendrogram_purity(tree, target_lst)
+
+            print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, Dendrogram_Purity: {dp:.4f}")
 
             combo_scores["FM"].append(fm_score)
             combo_scores["Rand"].append(rand)
             combo_scores["ARI"].append(ari)
             combo_scores["AMI"].append(ami)
+            combo_scores["Dendrogram Purity"].append(dp)
 
         return embedding_model, embed_name, cluster_method, combo_scores
 
