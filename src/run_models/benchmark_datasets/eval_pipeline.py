@@ -419,12 +419,6 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
         tree = dc_model.tree_
         node_list = dc_model.node_list_
 
-        if tree is None:
-            print(f"WARNING: DC produced no tree for {embed_name}, falling back to ward linkage")
-            Z = linkage(embed_data, method='ward')
-            tree, node_list = to_tree(Z, rd=True)
-            dc_model = None  # Mark that we're using fallback
-
     # Now iterate through cluster levels
     for level in cluster_levels:
         print(f"Testing cluster level: {level}")

@@ -15,7 +15,7 @@ class DiffusionCondensation:
                  k=5,
                  alpha=2,
                  epsilon_scale=0.99,
-                 merge_threshold=1e-15,
+                 merge_threshold=1e-3,
                  merge_threshold_end=None,  # NEW
                  min_clusters=5,
                  max_iterations=1000,

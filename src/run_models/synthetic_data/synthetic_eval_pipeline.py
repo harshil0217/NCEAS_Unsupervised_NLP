@@ -46,7 +46,7 @@ import pandas as pd
 # Machine Learning & Clustering
 # ===============================
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
-from scipy.cluster.hierarchy import fcluster, to_tree
+from scipy.cluster.hierarchy import fcluster, to_tree, linkage
 from collections import defaultdict
 import torch
 
@@ -213,25 +213,20 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
                 tree, node_list = to_tree(Z, rd=True)
 
         elif cluster_method == "DC":
-            linkage_path = f"intermediate_data/{embedding_model}_linkage/{path_prefix}/{embed_name}/DC_linkage.npy"
+            print(f"Running Diffusion Condensation for {embed_name}")
+            # Set min_clusters=1 to force complete dendrogram that can be cut at any level
+            dc_model = dc(min_clusters=1, max_iterations=5000, k=10, alpha=3)
+            dc_model.fit(embed_data)
 
-            if os.path.exists(linkage_path):
-                print(f"Loading cached DC linkage from {linkage_path}")
-                Z = np.load(linkage_path)
+            # DC builds ClusterNode tree directly (no linkage matrix needed)
+            tree = dc_model.tree_
+            node_list = dc_model.node_list_
+
+            if tree is None:
+                print(f"WARNING: DC produced no tree for {embed_name}, falling back to ward linkage")
+                Z = linkage(embed_data, method='ward')
                 tree, node_list = to_tree(Z, rd=True)
-            else:
-                print("Using CPU Diffusion Condensation...")
-                model = dc(min_clusters=min(cluster_levels), max_iterations=5000, k=10, alpha=3)
-                model.fit(embed_data)
-                Z = model.linkage_matrix_
-
-                # Save linkage matrix
-                os.makedirs(os.path.dirname(linkage_path), exist_ok=True)
-                np.save(linkage_path, Z)
-                print(f"Saved linkage matrix to {linkage_path}")
-
-                # Create NodeCluster Tree for dendrogram purity calculation
-                tree, node_list = to_tree(Z, rd=True)
+                dc_model = None  # Mark that we're using fallback
 
         # Now iterate through cluster levels
         for level in cluster_levels:
@@ -264,13 +259,18 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
                     print(f"Loading cached DC labels from {label_path}")
                     labels = np.load(label_path)
                 else:
-                    # Slice the tree at the requested level using SciPy
-                    labels = fcluster(Z, level, criterion='maxclust')
+                    # Cut the tree at the requested number of clusters
+                    if dc_model is not None:
+                        dc_model.get_labels(n_clusters=level)
+                        labels = dc_model.labels_
+                    else:
+                        # Fallback used ward linkage, use fcluster
+                        labels = fcluster(Z, level, criterion='maxclust')
 
                     # Cache the labels
                     os.makedirs(os.path.dirname(label_path), exist_ok=True)
                     np.save(label_path, labels)
-                    print(f"DC fcluster cut at {level}. Unique labels: {len(np.unique(labels))}")
+                    print(f"DC tree cut at {level}. Unique labels: {len(np.unique(labels))}")
 
             # Find closest available ground truth level
             available_levels = np.array(sorted(topic_dict.keys()))
