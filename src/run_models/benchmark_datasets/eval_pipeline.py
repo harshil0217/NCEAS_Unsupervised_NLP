@@ -68,8 +68,6 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # ==========================
 import phate
 import pacmap
-import trimap
-
 # cuML GPU-accelerated dimensionality reduction
 import cuml
 from cuml.decomposition import PCA as cuPCA
@@ -80,8 +78,7 @@ from cuml.manifold import UMAP as cuUMAP
 # Clustering
 # ========================
 from custom_packages.diffusion_condensation import DiffusionCondensation as dc
-import hdbscan
-from scipy.cluster.hierarchy import fcluster, to_tree
+from scipy.cluster.hierarchy import fcluster, to_tree, linkage
 
 # cuML GPU-accelerated clustering
 from cuml.cluster import AgglomerativeClustering as cuAgglomerativeClustering
@@ -204,7 +201,7 @@ DATASET_CONFIGS = {
         "short": "amz",
         "results_filename": "amazon_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
     },
     "dbpedia": {
         "load_function": load_dbpedia,
@@ -212,7 +209,7 @@ DATASET_CONFIGS = {
         "short": "db",
         "results_filename": "db_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
     },
     "arxiv": {
         "load_function": load_arxiv,
@@ -220,7 +217,7 @@ DATASET_CONFIGS = {
         "short": "arx",
         "results_filename": "arxiv_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
     },
     "rcv1": {
         "load_function": load_rcv1,
@@ -228,7 +225,7 @@ DATASET_CONFIGS = {
         "short": "rcv1",
         "results_filename": "rcv1_clustering_scores.csv",
         "batch_size": 8,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
     },
     "wos": {
         "load_function": load_wos,
@@ -236,7 +233,7 @@ DATASET_CONFIGS = {
         "short": "wos",
         "results_filename": "wos_clustering_scores.csv",
         "batch_size": 64,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
     },
 }
 
@@ -375,7 +372,7 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
             model.fit(embed_data)
 
             # Generate Linkage Matrix
-            Z = model.single_linkage_tree_.to_numpy()
+            Z = linkage(embed_data, method='ward')
 
             # Save linkage matrix
             linkage_dir = os.path.join(f"intermediate_data/{embedding_model}_linkage", short, embed_name)
@@ -490,8 +487,6 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
             target_lst = topic_series[valid_idx]
             label_lst = labels[valid_idx]
 
-            if cluster_method == "HDBSCAN":
-                label_lst = make_noise_labels_unique(label_lst)
 
             try:
                 fm_score = FowlkesMallows.Bk({level: target_lst}, {level: label_lst})[level]['FM']
@@ -681,6 +676,8 @@ def run_pipeline(dataset_name):
     scores_df = pd.DataFrame(rows)
 
     # Sort for easier viewing
+    print(scores_df)
+    print(scores_df.columns)
     scores_df = scores_df.sort_values(
         by=["embedding_model", "reduction_method", "cluster_method", "level"]
     ).reset_index(drop=True)
