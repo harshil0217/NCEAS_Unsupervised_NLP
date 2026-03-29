@@ -100,8 +100,90 @@ from tqdm import tqdm
 np.random.seed(67)
 warnings.filterwarnings("ignore")
 
+# =====================================
+# Dendrogram Purity Sampling Config
+# =====================================
+DENDROGRAM_PURITY_SAMPLE_SIZE = 2000
+
 # Reload modules if needed
 importlib.reload(phate)
+
+
+# =====================================
+# Dendrogram Purity Sampling Functions
+# =====================================
+
+def sample_for_dendrogram_purity(labels, sample_size=DENDROGRAM_PURITY_SAMPLE_SIZE, random_state=67):
+    """
+    Sample indices with weighted sampling to preserve class distribution.
+
+    Args:
+        labels: Array of class labels at the lowest hierarchy level
+        sample_size: Number of points to sample (default: 2000)
+        random_state: Random seed for reproducibility
+
+    Returns:
+        sampled_indices: Array of indices into the original data
+    """
+    rng = np.random.RandomState(random_state)
+
+    n_samples = len(labels)
+    if n_samples <= sample_size:
+        # If we have fewer points than sample_size, return all indices
+        return np.arange(n_samples)
+
+    # Get unique classes and their counts
+    unique_classes, class_counts = np.unique(labels, return_counts=True)
+
+    # Calculate how many samples to take from each class (proportional)
+    class_proportions = class_counts / n_samples
+    samples_per_class = np.round(class_proportions * sample_size).astype(int)
+
+    # Adjust to ensure we get exactly sample_size (handle rounding)
+    diff = sample_size - samples_per_class.sum()
+    if diff != 0:
+        # Add/remove from largest classes
+        sorted_idx = np.argsort(class_counts)[::-1]
+        for i in range(abs(diff)):
+            idx = sorted_idx[i % len(sorted_idx)]
+            samples_per_class[idx] += np.sign(diff)
+
+    # Sample from each class
+    sampled_indices = []
+    for cls, n_samples_cls in zip(unique_classes, samples_per_class):
+        cls_indices = np.where(labels == cls)[0]
+        # Handle case where class has fewer samples than requested
+        n_to_sample = min(n_samples_cls, len(cls_indices))
+        if n_to_sample > 0:
+            sampled = rng.choice(cls_indices, size=n_to_sample, replace=False)
+            sampled_indices.extend(sampled)
+
+    return np.array(sampled_indices)
+
+
+def build_sampled_tree_for_purity(embed_data, sampled_indices):
+    """
+    Build a smaller tree from sampled points for dendrogram purity calculation.
+
+    Args:
+        embed_data: Full embedding data array
+        sampled_indices: Indices of sampled points
+
+    Returns:
+        tree: ClusterNode tree root
+        index_map: Mapping from sampled tree leaf indices to original indices
+    """
+    # Extract sampled embeddings
+    sampled_embeddings = embed_data[sampled_indices]
+
+    # Build linkage matrix using ward method (consistent, fast)
+    Z_sampled = linkage(sampled_embeddings, method='ward')
+
+    # Create tree from linkage
+    tree, _ = to_tree(Z_sampled, rd=True)
+
+    # Return tree and the indices mapping (leaf i in tree -> sampled_indices[i] in original)
+    return tree, sampled_indices
 
 
 # =====================================
@@ -351,7 +433,7 @@ def apply_dimensionality_reduction(embeddings, reduction_dir, embed_filename, re
 
 
 def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
-                   cluster_levels, topic_dict, label_dir, short):
+                   cluster_levels, topic_dict, label_dir, short, lowest_level_labels):
     embed_data = embedding_models[embedding_model][embed_name]
     combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": [], "Dendrogram Purity": []}
     
@@ -418,6 +500,20 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
         # DC builds ClusterNode tree directly (no linkage matrix needed)
         tree = dc_model.tree_
         node_list = dc_model.node_list_
+
+    # Build sampled tree for dendrogram purity calculation (2000 points)
+    # Filter out NaN values from lowest_level_labels before sampling
+    valid_mask = ~pd.isna(lowest_level_labels)
+    valid_indices = np.where(valid_mask)[0]
+    valid_labels = lowest_level_labels[valid_mask]
+
+    print(f"Building sampled tree for dendrogram purity ({DENDROGRAM_PURITY_SAMPLE_SIZE} points)...")
+    # Sample from valid indices only
+    sampled_relative_indices = sample_for_dendrogram_purity(valid_labels)
+    sampled_indices = valid_indices[sampled_relative_indices]
+    sampled_tree, _ = build_sampled_tree_for_purity(embed_data, sampled_indices)
+    sampled_labels_for_purity = lowest_level_labels[sampled_indices]
+    print(f"Sampled {len(sampled_indices)} points for dendrogram purity")
 
     # Now iterate through cluster levels
     for level in cluster_levels:
@@ -488,8 +584,10 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
         ari = adjusted_rand_score(target_lst, label_lst)
         ami = adjusted_mutual_info_score(target_lst, label_lst)
 
-        #compute dendrogam purity using tree object
-        dp = dendrogram_purity(tree, target_lst)
+        # Compute dendrogram purity using sampled tree and sampled labels
+        # The sampled_tree uses indices 0 to len(sampled_indices)-1 as leaf nodes
+        # sampled_labels_for_purity contains the corresponding ground truth labels
+        dp = dendrogram_purity(sampled_tree, sampled_labels_for_purity)
 
         print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, Dendrogram_Purity: {dp:.4f}")
 
@@ -615,6 +713,12 @@ def run_pipeline(dataset_name):
     label_dir = f"intermediate_data/{embedding_model}_labels"
     os.makedirs(label_dir, exist_ok=True)
 
+    # Get lowest level labels for dendrogram purity sampling
+    # The deepest category (highest cluster count) is the finest granularity
+    lowest_level_key = max(topic_dict.keys())
+    lowest_level_labels = topic_dict[lowest_level_key]
+    print(f"Using lowest level labels with {lowest_level_key} unique classes for dendrogram purity sampling")
+
     # Run each combo sequentially
     combo_results = []
     for embedding_model, embed_name, cluster_method in tqdm(combo_params, desc="Processing embedding-clustering combos"):
@@ -626,7 +730,8 @@ def run_pipeline(dataset_name):
             cluster_levels,
             topic_dict,
             label_dir,
-            short = config["short"]
+            short=config["short"],
+            lowest_level_labels=lowest_level_labels
         )
         combo_results.append(result)
 
