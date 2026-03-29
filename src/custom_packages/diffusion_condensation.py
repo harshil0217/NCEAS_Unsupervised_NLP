@@ -197,12 +197,23 @@ class DiffusionCondensation:
             iterations += 1
 
         Z = np.array(all_linkage_rows, dtype=float)
-        Z = Z[Z[:, 2].argsort()] 
+        # topological sort — a row can only appear after both its children are defined
+        order = []
+        available = set(range(n))
+        rows_remaining = list(enumerate(Z))
+
+        while rows_remaining:
+            for idx, row in rows_remaining:
+                a, b = int(row[0]), int(row[1])
+                if a in available and b in available:
+                    order.append(idx)
+                    available.add(n + len(order) - 1)
+                    rows_remaining.remove((idx, row))
+                    break
+
+        Z = Z[order]
         self.linkage_matrix_ = Z
-        
-        self.get_labels()
-        return data
-    
+            
     def interpolate_param(self, start, end, iteration, max_iterations):
         if end is None:
             return start
