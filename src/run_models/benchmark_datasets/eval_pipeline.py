@@ -504,14 +504,26 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
             tree, node_list = to_tree(Z, rd=True)
 
     elif cluster_method == "DC":
-        print(f"Running Diffusion Condensation for {embed_name}")
-        # Set min_clusters=1 to force complete dendrogram that can be cut at any level
-        dc_model = dc(min_clusters=1, max_iterations=5000, k=10, alpha=3)
-        dc_model.fit(embed_data)
+        # Check if all DC label files already exist
+        all_labels_cached = all(
+            os.path.exists(os.path.join(
+                f"intermediate_data/{embedding_model}_labels", short, embed_name,
+                f"DC_{level}_labels.npy"
+            ))
+            for level in cluster_levels
+        )
 
-        # DC builds ClusterNode tree directly (no linkage matrix needed)
-        tree = dc_model.tree_
-        node_list = dc_model.node_list_
+        if all_labels_cached:
+            print(f"All DC labels cached for {embed_name}, skipping model fitting...")
+        else:
+            print(f"Running Diffusion Condensation for {embed_name}")
+            # Set min_clusters=1 to force complete dendrogram that can be cut at any level
+            dc_model = dc(min_clusters=1, max_iterations=5000, k=10, alpha=3)
+            dc_model.fit(embed_data)
+
+            # DC builds ClusterNode tree directly (no linkage matrix needed)
+            tree = dc_model.tree_
+            node_list = dc_model.node_list_
 
     # Build sampled tree for dendrogram purity calculation (2000 points)
     # Filter out NaN values from lowest_level_labels before sampling
