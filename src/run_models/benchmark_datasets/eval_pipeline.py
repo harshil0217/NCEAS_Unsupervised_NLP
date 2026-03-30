@@ -491,7 +491,7 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
 
     if cluster_method == "Agglomerative":
         print("Using cuML Agglomerative Clustering (GPU)...")
-        model = cuAgglomerativeClustering(n_clusters=None, distance_threshold=0, compute_distances=True, connectivity='average')
+        model = cuAgglomerativeClustering(n_clusters=None, compute_distances=True, connectivity='average')
         model.fit(embed_data)
 
         # Generate Linkage Matrix
