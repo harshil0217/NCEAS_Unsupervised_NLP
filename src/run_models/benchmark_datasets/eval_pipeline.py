@@ -15,10 +15,8 @@ Example:
 
 import os
 import sys
-from dotenv import load_dotenv
 import json
 import argparse
-load_dotenv()
 
 target_folder = "src"
 
