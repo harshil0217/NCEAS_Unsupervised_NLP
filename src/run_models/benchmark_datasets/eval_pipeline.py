@@ -161,13 +161,15 @@ def sample_for_dendrogram_purity(labels, sample_size=DENDROGRAM_PURITY_SAMPLE_SI
     return np.array(sampled_indices)
 
 
-def build_sampled_tree_for_purity(embed_data, sampled_indices):
+def build_sampled_tree_for_purity(embed_data, sampled_indices, cluster_method):
     """
     Build a smaller tree from sampled points for dendrogram purity calculation.
+    Uses the same clustering algorithm being evaluated to ensure consistency.
 
     Args:
         embed_data: Full embedding data array
         sampled_indices: Indices of sampled points
+        cluster_method: Clustering method to use ("Agglomerative", "HDBSCAN", or "DC")
 
     Returns:
         tree: ClusterNode tree root
@@ -176,11 +178,31 @@ def build_sampled_tree_for_purity(embed_data, sampled_indices):
     # Extract sampled embeddings
     sampled_embeddings = embed_data[sampled_indices]
 
-    # Build linkage matrix using ward method (consistent, fast)
-    Z_sampled = linkage(sampled_embeddings, method='ward')
+    if cluster_method == "Agglomerative":
+        # Use scipy ward linkage (cuML AgglomerativeClustering doesn't expose linkage tree)
+        Z_sampled = linkage(sampled_embeddings, method='ward')
+        tree, _ = to_tree(Z_sampled, rd=True)
 
-    # Create tree from linkage
-    tree, _ = to_tree(Z_sampled, rd=True)
+    elif cluster_method == "HDBSCAN":
+        # Use cuML HDBSCAN
+        model = cuHDBSCAN(min_cluster_size=5, min_samples=1)
+        model.fit(sampled_embeddings)
+        Z_sampled = model.single_linkage_tree_.to_numpy()
+        tree, _ = to_tree(Z_sampled, rd=True)
+
+    elif cluster_method == "DC":
+        # Use Diffusion Condensation
+        dc_model = dc(min_clusters=1, max_iterations=5000, k=10, alpha=3)
+        dc_model.fit(sampled_embeddings)
+        tree = dc_model.tree_
+
+        # Fallback to ward linkage if DC fails to produce a tree
+        if tree is None:
+            Z_sampled = linkage(sampled_embeddings, method='ward')
+            tree, _ = to_tree(Z_sampled, rd=True)
+
+    else:
+        raise ValueError(f"Unknown cluster_method: {cluster_method}")
 
     # Return tree and the indices mapping (leaf i in tree -> sampled_indices[i] in original)
     return tree, sampled_indices
@@ -507,11 +529,11 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
     valid_indices = np.where(valid_mask)[0]
     valid_labels = lowest_level_labels[valid_mask]
 
-    print(f"Building sampled tree for dendrogram purity ({DENDROGRAM_PURITY_SAMPLE_SIZE} points)...")
+    print(f"Building sampled tree for dendrogram purity ({DENDROGRAM_PURITY_SAMPLE_SIZE} points) using {cluster_method}...")
     # Sample from valid indices only
     sampled_relative_indices = sample_for_dendrogram_purity(valid_labels)
     sampled_indices = valid_indices[sampled_relative_indices]
-    sampled_tree, _ = build_sampled_tree_for_purity(embed_data, sampled_indices)
+    sampled_tree, _ = build_sampled_tree_for_purity(embed_data, sampled_indices, cluster_method)
     sampled_labels_for_purity = lowest_level_labels[sampled_indices]
     print(f"Sampled {len(sampled_indices)} points for dendrogram purity")
 
