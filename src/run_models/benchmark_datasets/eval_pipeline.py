@@ -116,15 +116,15 @@ def get_linkage_matrix(model):
         current_count = 0
         for child_idx in merge:
             if child_idx < n_samples:
-                current_count += 1  # leaf node
+                current_count += 1  
             else:
                 current_count += counts[child_idx - n_samples]  # internal node
         counts[i] = current_count
     
     linkage_matrix = np.column_stack([
-        model.children_,   # col 0,1: merged cluster indices
-        model.distances_,  # col 2: merge distance
-        counts             # col 3: cluster size after merge
+        model.children_,   
+        model.distances_, 
+        counts             
     ])
     return linkage_matrix
 
@@ -491,7 +491,7 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
 
     if cluster_method == "Agglomerative":
         print("Using cuML Agglomerative Clustering (GPU)...")
-        model = cuAgglomerativeClustering(n_clusters=1)
+        model = cuAgglomerativeClustering(n_clusters=None, distance_threshold=0, compute_distances=True, connectivity='average')
         model.fit(embed_data)
 
         # Generate Linkage Matrix
