@@ -108,26 +108,6 @@ DENDROGRAM_PURITY_SAMPLE_SIZE = 2000
 # Reload modules if needed
 importlib.reload(phate)
 
-def get_linkage_matrix(model):
-    counts = np.zeros(model.children_.shape[0])
-    n_samples = len(model.labels_)
-    
-    for i, merge in enumerate(model.children_):
-        current_count = 0
-        for child_idx in merge:
-            if child_idx < n_samples:
-                current_count += 1  
-            else:
-                current_count += counts[child_idx - n_samples]  # internal node
-        counts[i] = current_count
-    
-    linkage_matrix = np.column_stack([
-        model.children_,   
-        model.distances_, 
-        counts             
-    ])
-    return linkage_matrix
-
 
 # =====================================
 # Dendrogram Purity Sampling Functions
@@ -491,11 +471,11 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
 
     if cluster_method == "Agglomerative":
         print("Using cuML Agglomerative Clustering (GPU)...")
-        model = cuAgglomerativeClustering(n_clusters=None, connectivity='average')
+        model = cuAgglomerativeClustering(n_clusters=1)
         model.fit(embed_data)
 
         # Generate Linkage Matrix
-        Z = get_linkage_matrix(model)
+        Z = linkage(embed_data, method='ward')
 
         # Save linkage matrix
         linkage_dir = os.path.join(f"intermediate_data/{embedding_model}_linkage", short, embed_name)
