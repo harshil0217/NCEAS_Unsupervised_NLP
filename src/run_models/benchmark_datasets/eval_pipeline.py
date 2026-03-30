@@ -103,7 +103,7 @@ warnings.filterwarnings("ignore")
 # =====================================
 # Dendrogram Purity Sampling Config
 # =====================================
-DENDROGRAM_PURITY_SAMPLE_SIZE = 2000
+DENDROGRAM_PURITY_SAMPLE_SIZE = 1500
 
 # Reload modules if needed
 importlib.reload(phate)
