@@ -21,3 +21,4 @@ dependencies:
   - ipykernel
   - conda-forge::accelerate
   - jupyter
+  - nltk
