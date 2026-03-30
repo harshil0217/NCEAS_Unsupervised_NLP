@@ -458,7 +458,7 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
                    cluster_levels, topic_dict, label_dir, short, lowest_level_labels):
     embed_data = embedding_models[embedding_model][embed_name]
     combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": [], "Dendrogram Purity": []}
-    
+
     print(f"\n{'='*60}")
     print(f"Processing Embedding Method: {embed_name}")
     print(f"Clustering Method: {cluster_method}")
@@ -466,26 +466,16 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
     print(f"{'='*60}")
 
     # Build the tree once per embedding-clustering method combination
+    # For Agglomerative, we only build the tree on the sample for dendrogram purity
+    # For HDBSCAN and DC, we need the full tree to cut at different levels
     tree = None
     Z = None
+    dc_model = None
 
     if cluster_method == "Agglomerative":
-        print("Using cuML Agglomerative Clustering (GPU)...")
-        model = cuAgglomerativeClustering(n_clusters=1)
-        model.fit(embed_data)
-
-        # Generate Linkage Matrix
-        Z = linkage(embed_data, method='ward')
-
-        # Save linkage matrix
-        linkage_dir = os.path.join(f"intermediate_data/{embedding_model}_linkage", short, embed_name)
-        os.makedirs(linkage_dir, exist_ok=True)
-        linkage_path = os.path.join(linkage_dir, f"Agglomerative_linkage.npy")
-        np.save(linkage_path, Z)
-        print(f"Saved linkage matrix to {linkage_path}")
-
-        # Create NodeCluster Tree for dendrogram purity calculation
-        tree, node_list = to_tree(Z, rd=True)
+        # Agglomerative: No full tree needed - we'll create models with n_clusters for each level
+        # The sampled tree for dendrogram purity is built later via build_sampled_tree_for_purity()
+        print("Using cuML Agglomerative Clustering (GPU) - will fit per level...")
 
     elif cluster_method == "HDBSCAN":
         linkage_path = os.path.join(
@@ -542,8 +532,30 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
         print(f"Testing cluster level: {level}")
 
         if cluster_method == "Agglomerative":
-            # Slice the dendrogram at the requested level using SciPy
-            labels = fcluster(Z, level, criterion='maxclust')
+            # Create a new cuML Agglomerative model with n_clusters=level for each level
+            label_path = os.path.join(
+                f"intermediate_data/{embedding_model}_labels", short, embed_name,
+                f"Agg_{level}_labels.npy"
+            )
+
+            if os.path.exists(label_path):
+                print(f"Loading cached Agglomerative labels from {label_path}")
+                labels = np.load(label_path)
+            else:
+                print(f"Fitting cuML Agglomerative Clustering with n_clusters={level}...")
+                agg_model = cuAgglomerativeClustering(n_clusters=level)
+                agg_model.fit(embed_data)
+                labels = agg_model.labels_
+
+                # Convert GPU result to numpy if needed
+                if hasattr(labels, 'to_output'):
+                    labels = labels.to_output('numpy')
+                elif not isinstance(labels, np.ndarray):
+                    labels = np.array(labels)
+
+                os.makedirs(os.path.dirname(label_path), exist_ok=True)
+                np.save(label_path, labels)
+
             print(f"Agglomerative clustering complete. Unique labels: {len(np.unique(labels))}")
 
         elif cluster_method == "HDBSCAN":
