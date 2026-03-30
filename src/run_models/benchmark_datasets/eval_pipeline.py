@@ -536,7 +536,6 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
     sampled_relative_indices = sample_for_dendrogram_purity(valid_labels)
     sampled_indices = valid_indices[sampled_relative_indices]
     sampled_tree, _ = build_sampled_tree_for_purity(embed_data, sampled_indices, cluster_method)
-    sampled_labels_for_purity = lowest_level_labels[sampled_indices]
     print(f"Sampled {len(sampled_indices)} points for dendrogram purity")
 
     # Now iterate through cluster levels
@@ -630,9 +629,9 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
         ari = adjusted_rand_score(target_lst, label_lst)
         ami = adjusted_mutual_info_score(target_lst, label_lst)
 
-        # Compute dendrogram purity using sampled tree and sampled labels
+        # Compute dendrogram purity using sampled tree and ground truth labels for this level
         # The sampled_tree uses indices 0 to len(sampled_indices)-1 as leaf nodes
-        # sampled_labels_for_purity contains the corresponding ground truth labels
+        sampled_labels_for_purity = topic_series[sampled_indices]
         dp = dendrogram_purity(sampled_tree, sampled_labels_for_purity)
 
         print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, Dendrogram_Purity: {dp:.4f}")
