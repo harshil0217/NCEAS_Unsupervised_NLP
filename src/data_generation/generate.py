@@ -1,9 +1,6 @@
 # ========================
 # Environment Configuration
 # ========================
-from dotenv import load_dotenv
-load_dotenv()  # Loads variables from .env into environment
-
 import os
 import sys
 
