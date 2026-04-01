@@ -8,6 +8,8 @@ dependencies:
   - cudf=26.02
   - cuml=26.02
   - networkx
+  - scikit-learn
+  - scipy
   - nx-cugraph=26.02
   - pytorch[build=*cuda*]
   - cuda-cudart

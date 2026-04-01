@@ -16,7 +16,7 @@ CMSE 495 is the MSU Data Science Capstone course where student teams work with r
 
 ## Objective
 
-The goal of this project is to benchmark dimensionality reduction methods combined with clustering algorithms on textual embeddings to support unsupervised NLP analysis for US fisheries discourse and narratives. We evaluate how well methods like PHATE, PCA, UMAP, t-SNE, and PaCMAP preserve hierarchical structure in text data when paired with clustering algorithms including Agglomerative, HDBSCAN, and Diffusion Condensation. Results are measured using FM index, ARI, AMI, and Rand Index across five benchmark datasets.
+The goal of this project is to benchmark dimensionality reduction methods combined with clustering algorithms on textual embeddings to support unsupervised NLP analysis for US fisheries discourse and narratives. We evaluate how well methods like PHATE, PCA, UMAP, t-SNE, and PaCMAP preserve hierarchical structure in text data when paired with clustering algorithms including Agglomerative, HDBSCAN, Diffusion Condensation, and Hercules. Results are measured using FM index, ARI, AMI, and Rand Index across five benchmark datasets.
 
 ---
 
@@ -37,7 +37,7 @@ Documents are embedded using two models: `Qwen3-Embedding-0.6B` and `all-MiniLM-
 We compare five reduction methods: PHATE, PCA, UMAP, t-SNE, and PaCMAP. GPU-accelerated implementations (cuML) are used where available.
 
 ### Clustering
-Three clustering methods are applied at multiple hierarchy levels: Agglomerative Clustering, HDBSCAN, and Diffusion Condensation.
+Four clustering methods are applied at multiple hierarchy levels: Agglomerative Clustering, HDBSCAN, Diffusion Condensation, and Hercules
 
 ### Evaluation
 Clustering quality is measured against ground truth labels using FM index, Adjusted Rand Index (ARI), Adjusted Mutual Information (AMI), and Rand Index.
@@ -118,9 +118,11 @@ NCEAS_Unsupervised_NLP/
 │       ├── benchmark_datasets/
 │       │   ├── eval_pipeline.py  # Main benchmark evaluation pipeline
 │       │   └── herc_pipeline.py  # HERCULES hierarchical clustering pipeline
-│       └── synthetic_data/
-│           ├── eval_script.py
-│           └── synth_herc_pipeline.py
+│       ├── synthetic_data/
+│       │   ├── eval_script.py
+│       │   └── synth_herc_pipeline.py
+│       ├── visualization_metrics.ipynb           # Visualization quality metrics (benchmark)
+│       └── visualization_metrics_synthetic.ipynb # Visualization quality metrics (synthetic)
 │
 ├── environment.yml               # Conda environment (Linux/CUDA)
 ├── INSTALL.md                    # Installation instructions
