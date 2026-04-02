@@ -8,6 +8,12 @@ To evaluate its utility for text, we compare PHATE visualizations against those 
 \end{description}
 
 \textit{Qualitative comparisons} are made using datasets with ground-truth metadata. Evaluation criteria include cluster coherence, separation of known categories, and preservation of trajectories or arcs in embedding space.
+
+\subsection{Text Embeddings}
+
+We generate dense semantic embeddings using two models: all-MiniLM-L6-v2 and Qwen3-Embedding-0.6B. Each document is converted into a high-dimensional vector representation capturing semantic meaning.
+
+For Qwen embeddings, text inputs are tokenized and transformed into 1024-dimensional vectors. Mean pooling is applied to obtain a single representation per document, followed by L2 normalization to ensure consistent similarity comparisons.
 \subsection{Hierarchical clustering}
 To assess PHATE in clustering, we:
 \begin{enumerate}
@@ -17,11 +23,27 @@ To assess PHATE in clustering, we:
     \item Cluster with agglomerative clustering (Ward's method), HDBSCAN, or diffusion condensation.
 \end{enumerate}
 
-
 Under certain parameters, diffusion condensation is known to be equivalent to agglomerative clustering with particular linkage methods \cite{huguet2023time}, yet these methods differ in general. To our knowledge, this is the first application of diffusion condensation to textual data. 
 
 We evaluate performance using the Adjusted Rand Index (ARI) \cite{rand1971objective}, which quantifies pairwise agreement between predicted and ground-truth clusters. Because clustering algorithms may not yield exactly $n-1$ merges for n points, we evaluate the clustering closest to the ground-truth number of clusters. HDBSCAN-assigned label $-1$ is treated as a singleton cluster. Detailed descriptions of parameter selection processes for clustering and visualization are provided in Appendix \ref{subsec:parameters}.
+
 In addition to ARI, we also report standard clustering metrics including Adjusted Mutual Information (AMI), Fowlkes–Mallows (FM), and Rand Index to provide complementary perspectives on clustering quality.
+
+To capture hierarchical structure, we additionally use metrics such as LCA-F1, 
+which evaluates agreement between predicted and ground-truth hierarchies by comparing 
+lowest common ancestors \cite{kosmopoulos2015}.
+
+These evaluation choices are motivated by prior work in hierarchical text classification, 
+which highlights the importance of structure-aware metrics when analyzing semantic hierarchies \cite{stein2019}.
+
+\subsection{Experimental Pipeline}
+
+We implement a unified experimental pipeline in which all methods operate on identical precomputed embeddings. For each dataset, we first generate dense vector representations using all-MiniLM-L6-v2 and Qwen3-Embedding-0.6B. These embeddings are stored and reused across all experiments to ensure consistency.
+
+We then apply dimensionality reduction methods, including PCA, UMAP, PHATE, and PaCMAP, to obtain low-dimensional representations. Clustering is performed on each reduced embedding using Agglomerative Clustering, HDBSCAN, and Diffusion Condensation.
+
+All methods operate on the same inputs, ensuring that performance differences arise solely from the methods themselves.
+
 
 \subsection{Datasets}
 To assess the visual quality of PHATE embeddings, public comments from the Environmental Protection Agency (EPA) were sourced from the Federal Register via Regulations.gov as part of a related project studying public perceptions and preferences as related to environmental policy. The data was collected from an open source initiative called Mirrulations\footnote{https://registry.opendata.aws/mirrulations/}, which mirrors this public data through an Amazon Web Services S3 bucket. Once the data was gathered, the text was cleaned by removing HTML tags, special characters, URLs, stop words, and excessively short entries, focusing only on comments submitted after the year 2000. To handle long comments and improve compatibility with transformer models, a head-tail truncation strategy \cite{sun2019fine} was used to preserve meaningful content from the beginning and end of each comment. The cleaned data was embedded using the sentence-transformers model all-\texttt{MiniLM-L6-v2}. 
