@@ -435,6 +435,11 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
             tree, node_list = to_tree(Z, rd=True)
 
     elif cluster_method == "DC":
+        dc_tree_path = os.path.join(
+            f"intermediate_data/{embedding_model}_labels", short, embed_name,
+            "DC_tree.pkl"
+        )
+
         # Check if all DC label files already exist
         all_labels_cached = all(
             os.path.exists(os.path.join(
@@ -444,8 +449,21 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
             for level in cluster_levels
         )
 
-        if all_labels_cached:
-            print(f"All DC labels cached for {embed_name}, skipping model fitting...")
+        if all_labels_cached and os.path.exists(dc_tree_path):
+            print(f"All DC labels and tree cached for {embed_name}, loading tree from cache...")
+            with open(dc_tree_path, 'rb') as f:
+                tree = pickle.load(f)
+        elif all_labels_cached:
+            print(f"All DC labels cached for {embed_name}, fitting DC model to recover tree...")
+            dc_model = dc(min_clusters=1, max_iterations=5000, k=10, alpha=3)
+            dc_model.fit(embed_data)
+            tree = dc_model.tree_
+            node_list = dc_model.node_list_
+            if tree is not None:
+                os.makedirs(os.path.dirname(dc_tree_path), exist_ok=True)
+                with open(dc_tree_path, 'wb') as f:
+                    pickle.dump(tree, f)
+                print(f"Saved DC tree to {dc_tree_path}")
         else:
             print(f"Running Diffusion Condensation for {embed_name}")
             # Set min_clusters=1 to force complete dendrogram that can be cut at any level
@@ -456,8 +474,14 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
             tree = dc_model.tree_
             node_list = dc_model.node_list_
 
+            # Cache tree for future runs where labels are already cached
+            if tree is not None:
+                os.makedirs(os.path.dirname(dc_tree_path), exist_ok=True)
+                with open(dc_tree_path, 'wb') as f:
+                    pickle.dump(tree, f)
+                print(f"Saved DC tree to {dc_tree_path}")
+
     # Convert full predicted tree to anytree once; used for both dendrogram purity and LCA-F1.
-    # Will be None for DC when all labels are cached and the model was not fit.
     pred_tree = None
     if tree is not None:
         pred_tree = clusternode_to_anytree(tree)
