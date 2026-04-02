@@ -21,6 +21,7 @@
 %   showstringspaces=false
 % }
 % \begin{document}
+
 \section{Technical Appendices}
 \subsection{Code and Data Availability}
 All code and data necessary for replicating experiments can be accessed here: \url{https://anonymous.4open.science/r/phate-for-text-4D7D/README.md}. 
@@ -79,7 +80,7 @@ Diffusion condensation & \texttt{k: [4, 5, 10], t: [3, 10, 30], alpha: [2, 4, 8]
 % \bottomrule
 % \end{tabular}
 % \end{table}
- 
+
 We evaluated performance using both random forest classifiers and simple averaging metrics to identify high-performing parameter configurations. For the random forest we used the parameters as predictors and average ARI as the target. Based on these results, we reduced the search space and standardized the dimensionality parameter $\mathtt{n\_components}$ to values of 100 and 300 across all dimensionality reduction methods.
 \begin{table*}[ht]
 \centering
@@ -148,7 +149,8 @@ UMAP (visualization only) & \texttt{n\_components: [300], min\_dist: [0.1], n\_n
 \subsection{Example GPT Query Prompt and Response}
 \subsubsection*{System and user prompt}
 In this example, the \textbf{Parent Topic} is the direct parent, while the \textbf{Core Topic} is the highest-level topic in the hierarchy.
-\begin{tcolorbox}[title=System and User Prompt, colback=gray!5, colframe=gray!40!black, boxrule=0.5pt, breakable=unlimited]
+
+% \begin{tcolorbox}[title=System and User Prompt, colback=gray!5, colframe=gray!40!black, boxrule=0.5pt, breakable=unlimited]
 \begin{lstlisting}[style=json]
 [
   {
@@ -162,6 +164,9 @@ In this example, the \textbf{Parent Topic} is the direct parent, while the \text
     - Subtopics should not merely influence the parent topic but be a sub-example or more specific application of the parent."
   }
 ]
+...
+\end{lstlisting}
+% \end{tcolorbox}
 
 Expand the given Parent Topic into a list of up to 5 or fewer specific subtopics that:
 - Are related to Economic Impact Metrics, especially Economic Impact Metrics.
@@ -178,27 +183,22 @@ Output Format: A JSON list of up to 5 subtopics, e.g.:
 
 ["Subtopic 1", "...", "Subtopic 5"]
 
-Ensure that:
-- All subtopics can increase and decrease in magnitude, but do not contain increase or decrease or any causal relations
-- Each subtopic is distinct and separate from others.
-\end{lstlisting}
-\end{tcolorbox}
 
 \subsubsection*{Generated output}
-The model used for recursive generation of hierarchies was \texttt{gpt-4o} with the default temperature of $1.0$ applied across all datasets. We inserted synonyms as would be expected in real data. For each concept in the hierarchy, we asked GPT for synonyms and inserted them into the hierarchy without children, alongside the original concept. For the simpler task of synonym generation we used \texttt{gpt-4o-mini} to improve efficiency. After the dataset was created, we also injected noise by sampling concepts uniformly at random from across the hierarchy and asking \texttt{gpt-4o} to generate concepts that represented the overlap of all the words in the sample.
 
-\begin{tcolorbox}[title=Model Output, colback=gray!5, colframe=gray!40!black, boxrule=0.5pt]
+...
+
+% \begin{tcolorbox}[title=Model Output, colback=gray!5, colframe=gray!40!black, boxrule=0.5pt]
 \begin{lstlisting}[style=json]
-[
-  "Job Creation in Renewable Sector",
-  "Capital Expenditure on Green Technologies",
-  "Subsidies for Renewable Energy Projects",
-  "Grid Infrastructure Upgrades for Renewables",
-  "R&D Investment in Renewable Technologies"
-]
-\end{lstlisting}
-\end{tcolorbox}
-
+  [
+    "Job Creation in Renewable Sector",
+    "Capital Expenditure on Green Technologies",
+    "Subsidies for Renewable Energy Projects",
+    "Grid Infrastructure Upgrades for Renewables",
+    "R&D Investment in Renewable Technologies"
+  ]
+  \end{lstlisting}
+  % \end{tcolorbox}
 \subsection{Dataset Details}
 We evaluated our method on three publicly available datasets, each containing hierarchical categorical labels. Below, we detail the preprocessing, embedding, and clustering procedures applied to each dataset.
 

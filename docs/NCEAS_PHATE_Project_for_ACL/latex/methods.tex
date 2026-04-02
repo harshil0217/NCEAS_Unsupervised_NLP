@@ -1,14 +1,22 @@
+\section{Related Work}
+
+Dimensionality reduction techniques such as PCA, UMAP \cite{mcinnes2018umap}, and t-SNE \cite{van2008visualizing} are widely used for visualizing high-dimensional data. While PCA preserves global linear structure, nonlinear methods like UMAP and t-SNE focus on local neighborhood preservation, often at the expense of global relationships.
+
+PHATE \cite{moon2019visualizing} was introduced to better capture both local and global structure through diffusion geometry, and has been successfully applied in biological and scientific data analysis. However, its application to large-scale textual data remains less explored.
+
+In hierarchical clustering evaluation, traditional metrics such as ARI and AMI do not capture structural relationships between clusters. Prior work has introduced structure-aware metrics such as LCA-F1 \cite{kosmopoulos2015} and dendrogram purity \cite{heller2005bayesian}, which evaluate agreement between hierarchical structures. These metrics have been shown to provide more meaningful evaluation for hierarchical classification tasks \cite{stein2018}.
+
+\section{Methods}
 \subsection{Dimensionality reduction \& visualization}
 To evaluate its utility for text, we compare PHATE visualizations against those from PCA, UMAP, and t-SNE.
 \begin{description}
     \item[PCA] reduces dimensionality by projecting data onto the leading eigenvectors of the covariance matrix, preserving global linear structure.
     \item[UMAP] uses a weighted k-nearest neighbor (kNN) graph and a nonlinear embedding based on force-directed layout \cite{mcinnes2018umap}.
-    \item[t-SNE] forms a probability distribution over pairwise dissimilarities and embeds points such that the KL divergence between the original and embedded distributions is minimized \cite{van2008visualizing}.
+    \item[t-SNE] forms a probability distribution over pairwise dissimilarities and embeds points such that the KL divergence between the original and embedded distributions is minimized \cite{van2008visualizing}
     \item[PHATE] also constructs a weighted kNN graph, row-normalizes its adjacency matrix to a Markov operator, amplifies global structure by powering the operator, computes information distances using row-wise log-transforms, and applies metric multidimensional scaling to derive low-dimensional coordinates \cite{moon2019visualizing}.
+    \item[PaCMAP] (Pairwise Controlled Manifold Approximation) balances preservation of both local and global structure by explicitly controlling pairwise relationships during embedding optimization.
 \end{description}
-
 \textit{Qualitative comparisons} are made using datasets with ground-truth metadata. Evaluation criteria include cluster coherence, separation of known categories, and preservation of trajectories or arcs in embedding space.
-
 \subsection{Text Embeddings}
 
 We generate dense semantic embeddings using two models: all-MiniLM-L6-v2 and Qwen3-Embedding-0.6B. Each document is converted into a high-dimensional vector representation capturing semantic meaning.
@@ -23,28 +31,25 @@ To assess PHATE in clustering, we:
     \item Cluster with agglomerative clustering (Ward's method), HDBSCAN, or diffusion condensation.
 \end{enumerate}
 
+HERCULES is an LLM-based hierarchical clustering framework that constructs topic hierarchies using semantic reasoning and recursive partitioning. It provides a complementary approach to traditional clustering methods by leveraging language models to infer hierarchical structure.
 Under certain parameters, diffusion condensation is known to be equivalent to agglomerative clustering with particular linkage methods \cite{huguet2023time}, yet these methods differ in general. To our knowledge, this is the first application of diffusion condensation to textual data. 
 
 We evaluate performance using the Adjusted Rand Index (ARI) \cite{rand1971objective}, which quantifies pairwise agreement between predicted and ground-truth clusters. Because clustering algorithms may not yield exactly $n-1$ merges for n points, we evaluate the clustering closest to the ground-truth number of clusters. HDBSCAN-assigned label $-1$ is treated as a singleton cluster. Detailed descriptions of parameter selection processes for clustering and visualization are provided in Appendix \ref{subsec:parameters}.
 
-In addition to ARI, we also report standard clustering metrics including Adjusted Mutual Information (AMI), Fowlkes–Mallows (FM), and Rand Index to provide complementary perspectives on clustering quality.
+In addition to ARI, we also report standard clustering metrics...
 
-To capture hierarchical structure, we additionally use metrics such as LCA-F1, 
-which evaluates agreement between predicted and ground-truth hierarchies by comparing 
-lowest common ancestors \cite{kosmopoulos2015}.
+We also analyze global structure preservation using Shepard diagrams, which compare pairwise distances in high- and low-dimensional spaces.
 
-These evaluation choices are motivated by prior work in hierarchical text classification, 
-which highlights the importance of structure-aware metrics when analyzing semantic hierarchies \cite{stein2018}.
+To capture hierarchical structure, we additionally use metrics such as LCA-F1 \cite{kosmopoulos2015} and dendrogram purity \cite{heller2005bayesian}, which evaluate agreement between predicted and ground-truth hierarchies.
 
+These evaluation choices are motivated by prior work...
 \subsection{Experimental Pipeline}
 
-We implement a unified experimental pipeline in which all methods operate on identical precomputed embeddings. For each dataset, we first generate dense vector representations using all-MiniLM-L6-v2 and Qwen3-Embedding-0.6B. These embeddings are stored and reused across all experiments to ensure consistency.
+We then apply dimensionality reduction methods, including PCA, UMAP, PHATE, and PaCMAP, to obtain low-dimensional representations.
 
-We then apply dimensionality reduction methods, including PCA, UMAP, PHATE, and PaCMAP, to obtain low-dimensional representations. Clustering is performed on each reduced embedding using Agglomerative Clustering, HDBSCAN, and Diffusion Condensation.
+TriMAP was initially considered as a dimensionality reduction method; however, it was not included in the final experiments due to compatibility issues in the computational environment.
 
-All methods operate on the same inputs, ensuring that performance differences arise solely from the methods themselves.
-
-
+Clustering is performed on each reduced embedding using Agglomerative Clustering, HDBSCAN, and Diffusion Condensation.
 \subsection{Datasets}
 To assess the visual quality of PHATE embeddings, public comments from the Environmental Protection Agency (EPA) were sourced from the Federal Register via Regulations.gov as part of a related project studying public perceptions and preferences as related to environmental policy. The data was collected from an open source initiative called Mirrulations\footnote{https://registry.opendata.aws/mirrulations/}, which mirrors this public data through an Amazon Web Services S3 bucket. Once the data was gathered, the text was cleaned by removing HTML tags, special characters, URLs, stop words, and excessively short entries, focusing only on comments submitted after the year 2000. To handle long comments and improve compatibility with transformer models, a head-tail truncation strategy \cite{sun2019fine} was used to preserve meaningful content from the beginning and end of each comment. The cleaned data was embedded using the sentence-transformers model all-\texttt{MiniLM-L6-v2}. 
 
@@ -56,24 +61,34 @@ The resulting datasets were used for both quantitative benchmarking and qualitat
 
 To assess performance across diverse hierarchical domains, we additionally applied our methods to three benchmark datasets with known hierarchies that have been used to evaluate machine learning methods in previous work: Web of Science paper keywords \cite{kowsari2017HDLTex}, Wikipedia article categories \cite{brummer2016dbpedia, NIPS2015_250cf8b5, yang2019xlnet}, and Amazon product reviews \cite{yury_kashnitsky_2020}. Data set sizes appear in Table \ref{tab:dataset_counts}.
 
+To further evaluate generalization to real-world textual data, we additionally conducted experiments on the arXiv and RCV1 datasets. 
+
+The arXiv dataset \cite{arxiv_kaggle} consists of approximately 30,000 scientific documents (titles and abstracts) obtained from a publicly available metadata snapshot. Documents were filtered to relevant domains and constructed by concatenating titles and abstracts. Hierarchical subject categories were used to define ground truth labels at multiple levels of granularity.
+
+The RCV1 dataset \cite{lewis2004rcv1} contains news articles annotated with hierarchical topic codes. We used a processed subset of the corpus, where each document was represented by combining headline and body text. Ground truth labels were derived from professional topic codes defining a hierarchical structure.
+For both datasets, preprocessing, embedding, and evaluation procedures were consistent with those described in Section 3.4.
 \begin{table}[ht]
-\centering
-\caption{Number of datapoints in each dataset.}
-\begin{tabular}{l l l r}
-\hline
-\textbf{Category} & \textbf{Topic} & \textbf{Depth} & \textbf{N} \\
-\hline
-\multirow{4}{*}{Generated} 
- & \multirow{2}{*}{Ecosystems} & Deep & 19{,}469 \\
- &  & Shallow & 4{,}848 \\
- & \multirow{2}{*}{Fisheries} & Deep & 19{,}806 \\
- &  & Shallow & 6{,}708 \\
-\hline
-\multirow{3}{*}{Benchmark}
- & \multicolumn{2}{l}{WoS} & 46{,}985 \\
- & \multicolumn{2}{l}{DBpedia} & 60{,}794 \\
- & \multicolumn{2}{l}{Amazon} & 14{,}824 \\
-\hline
-\end{tabular}
-\label{tab:dataset_counts}
-\end{table}
+    \centering
+    \caption{Number of datapoints in each dataset.}
+    \begin{tabular}{l l l r}
+    \hline
+    \textbf{Category} & \textbf{Topic} & \textbf{Depth} & \textbf{N} \\
+    \hline
+    \multirow{4}{*}{Generated} 
+     & \multirow{2}{*}{Ecosystems} & Deep & 19{,}469 \\
+     &  & Shallow & 4{,}848 \\
+     & \multirow{2}{*}{Fisheries} & Deep & 19{,}806 \\
+     &  & Shallow & 6{,}708 \\
+    \hline
+    \multirow{5}{*}{Benchmark}
+     & \multicolumn{2}{l}{WoS} & 46{,}985 \\
+     & \multicolumn{2}{l}{DBpedia} & 60{,}794 \\
+     & \multicolumn{2}{l}{Amazon} & 14{,}824 \\
+     & \multicolumn{2}{l}{arXiv} & 30{,}000 \\
+     & \multicolumn{2}{l}{RCV1} & 1{,}628 \\
+    \hline
+    \end{tabular}
+    \label{tab:dataset_counts}
+    \end{table}
+\bibliographystyle{acl_natbib}
+\bibliography{custom}
