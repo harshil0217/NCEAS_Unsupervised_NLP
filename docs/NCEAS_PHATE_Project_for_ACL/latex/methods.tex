@@ -1,5 +1,3 @@
-\section{Related Work}
-
 Dimensionality reduction techniques such as PCA, UMAP \cite{mcinnes2018umap}, and t-SNE \cite{van2008visualizing} are widely used for visualizing high-dimensional data. While PCA preserves global linear structure, nonlinear methods like UMAP and t-SNE focus on local neighborhood preservation, often at the expense of global relationships.
 
 PHATE \cite{moon2019visualizing} was introduced to better capture both local and global structure through diffusion geometry, and has been successfully applied in biological and scientific data analysis. However, its application to large-scale textual data remains less explored.
@@ -23,7 +21,6 @@ We generate dense semantic embeddings using two models: all-MiniLM-L6-v2 and Qwe
 For Qwen embeddings, text inputs are tokenized and transformed into 1024-dimensional vectors. Mean pooling is applied to obtain a single representation per document, followed by L2 normalization to ensure consistent similarity comparisons.
 \subsection{Hierarchical clustering}
 
-
 To assess PHATE in clustering, we:
 \begin{enumerate}
 \item Generate datasets with known hierarchical structure (see "Datasets").
@@ -32,19 +29,17 @@ To assess PHATE in clustering, we:
 \item Cluster with agglomerative clustering (Ward's method), HDBSCAN, Diffusion Condensation, and HERCULES.
 \end{enumerate}
 
-HERCULES is an LLM-based hierarchical clustering framework that constructs topic hierarchies using semantic reasoning and recursive partitioning. It provides a complementary approach to traditional clustering methods by leveraging language models to infer hierarchical structure.
+\paragraph{Clustering Methods.}
+We evaluate multiple clustering approaches on the reduced embeddings.
 
-Under certain parameters, diffusion condensation is known to be equivalent to agglomerative clustering with particular linkage methods \cite{huguet2023time}, yet these methods differ in general. To our knowledge, this is the first application of diffusion condensation to textual data.
+Agglomerative clustering constructs a hierarchical tree using Ward linkage, enabling direct evaluation of hierarchical structure.
 
-We evaluate clustering performance using the Adjusted Rand Index (ARI) \cite{rand1971objective}, which quantifies pairwise agreement between predicted and ground-truth clusters. Because clustering algorithms may not yield exactly $n-1$ merges for $n$ points, we evaluate the clustering closest to the ground-truth number of clusters. HDBSCAN-assigned label $-1$ is treated as a singleton cluster. Detailed descriptions of parameter selection processes for clustering and visualization are provided in Appendix \ref{subsec:parameters}.
+HDBSCAN is a density-based clustering method that identifies clusters of varying density while labeling noise points automatically.
 
-In addition to ARI, we also report Adjusted Mutual Information (AMI) \cite{vinh2010information}, which measures agreement between predicted and ground-truth cluster assignments while accounting for chance.
+Diffusion Condensation builds hierarchical structure through an iterative diffusion process, progressively merging points based on similarity.
 
-We analyze global structure preservation using Shepard diagrams \cite{shepard1962analysis}, which compare pairwise distances in high- and low-dimensional spaces.
-We also evaluate local structure preservation using trustworthiness and continuity \cite{venna2006local}.
-To capture hierarchical structure, we additionally use metrics such as LCA-F1 \cite{kosmopoulos2015} and dendrogram purity \cite{heller2005bayesian}, which evaluate agreement between predicted and ground-truth hierarchies.
-These evaluation choices are motivated by prior work on hierarchical clustering evaluation \cite{kosmopoulos2015}.
-
+HERCULES is an LLM-based hierarchical clustering framework that constructs topic hierarchies using semantic reasoning and recursive partitioning.
+These methods were selected to compare hierarchical and density-based clustering approaches under a unified embedding and reduction pipeline.
 \subsection{Experimental Pipeline}
 
 We then apply dimensionality reduction methods, including PCA, UMAP, PHATE, and PaCMAP, to obtain low-dimensional representations.
