@@ -84,13 +84,14 @@ def find_lca(i, j, parent_map):
     return None
 
 
-def lca_f1(pred_tree, gt_tree, true_labels, n_samples=10_000):
+def lca_f1(pred_tree, gt_tree, true_labels, n_samples=10_000, n_trials=30):
     """
     Monte Carlo estimation of LCA-F1 for hierarchical clustering evaluation.
 
     For each sample: picks a ground-truth cluster proportional to its number of pairs,
     selects two random points from it, finds their LCA in both the predicted and ground
     truth trees, then computes per-sample F1 from the overlap of the two LCA subtrees.
+    Runs n_trials independent trials of n_samples each and returns the mean.
 
     Parameters
     ----------
@@ -101,12 +102,14 @@ def lca_f1(pred_tree, gt_tree, true_labels, n_samples=10_000):
     true_labels : array-like of shape (n_samples,)
         Ground-truth flat cluster labels for each data point (index = leaf node id).
     n_samples : int, optional
-        Number of Monte Carlo samples (default 10_000).
+        Number of Monte Carlo samples per trial (default 10_000).
+    n_trials : int, optional
+        Number of independent trials to average over (default 30).
 
     Returns
     -------
     float
-        Average LCA-F1 score over all sampled pairs (0–1).
+        Mean LCA-F1 score across all trials (0–1).
     """
     if isinstance(pred_tree, ClusterNode):
         pred_tree = clusternode_to_anytree(pred_tree)
@@ -129,26 +132,31 @@ def lca_f1(pred_tree, gt_tree, true_labels, n_samples=10_000):
     weights = cluster_counts_sorted * (cluster_counts_sorted - 1) / 2  # C(k,2) pairs
     weights = weights / weights.sum()
 
-    f1_scores = []
+    trial_means = []
 
-    for _ in range(n_samples):
-        c = np.random.choice(true_clusters_sorted, p=weights)
-        cluster_idx = np.where(true_labels == c)[0]
-        i, j = np.random.choice(cluster_idx, size=2, replace=False)
+    for _ in range(n_trials):
+        f1_scores = []
 
-        pred_lca_id = find_lca(i, j, pred_parent_map)
-        gt_lca_id = find_lca(i, j, gt_parent_map)
+        for _ in range(n_samples):
+            c = np.random.choice(true_clusters_sorted, p=weights)
+            cluster_idx = np.where(true_labels == c)[0]
+            i, j = np.random.choice(cluster_idx, size=2, replace=False)
 
-        pred_leaves = set(get_leaves(pred_node_map[pred_lca_id]))
-        gt_leaves = set(get_leaves(gt_node_map[gt_lca_id]))
+            pred_lca_id = find_lca(i, j, pred_parent_map)
+            gt_lca_id = find_lca(i, j, gt_parent_map)
 
-        intersection = len(pred_leaves & gt_leaves)
-        precision = intersection / len(pred_leaves)
-        recall = intersection / len(gt_leaves)
+            pred_leaves = set(get_leaves(pred_node_map[pred_lca_id]))
+            gt_leaves = set(get_leaves(gt_node_map[gt_lca_id]))
 
-        if precision + recall == 0:
-            f1_scores.append(0.0)
-        else:
-            f1_scores.append(2 * precision * recall / (precision + recall))
+            intersection = len(pred_leaves & gt_leaves)
+            precision = intersection / len(pred_leaves)
+            recall = intersection / len(gt_leaves)
 
-    return float(np.mean(f1_scores))
+            if precision + recall == 0:
+                f1_scores.append(0.0)
+            else:
+                f1_scores.append(2 * precision * recall / (precision + recall))
+
+        trial_means.append(np.mean(f1_scores))
+
+    return float(np.mean(trial_means))
