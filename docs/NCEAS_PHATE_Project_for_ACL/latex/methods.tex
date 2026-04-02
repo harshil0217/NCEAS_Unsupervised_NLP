@@ -4,7 +4,7 @@ Dimensionality reduction techniques such as PCA, UMAP \cite{mcinnes2018umap}, an
 
 PHATE \cite{moon2019visualizing} was introduced to better capture both local and global structure through diffusion geometry, and has been successfully applied in biological and scientific data analysis. However, its application to large-scale textual data remains less explored.
 
-In hierarchical clustering evaluation, traditional metrics such as ARI and AMI do not capture structural relationships between clusters. Prior work has introduced structure-aware metrics such as LCA-F1 \cite{kosmopoulos2015} and dendrogram purity \cite{heller2005bayesian}, which evaluate agreement between hierarchical structures. These metrics have been shown to provide more meaningful evaluation for hierarchical classification tasks \cite{stein2018}.
+In hierarchical clustering evaluation, traditional metrics such as ARI and AMI do not capture structural relationships between clusters. Prior work has introduced structure-aware metrics such as LCA-F1 \cite{kosmopoulos2015} and dendrogram purity \cite{heller2005bayesian}, which evaluate agreement between hierarchical structures. These metrics have been shown to provide more meaningful evaluation for hierarchical classification tasks \cite{kosmopoulos2015}
 
 \section{Methods}
 \subsection{Dimensionality reduction \& visualization}
@@ -14,7 +14,7 @@ To evaluate its utility for text, we compare PHATE visualizations against those 
     \item[UMAP] uses a weighted k-nearest neighbor (kNN) graph and a nonlinear embedding based on force-directed layout \cite{mcinnes2018umap}.
     \item[t-SNE] forms a probability distribution over pairwise dissimilarities and embeds points such that the KL divergence between the original and embedded distributions is minimized \cite{van2008visualizing}
     \item[PHATE] also constructs a weighted kNN graph, row-normalizes its adjacency matrix to a Markov operator, amplifies global structure by powering the operator, computes information distances using row-wise log-transforms, and applies metric multidimensional scaling to derive low-dimensional coordinates \cite{moon2019visualizing}.
-    \item[PaCMAP] (Pairwise Controlled Manifold Approximation) balances preservation of both local and global structure by explicitly controlling pairwise relationships during embedding optimization.
+    \item[PaCMAP] (Pairwise Controlled Manifold Approximation) balances preservation of both local and global structure by explicitly controlling pairwise relationships during embedding optimization \cite{wang2021pacmap}.
 \end{description}
 \textit{Qualitative comparisons} are made using datasets with ground-truth metadata. Evaluation criteria include cluster coherence, separation of known categories, and preservation of trajectories or arcs in embedding space.
 \subsection{Text Embeddings}
@@ -23,33 +23,34 @@ We generate dense semantic embeddings using two models: all-MiniLM-L6-v2 and Qwe
 
 For Qwen embeddings, text inputs are tokenized and transformed into 1024-dimensional vectors. Mean pooling is applied to obtain a single representation per document, followed by L2 normalization to ensure consistent similarity comparisons.
 \subsection{Hierarchical clustering}
+
+
 To assess PHATE in clustering, we:
 \begin{enumerate}
 \item Generate datasets with known hierarchical structure (see "Datasets").
-    \item Embed these using GPT \texttt{text-embedding-3-large}.
-    \item Apply PCA, UMAP, and PHATE for dimensionality reduction.
-    \item Cluster with agglomerative clustering (Ward's method), HDBSCAN, or diffusion condensation.
+\item Embed these using GPT \texttt{text-embedding-3-large}.
+\item Apply PCA, UMAP, and PHATE for dimensionality reduction.
+\item Cluster with agglomerative clustering (Ward's method), HDBSCAN, Diffusion Condensation, and HERCULES.
 \end{enumerate}
 
 HERCULES is an LLM-based hierarchical clustering framework that constructs topic hierarchies using semantic reasoning and recursive partitioning. It provides a complementary approach to traditional clustering methods by leveraging language models to infer hierarchical structure.
-Under certain parameters, diffusion condensation is known to be equivalent to agglomerative clustering with particular linkage methods \cite{huguet2023time}, yet these methods differ in general. To our knowledge, this is the first application of diffusion condensation to textual data. 
 
-We evaluate performance using the Adjusted Rand Index (ARI) \cite{rand1971objective}, which quantifies pairwise agreement between predicted and ground-truth clusters. Because clustering algorithms may not yield exactly $n-1$ merges for n points, we evaluate the clustering closest to the ground-truth number of clusters. HDBSCAN-assigned label $-1$ is treated as a singleton cluster. Detailed descriptions of parameter selection processes for clustering and visualization are provided in Appendix \ref{subsec:parameters}.
+Under certain parameters, diffusion condensation is known to be equivalent to agglomerative clustering with particular linkage methods \cite{huguet2023time}, yet these methods differ in general. To our knowledge, this is the first application of diffusion condensation to textual data.
 
-In addition to ARI, we also report standard clustering metrics...
+We evaluate clustering performance using the Adjusted Rand Index (ARI) \cite{rand1971objective}, which quantifies pairwise agreement between predicted and ground-truth clusters. Because clustering algorithms may not yield exactly $n-1$ merges for $n$ points, we evaluate the clustering closest to the ground-truth number of clusters. HDBSCAN-assigned label $-1$ is treated as a singleton cluster. Detailed descriptions of parameter selection processes for clustering and visualization are provided in Appendix \ref{subsec:parameters}.
 
-We also analyze global structure preservation using Shepard diagrams, which compare pairwise distances in high- and low-dimensional spaces.
+In addition to ARI, we also report Adjusted Mutual Information (AMI), which measures agreement between predicted and ground-truth cluster assignments while accounting for chance.
+
+We analyze global structure preservation using Shepard diagrams, which compare pairwise distances in high- and low-dimensional spaces.
 
 To capture hierarchical structure, we additionally use metrics such as LCA-F1 \cite{kosmopoulos2015} and dendrogram purity \cite{heller2005bayesian}, which evaluate agreement between predicted and ground-truth hierarchies.
-
-These evaluation choices are motivated by prior work...
+These evaluation choices are motivated by prior work on hierarchical clustering evaluation \cite{kosmopoulos2015}.
 \subsection{Experimental Pipeline}
 
 We then apply dimensionality reduction methods, including PCA, UMAP, PHATE, and PaCMAP, to obtain low-dimensional representations.
 
 TriMAP was initially considered as a dimensionality reduction method; however, it was not included in the final experiments due to compatibility issues in the computational environment.
-
-Clustering is performed on each reduced embedding using Agglomerative Clustering, HDBSCAN, and Diffusion Condensation.
+Clustering is performed on each reduced embedding using Agglomerative Clustering, HDBSCAN, Diffusion Condensation, and HERCULES.
 \subsection{Datasets}
 To assess the visual quality of PHATE embeddings, public comments from the Environmental Protection Agency (EPA) were sourced from the Federal Register via Regulations.gov as part of a related project studying public perceptions and preferences as related to environmental policy. The data was collected from an open source initiative called Mirrulations\footnote{https://registry.opendata.aws/mirrulations/}, which mirrors this public data through an Amazon Web Services S3 bucket. Once the data was gathered, the text was cleaned by removing HTML tags, special characters, URLs, stop words, and excessively short entries, focusing only on comments submitted after the year 2000. To handle long comments and improve compatibility with transformer models, a head-tail truncation strategy \cite{sun2019fine} was used to preserve meaningful content from the beginning and end of each comment. The cleaned data was embedded using the sentence-transformers model all-\texttt{MiniLM-L6-v2}. 
 
@@ -91,4 +92,4 @@ For both datasets, preprocessing, embedding, and evaluation procedures were cons
     \label{tab:dataset_counts}
     \end{table}
 \bibliographystyle{acl_natbib}
-\bibliography{custom}
+\bibliography{refs,custom}
