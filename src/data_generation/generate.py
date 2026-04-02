@@ -40,7 +40,7 @@ model = 'openai/gpt-oss-120b'
 
 def generate_hierarchy(topics, theme, terms=None, depth=2, temperature=0.7, model=model, num=3,with_synonyms=0,branching="constant",max_num=20):
     """
-    Generate hierarchical data using the OpenAI API while maintaining context across API calls.
+    Generate hierarchical data using the Groq API while maintaining context across API calls.
     """
     hierarchy = {}
     seen_nodes = set()
