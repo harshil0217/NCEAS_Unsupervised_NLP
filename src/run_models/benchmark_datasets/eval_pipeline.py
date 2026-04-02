@@ -90,7 +90,9 @@ from cuml.cluster import HDBSCAN as cuHDBSCAN
 # ======================
 from custom_packages.fowlkes_mallows import FowlkesMallows
 from custom_packages.dendrogram_purity import dendrogram_purity
+from custom_packages.lca_f1 import lca_f1, clusternode_to_anytree
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
+import pickle
 
 from tqdm import tqdm
 
@@ -103,109 +105,25 @@ warnings.filterwarnings("ignore")
 # =====================================
 # Dendrogram Purity Sampling Config
 # =====================================
-DENDROGRAM_PURITY_SAMPLE_SIZE = 1500
-
 # Reload modules if needed
 importlib.reload(phate)
 
 
-# =====================================
-# Dendrogram Purity Sampling Functions
-# =====================================
-
-def sample_for_dendrogram_purity(labels, sample_size=DENDROGRAM_PURITY_SAMPLE_SIZE, random_state=67):
+def load_gt_tree(dataset_name):
     """
-    Sample indices with weighted sampling to preserve class distribution.
+    Load a pre-built ground truth tree from pkl.
 
     Args:
-        labels: Array of class labels at the lowest hierarchy level
-        sample_size: Number of points to sample (default: 2000)
-        random_state: Random seed for reproducibility
+        dataset_name: Dataset name matching the saved pkl filename
 
     Returns:
-        sampled_indices: Array of indices into the original data
+        root: anytree.Node root of the ground truth tree
+        node_map: dict mapping node ID → anytree.Node (leaf IDs are row indices)
     """
-    rng = np.random.RandomState(random_state)
-
-    n_samples = len(labels)
-    if n_samples <= sample_size:
-        # If we have fewer points than sample_size, return all indices
-        return np.arange(n_samples)
-
-    # Get unique classes and their counts
-    unique_classes, class_counts = np.unique(labels, return_counts=True)
-
-    # Calculate how many samples to take from each class (proportional)
-    class_proportions = class_counts / n_samples
-    samples_per_class = np.round(class_proportions * sample_size).astype(int)
-
-    # Adjust to ensure we get exactly sample_size (handle rounding)
-    diff = sample_size - samples_per_class.sum()
-    if diff != 0:
-        # Add/remove from largest classes
-        sorted_idx = np.argsort(class_counts)[::-1]
-        for i in range(abs(diff)):
-            idx = sorted_idx[i % len(sorted_idx)]
-            samples_per_class[idx] += np.sign(diff)
-
-    # Sample from each class
-    sampled_indices = []
-    for cls, n_samples_cls in zip(unique_classes, samples_per_class):
-        cls_indices = np.where(labels == cls)[0]
-        # Handle case where class has fewer samples than requested
-        n_to_sample = min(n_samples_cls, len(cls_indices))
-        if n_to_sample > 0:
-            sampled = rng.choice(cls_indices, size=n_to_sample, replace=False)
-            sampled_indices.extend(sampled)
-
-    return np.array(sampled_indices)
-
-
-def build_sampled_tree_for_purity(embed_data, sampled_indices, cluster_method):
-    """
-    Build a smaller tree from sampled points for dendrogram purity calculation.
-    Uses the same clustering algorithm being evaluated to ensure consistency.
-
-    Args:
-        embed_data: Full embedding data array
-        sampled_indices: Indices of sampled points
-        cluster_method: Clustering method to use ("Agglomerative", "HDBSCAN", or "DC")
-
-    Returns:
-        tree: ClusterNode tree root
-        index_map: Mapping from sampled tree leaf indices to original indices
-    """
-    # Extract sampled embeddings
-    sampled_embeddings = embed_data[sampled_indices]
-
-    if cluster_method == "Agglomerative":
-        # Use scipy ward linkage (cuML AgglomerativeClustering doesn't expose linkage tree)
-        Z_sampled = linkage(sampled_embeddings, method='ward')
-        tree, _ = to_tree(Z_sampled, rd=True)
-
-    elif cluster_method == "HDBSCAN":
-        # Use cuML HDBSCAN
-        model = cuHDBSCAN(min_cluster_size=5, min_samples=1)
-        model.fit(sampled_embeddings)
-        Z_sampled = model.single_linkage_tree_.to_numpy()
-        tree, _ = to_tree(Z_sampled, rd=True)
-
-    elif cluster_method == "DC":
-        # Use Diffusion Condensation
-        dc_model = dc(min_clusters=1, max_iterations=5000, k=10, alpha=3)
-        dc_model.fit(sampled_embeddings)
-        tree = dc_model.tree_
-
-        # Fallback to ward linkage if DC fails to produce a tree
-        if tree is None:
-            Z_sampled = linkage(sampled_embeddings, method='ward')
-            tree, _ = to_tree(Z_sampled, rd=True)
-
-    else:
-        raise ValueError(f"Unknown cluster_method: {cluster_method}")
-
-    # Return tree and the indices mapping (leaf i in tree -> sampled_indices[i] in original)
-    return tree, sampled_indices
+    path = f"intermediate_data/ground_truth_trees/{dataset_name}_tree.pkl"
+    with open(path, "rb") as f:
+        saved = pickle.load(f)
+    return saved["root"], saved["node_map"]
 
 
 # =====================================
@@ -455,9 +373,10 @@ def apply_dimensionality_reduction(embeddings, reduction_dir, embed_filename, re
 
 
 def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
-                   cluster_levels, topic_dict, label_dir, short, lowest_level_labels):
+                   cluster_levels, topic_dict, label_dir, short,
+                   gt_tree_root=None, gt_node_map=None):
     embed_data = embedding_models[embedding_model][embed_name]
-    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": [], "Dendrogram Purity": []}
+    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": [], "Dendrogram Purity": [], "LCA_F1": []}
 
     print(f"\n{'='*60}")
     print(f"Processing Embedding Method: {embed_name}")
@@ -465,17 +384,29 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
     print(f"Embedding shape: {embed_data.shape}")
     print(f"{'='*60}")
 
-    # Build the tree once per embedding-clustering method combination
-    # For Agglomerative, we only build the tree on the sample for dendrogram purity
-    # For HDBSCAN and DC, we need the full tree to cut at different levels
+    # Build the full linkage tree once per embedding-clustering method combination.
+    # All three methods now use fcluster (or DC's get_labels) to cut at each level.
     tree = None
     Z = None
     dc_model = None
 
     if cluster_method == "Agglomerative":
-        # Agglomerative: No full tree needed - we'll create models with n_clusters for each level
-        # The sampled tree for dendrogram purity is built later via build_sampled_tree_for_purity()
-        print("Using cuML Agglomerative Clustering (GPU) - will fit per level...")
+        linkage_path = os.path.join(
+            f"intermediate_data/{embedding_model}_linkage", short, embed_name,
+            "Agg_linkage.npy"
+        )
+
+        if os.path.exists(linkage_path):
+            print(f"Loading cached Agglomerative linkage from {linkage_path}")
+            Z = np.load(linkage_path)
+        else:
+            print("Building ward linkage tree for Agglomerative Clustering...")
+            Z = linkage(embed_data, method='ward')
+            os.makedirs(os.path.dirname(linkage_path), exist_ok=True)
+            np.save(linkage_path, Z)
+            print(f"Saved linkage matrix to {linkage_path}")
+
+        tree, node_list = to_tree(Z, rd=True)
 
     elif cluster_method == "HDBSCAN":
         linkage_path = os.path.join(
@@ -525,25 +456,17 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
             tree = dc_model.tree_
             node_list = dc_model.node_list_
 
-    # Build sampled tree for dendrogram purity calculation (2000 points)
-    # Filter out NaN values from lowest_level_labels before sampling
-    valid_mask = ~pd.isna(lowest_level_labels)
-    valid_indices = np.where(valid_mask)[0]
-    valid_labels = lowest_level_labels[valid_mask]
-
-    print(f"Building sampled tree for dendrogram purity ({DENDROGRAM_PURITY_SAMPLE_SIZE} points) using {cluster_method}...")
-    # Sample from valid indices only
-    sampled_relative_indices = sample_for_dendrogram_purity(valid_labels)
-    sampled_indices = valid_indices[sampled_relative_indices]
-    sampled_tree, _ = build_sampled_tree_for_purity(embed_data, sampled_indices, cluster_method)
-    print(f"Sampled {len(sampled_indices)} points for dendrogram purity")
+    # Convert full predicted tree to anytree once; used for both dendrogram purity and LCA-F1.
+    # Will be None for DC when all labels are cached and the model was not fit.
+    pred_tree = None
+    if tree is not None:
+        pred_tree = clusternode_to_anytree(tree)
 
     # Now iterate through cluster levels
     for level in cluster_levels:
         print(f"Testing cluster level: {level}")
 
         if cluster_method == "Agglomerative":
-            # Create a new cuML Agglomerative model with n_clusters=level for each level
             label_path = os.path.join(
                 f"intermediate_data/{embedding_model}_labels", short, embed_name,
                 f"Agg_{level}_labels.npy"
@@ -553,21 +476,10 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
                 print(f"Loading cached Agglomerative labels from {label_path}")
                 labels = np.load(label_path)
             else:
-                print(f"Fitting cuML Agglomerative Clustering with n_clusters={level}...")
-                agg_model = cuAgglomerativeClustering(n_clusters=level)
-                agg_model.fit(embed_data)
-                labels = agg_model.labels_
-
-                # Convert GPU result to numpy if needed
-                if hasattr(labels, 'to_output'):
-                    labels = labels.to_output('numpy')
-                elif not isinstance(labels, np.ndarray):
-                    labels = np.array(labels)
-
+                labels = fcluster(Z, level, criterion='maxclust')
                 os.makedirs(os.path.dirname(label_path), exist_ok=True)
                 np.save(label_path, labels)
-
-            print(f"Agglomerative clustering complete. Unique labels: {len(np.unique(labels))}")
+                print(f"Agglomerative fcluster cut at {level}. Unique labels: {len(np.unique(labels))}")
 
         elif cluster_method == "HDBSCAN":
             label_path = os.path.join(
@@ -629,18 +541,29 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
         ari = adjusted_rand_score(target_lst, label_lst)
         ami = adjusted_mutual_info_score(target_lst, label_lst)
 
-        # Compute dendrogram purity using sampled tree and ground truth labels for this level
-        # The sampled_tree uses indices 0 to len(sampled_indices)-1 as leaf nodes
-        sampled_labels_for_purity = topic_series[sampled_indices]
-        dp = dendrogram_purity(sampled_tree, sampled_labels_for_purity)
+        # Compute hierarchical metrics using the full predicted tree.
+        # pred_tree is None only when DC labels were all cached and the model was not fit.
+        if pred_tree is not None:
+            dp = dendrogram_purity(pred_tree, topic_series)
+        else:
+            dp = np.nan
 
-        print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, Dendrogram_Purity: {dp:.4f}")
+        if pred_tree is not None and gt_tree_root is not None:
+            lca_f1_score = lca_f1(pred_tree, gt_tree_root, topic_series)
+        else:
+            lca_f1_score = np.nan
+
+        print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, "
+              f"Dendrogram_Purity: {dp:.4f}, LCA_F1: {lca_f1_score:.4f}" if not np.isnan(lca_f1_score)
+              else f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, "
+                   f"Dendrogram_Purity: {dp:.4f}, LCA_F1: NaN")
 
         combo_scores["FM"].append(fm_score)
         combo_scores["Rand"].append(rand)
         combo_scores["ARI"].append(ari)
         combo_scores["AMI"].append(ami)
         combo_scores["Dendrogram Purity"].append(dp)
+        combo_scores["LCA_F1"].append(lca_f1_score)
 
     return embedding_model, embed_name, cluster_method, combo_scores
 
@@ -676,9 +599,11 @@ def run_pipeline(dataset_name):
     embedding_models = {}  # Will store {model_name: {reduction_method: embeddings}}
 
     # Prepare data once (same for all embedding models)
-    shuffle_idx = np.random.RandomState(seed=67).permutation(len(data))
-    topic_data = data.iloc[shuffle_idx].reset_index(drop=True)
-    reverse_idx = np.argsort(shuffle_idx)
+    topic_data = data.reset_index(drop=True)
+
+    # Load pre-built ground truth tree (leaf IDs match row indices directly)
+    print("Loading pre-built ground truth tree...")
+    gt_tree_root, gt_node_map = load_gt_tree(dataset_name)
 
     # Build topic_dict from ground truth categories
     topic_dict = {}
@@ -731,8 +656,7 @@ def run_pipeline(dataset_name):
             np.save(embedding_path, embedding_list)
             print(f"Saved embeddings to {embedding_path}")
 
-        # Shuffle embeddings with the same index as topic_data
-        embeddings = np.array(embedding_list)[shuffle_idx]
+        embeddings = np.array(embedding_list)
 
         # Apply dimensionality reduction
         embedding_methods_for_model = apply_dimensionality_reduction(
@@ -758,12 +682,6 @@ def run_pipeline(dataset_name):
     label_dir = f"intermediate_data/{embedding_model}_labels"
     os.makedirs(label_dir, exist_ok=True)
 
-    # Get lowest level labels for dendrogram purity sampling
-    # The deepest category (highest cluster count) is the finest granularity
-    lowest_level_key = max(topic_dict.keys())
-    lowest_level_labels = topic_dict[lowest_level_key]
-    print(f"Using lowest level labels with {lowest_level_key} unique classes for dendrogram purity sampling")
-
     # Run each combo sequentially
     combo_results = []
     for embedding_model, embed_name, cluster_method in tqdm(combo_params, desc="Processing embedding-clustering combos"):
@@ -776,7 +694,8 @@ def run_pipeline(dataset_name):
             topic_dict,
             label_dir,
             short=config["short"],
-            lowest_level_labels=lowest_level_labels
+            gt_tree_root=gt_tree_root,
+            gt_node_map=gt_node_map,
         )
         combo_results.append(result)
 
@@ -786,6 +705,7 @@ def run_pipeline(dataset_name):
         scores_all[(embedding_model, embed_name, cluster_method)]["ARI"] = combo_scores["ARI"]
         scores_all[(embedding_model, embed_name, cluster_method)]["AMI"] = combo_scores["AMI"]
         scores_all[(embedding_model, embed_name, cluster_method)]["Dendrogram Purity"] = combo_scores["Dendrogram Purity"]
+        scores_all[(embedding_model, embed_name, cluster_method)]["LCA_F1"] = combo_scores["LCA_F1"]
 
     print(f"\n{'='*60}")
     print("All clustering and evaluation complete!")
@@ -807,6 +727,7 @@ def run_pipeline(dataset_name):
                 "ARI": score_dict["ARI"][i],
                 "AMI": score_dict["AMI"][i],
                 "Dendrogram_Purity": score_dict["Dendrogram Purity"][i],
+                "LCA_F1": score_dict["LCA_F1"][i],
             })
 
     # Create DataFrame
