@@ -34,6 +34,10 @@ def dendrogram_purity(tree, true_labels, n_samples=1000):
         cluster_idx = np.where(true_labels == c)[0]
         i, j = np.random.choice(cluster_idx, size=2, replace=False)
 
+        # skip if either point is absent from the predicted tree (e.g. DC produced incomplete tree)
+        if i not in parent_map or j not in parent_map:
+            continue
+
         # find lowest common ancestor of i and j in the dendrogram
         lca_id = find_lca(i, j, parent_map)
         lca_node = node_map[lca_id]
@@ -43,4 +47,4 @@ def dendrogram_purity(tree, true_labels, n_samples=1000):
         purity = np.sum(true_labels[lca_leaves] == c) / len(lca_leaves)
         scores.append(purity)
 
-    return float(np.mean(scores))
+    return float(np.mean(scores)) if scores else float('nan')

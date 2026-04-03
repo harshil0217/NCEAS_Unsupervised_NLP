@@ -169,6 +169,12 @@ def lca_f1(pred_tree, gt_tree, true_labels, n_samples=1000):
         cluster_idx = np.where(true_labels == c)[0]
         i, j = np.random.choice(cluster_idx, size=2, replace=False)
 
+        # skip if either point is absent from a tree (e.g. DC produced incomplete tree)
+        if i not in pred_parent_map or j not in pred_parent_map:
+            continue
+        if i not in gt_parent_map or j not in gt_parent_map:
+            continue
+
         pred_lca_id = find_lca(i, j, pred_parent_map)
         gt_lca_id = find_lca(i, j, gt_parent_map)
 
@@ -184,4 +190,4 @@ def lca_f1(pred_tree, gt_tree, true_labels, n_samples=1000):
         else:
             f1_scores.append(2 * precision * recall / (precision + recall))
 
-    return float(np.mean(f1_scores))
+    return float(np.mean(f1_scores)) if f1_scores else float('nan')

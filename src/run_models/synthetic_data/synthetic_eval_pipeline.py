@@ -88,6 +88,8 @@ from tqdm import tqdm
 # ========================
 from custom_packages.fowlkes_mallows import FowlkesMallows
 from custom_packages.dendrogram_purity import dendrogram_purity
+from custom_packages.lca_f1 import lca_f1, clusternode_to_anytree
+from run_models.benchmark_datasets.build_ground_truth_trees import build_ground_truth_tree
 
 
 # ===================
@@ -151,9 +153,9 @@ def make_noise_labels_unique(labels):
 # ===================
 # Clustering Runner
 # ===================
-def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, cluster_levels, topic_dict, theme, t, max_sub, depth, synonyms, branching, add_noise):
+def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, cluster_levels, topic_dict, theme, t, max_sub, depth, synonyms, branching, add_noise, gt_tree_root=None):
     """Run clustering on reduced embeddings and evaluate against ground truth."""
-    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": [], "Dendrogram Purity": []}
+    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": [], "Dendrogram Purity": [], "LCA_F1": []}
     try:
         print(f"\n{'='*60}")
         print(f"Processing Embedding Method: {embed_name}")
@@ -228,6 +230,9 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
                 tree, node_list = to_tree(Z, rd=True)
                 dc_model = None  # Mark that we're using fallback
 
+        # Convert full predicted tree to anytree once; used for both dendrogram purity and LCA-F1.
+        pred_tree = clusternode_to_anytree(tree) if tree is not None else None
+
         # Now iterate through cluster levels
         for level in cluster_levels:
             print(f"Testing cluster level: {level}")
@@ -295,16 +300,22 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
             ari = adjusted_rand_score(target_lst, label_lst)
             ami = adjusted_mutual_info_score(target_lst, label_lst)
 
-            # Compute dendrogram purity using tree object
-            dp = dendrogram_purity(tree, target_lst)
+            # Compute dendrogram purity using anytree object
+            dp = dendrogram_purity(pred_tree, target_lst) if pred_tree is not None else np.nan
 
-            print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, Dendrogram_Purity: {dp:.4f}")
+            lca_f1_score = lca_f1(pred_tree, gt_tree_root, topic_series) if (pred_tree is not None and gt_tree_root is not None) else np.nan
+
+            print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, "
+                  f"Dendrogram_Purity: {dp:.4f}, LCA_F1: {lca_f1_score:.4f}" if not np.isnan(lca_f1_score)
+                  else f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, "
+                       f"Dendrogram_Purity: {dp:.4f}, LCA_F1: NaN")
 
             combo_scores["FM"].append(fm_score)
             combo_scores["Rand"].append(rand)
             combo_scores["ARI"].append(ari)
             combo_scores["AMI"].append(ami)
             combo_scores["Dendrogram Purity"].append(dp)
+            combo_scores["LCA_F1"].append(lca_f1_score)
 
         return embedding_model, embed_name, cluster_method, combo_scores
     except Exception as e:
@@ -479,6 +490,13 @@ for embedding_model in embedding_model_names:
     # Store the embedding methods for this model
     embedding_models[embedding_model] = embedding_methods_for_model
 
+# Build ground truth tree from synthetic data (topic_data already shuffled to match embeddings)
+# Rename 'category {i}' -> 'category_{i}' as expected by build_ground_truth_tree
+print("Building ground truth tree for synthetic data...")
+gt_df = topic_data.rename(columns={f'category {i}': f'category_{i}' for i in range(depth)})
+gt_tree_root, _ = build_ground_truth_tree(gt_df, depth)
+print(f"Ground truth tree built. Root id: {gt_tree_root.name}")
+
 # Run clustering and evaluation
 scores_all = defaultdict(lambda: defaultdict(list))
 
@@ -494,7 +512,7 @@ combo_params = [
 combo_results = []
 for embedding_model, embed_name, cluster_method in tqdm(combo_params, desc="Processing embedding-clustering combos"):
     embed_data = embedding_models[embedding_model][embed_name]
-    result = safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, cluster_levels, topic_dict, theme, t, max_sub, depth, synonyms, branching, add_noise)
+    result = safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, cluster_levels, topic_dict, theme, t, max_sub, depth, synonyms, branching, add_noise, gt_tree_root=gt_tree_root)
     combo_results.append(result)
 
 # Collect results
@@ -504,6 +522,7 @@ for embedding_model, embed_name, cluster_method, combo_scores in combo_results:
     scores_all[(embedding_model, embed_name, cluster_method)]["ARI"] = combo_scores["ARI"]
     scores_all[(embedding_model, embed_name, cluster_method)]["AMI"] = combo_scores["AMI"]
     scores_all[(embedding_model, embed_name, cluster_method)]["Dendrogram Purity"] = combo_scores["Dendrogram Purity"]
+    scores_all[(embedding_model, embed_name, cluster_method)]["LCA_F1"] = combo_scores["LCA_F1"]
 
 print(f"\n{'='*60}")
 print("All clustering and evaluation complete!")
@@ -524,6 +543,7 @@ for (embedding_model, embed_name, cluster_method), score_dict in scores_all.item
             "ARI": score_dict["ARI"][i],
             "AMI": score_dict["AMI"][i],
             "Dendrogram_Purity": score_dict["Dendrogram Purity"][i],
+            "LCA_F1": score_dict["LCA_F1"][i],
         })
 
 # Create DataFrame and save
