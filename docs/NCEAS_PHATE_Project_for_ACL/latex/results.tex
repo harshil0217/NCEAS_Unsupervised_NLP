@@ -52,7 +52,7 @@ The visualization of PHATE compared to PCA, t-SNE and UMAP colored by the top 20
 \FloatBarrier
 \subsection{Dimensionality Reduction Evaluation}
 
-Across all datasets, including both synthetic benchmarks and real-world datasets such as arXiv and RCV1, trustworthiness and continuity values are nearly identical across all dimensionality reduction methods, with values consistently around 0.5. This indicates that all methods preserve local neighborhood structure to a similar extent, and that performance is close to a random baseline, suggesting limited preservation of local neighborhood relationships when projecting high-dimensional embeddings to two dimensions.
+As shown in Table \ref{tab:dr_metrics}, across all datasets, including both synthetic benchmarks and real-world datasets such as arXiv and RCV1, trustworthiness and continuity values are nearly identical across all dimensionality reduction methods, with values consistently around 0.5. This indicates that all methods preserve local neighborhood structure to a similar extent, and that performance is close to a random baseline, suggesting limited preservation of local neighborhood relationships when projecting high-dimensional embeddings to two dimensions.
 
 Shepard diagrams show significant deviation from the diagonal across all methods, indicating that global distances are not well preserved. This suggests that dimensionality reduction introduces non-linear distortion, where distances are compressed in some regions and expanded in others.
 
@@ -61,8 +61,45 @@ Spearman rank correlation and DEMaP metrics further confirm that distance relati
 We observe that shallow hierarchical datasets (depth3) consistently achieve higher DEMaP and Spearman scores than deeper hierarchies (depth5), suggesting that simpler structures are easier to preserve in low-dimensional space.
 
 Across methods, PHATE tends to achieve slightly higher DEMaP and Spearman values in some datasets, indicating improved preservation of manifold structure, although the differences are marginal. However, no single method consistently outperforms the others across all datasets.
-
 These results highlight that commonly used dimensionality reduction methods exhibit similar trade-offs between local and global structure preservation when applied to high-dimensional text embeddings.
+\begin{table*}[t]
+    \centering
+    \caption{Dimensionality reduction evaluation across datasets using trustworthiness, continuity, Spearman correlation, and DEMaP.}
+    \label{tab:dr_metrics}
+    \begin{tabular}{llcccc}
+    \toprule
+    Dataset & Method & Trustworthiness & Continuity & Spearman & DEMaP \\
+    \midrule
+    RCV1 & PCA & 0.5010 & 0.5071 & 0.0065 & -0.0018 \\
+    RCV1 & UMAP & 0.5039 & 0.5077 & 0.0148 & -0.0010 \\
+    RCV1 & PHATE & 0.5010 & 0.5046 & 0.0125 & -0.0020 \\
+    RCV1 & PaCMAP & 0.5021 & 0.5038 & 0.0095 & -0.0053 \\
+    \midrule
+    arXiv & PCA & 0.4984 & 0.4997 & -0.0006 & -0.0005 \\
+    arXiv & UMAP & 0.5000 & 0.5032 & 0.0017 & 0.0004 \\
+    arXiv & PHATE & 0.4987 & 0.5029 & 0.0033 & 0.0026 \\
+    arXiv & PaCMAP & 0.5011 & 0.5011 & 0.0021 & 0.0018 \\
+    \midrule
+    Amazon & PCA & 0.4996 & 0.4999 & -0.0014 & -0.0007 \\
+    Amazon & UMAP & 0.5006 & 0.5004 & 0.0007 & 0.0005 \\
+    Amazon & PHATE & 0.5009 & 0.5002 & -0.0031 & -0.0043 \\
+    Amazon & PaCMAP & 0.4997 & 0.5000 & 0.0007 & 0.0018 \\
+    \midrule
+    DBpedia & PCA & 0.5025 & 0.5004 & -0.0008 & -0.0064 \\
+    DBpedia & UMAP & 0.5016 & 0.4980 & 0.0010 & -0.0031 \\
+    DBpedia & PHATE & 0.5021 & 0.4989 & -0.0001 & -0.0020 \\
+    DBpedia & PaCMAP & 0.5014 & 0.5000 & -0.0002 & -0.0046 \\
+    \midrule
+    WoS & PCA & 0.4983 & 0.5013 & -0.0024 & 0.0005 \\
+    WoS & UMAP & 0.4997 & 0.5001 & -0.0002 & -0.0013 \\
+    WoS & PHATE & 0.4997 & 0.5001 & 0.0013 & 0.0011 \\
+    WoS & PaCMAP & 0.4985 & 0.4999 & -0.0004 & 0.0004 \\
+    \bottomrule
+    \end{tabular}
+\end{table*}
+
+
+
 \subsection{Hierarchical clustering}
 A summary of the performance of each method on the hierarchical clustering task appears in Table \ref{tab:pivot_table}. The reported values are the means over all cluster levels of the medians over all parameters for each method. PHATE and UMAP with agglomerative clustering each achieve the best or second-best performance on five of seven datasets. HDBSCAN consistently performs poorly on average as compared to diffusion condensation and agglomerative, regardless of dimensionality reduction method.  
 
