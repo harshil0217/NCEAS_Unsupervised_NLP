@@ -118,9 +118,11 @@ NCEAS_Unsupervised_NLP/
 │       ├── benchmark_datasets/
 │       │   ├── eval_pipeline.py  # Main benchmark evaluation pipeline
 │       │   └── herc_pipeline.py  # HERCULES hierarchical clustering pipeline
-│       └── synthetic_data/
-│           ├── eval_script.py
-│           └── synth_herc_pipeline.py
+│       ├── synthetic_data/
+│       │   ├── eval_script.py
+│       │   └── synth_herc_pipeline.py
+│       ├── visualization_metrics.ipynb           # Visualization quality metrics (benchmark)
+│       └── visualization_metrics_synthetic.ipynb # Visualization quality metrics (synthetic)
 │
 ├── environment.yml               # Conda environment (Linux/CUDA)
 ├── INSTALL.md                    # Installation instructions
