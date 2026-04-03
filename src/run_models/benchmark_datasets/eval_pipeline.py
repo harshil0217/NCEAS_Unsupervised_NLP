@@ -372,17 +372,44 @@ def apply_dimensionality_reduction(embeddings, reduction_dir, embed_filename, re
     return embedding_methods
 
 
-def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
-                   cluster_levels, topic_dict, label_dir, short,
+def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced_embeddings,
+                   cluster_levels, topic_dict, short,
                    gt_tree_root=None, gt_node_map=None):
-    embed_data = embedding_models[embedding_model][embed_name]
+    embed_data = reduced_embeddings[embedding_model][dim_reduction_method]
     combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": [], "Dendrogram Purity": [], "LCA_F1": []}
 
     print(f"\n{'='*60}")
-    print(f"Processing Embedding Method: {embed_name}")
+    print(f"Processing Embedding Method: {dim_reduction_method}")
     print(f"Clustering Method: {cluster_method}")
     print(f"Embedding shape: {embed_data.shape}")
     print(f"{'='*60}")
+
+    method_prefix = {"Agglomerative": "Agg", "HDBSCAN": "HDB", "DC": "DC"}[cluster_method]
+    scores_dir = os.path.join(f"intermediate_data/{embedding_model}_scores", short, dim_reduction_method)
+    os.makedirs(scores_dir, exist_ok=True)
+
+    def score_paths(level):
+        return {
+            "fm":   os.path.join(scores_dir, f"{method_prefix}_{level}_fm.npy"),
+            "rand": os.path.join(scores_dir, f"{method_prefix}_{level}_rand.npy"),
+            "ari":  os.path.join(scores_dir, f"{method_prefix}_{level}_ari.npy"),
+            "ami":  os.path.join(scores_dir, f"{method_prefix}_{level}_ami.npy"),
+            "dp":   os.path.join(scores_dir, f"{method_prefix}_{level}_dp.npy"),
+            "lca":  os.path.join(scores_dir, f"{method_prefix}_{level}_lca_f1.npy"),
+        }
+
+    # Short-circuit: if all scores for every level are cached, load and return immediately.
+    if all(all(os.path.exists(p) for p in score_paths(level).values()) for level in cluster_levels):
+        print(f"All scores cached for {dim_reduction_method} / {cluster_method}, loading from cache...")
+        for level in cluster_levels:
+            paths = score_paths(level)
+            combo_scores["FM"].append(float(np.load(paths["fm"])))
+            combo_scores["Rand"].append(float(np.load(paths["rand"])))
+            combo_scores["ARI"].append(float(np.load(paths["ari"])))
+            combo_scores["AMI"].append(float(np.load(paths["ami"])))
+            combo_scores["Dendrogram Purity"].append(float(np.load(paths["dp"])))
+            combo_scores["LCA_F1"].append(float(np.load(paths["lca"])))
+        return embedding_model, dim_reduction_method, cluster_method, combo_scores
 
     # Build the full linkage tree once per embedding-clustering method combination.
     # All three methods now use fcluster (or DC's get_labels) to cut at each level.
@@ -392,7 +419,7 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
 
     if cluster_method == "Agglomerative":
         linkage_path = os.path.join(
-            f"intermediate_data/{embedding_model}_linkage", short, embed_name,
+            f"intermediate_data/{embedding_model}_linkage", short, dim_reduction_method,
             "Agg_linkage.npy"
         )
 
@@ -406,143 +433,83 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
             np.save(linkage_path, Z)
             print(f"Saved linkage matrix to {linkage_path}")
 
-        tree, node_list = to_tree(Z, rd=True)
+        tree, _ = to_tree(Z, rd=True)
 
     elif cluster_method == "HDBSCAN":
         linkage_path = os.path.join(
-            f"intermediate_data/{embedding_model}_linkage", short, embed_name,
-            f"HDBSCAN_linkage.npy"
+            f"intermediate_data/{embedding_model}_linkage", short, dim_reduction_method,
+            "HDBSCAN_linkage.npy"
         )
 
         if os.path.exists(linkage_path):
             print(f"Loading cached HDBSCAN linkage from {linkage_path}")
             Z = np.load(linkage_path)
-            tree, node_list = to_tree(Z, rd=True)
+            tree, _ = to_tree(Z, rd=True)
         else:
             print("Using cuML HDBSCAN (GPU)...")
             model = cuHDBSCAN(min_cluster_size=5, min_samples=1)
             model.fit(embed_data)
 
-            # Convert GPU result to numpy
             Z = model.single_linkage_tree_.to_numpy()
 
-            # Save linkage matrix
             os.makedirs(os.path.dirname(linkage_path), exist_ok=True)
             np.save(linkage_path, Z)
             print(f"Saved linkage matrix to {linkage_path}")
 
-            # Create NodeCluster Tree for dendrogram purity calculation
-            tree, node_list = to_tree(Z, rd=True)
+            tree, _ = to_tree(Z, rd=True)
 
     elif cluster_method == "DC":
         dc_tree_path = os.path.join(
-            f"intermediate_data/{embedding_model}_labels", short, embed_name,
+            f"intermediate_data/{embedding_model}_linkage", short, dim_reduction_method,
             "DC_tree.pkl"
         )
 
-        # Check if all DC label files already exist
-        all_labels_cached = all(
-            os.path.exists(os.path.join(
-                f"intermediate_data/{embedding_model}_labels", short, embed_name,
-                f"DC_{level}_labels.npy"
-            ))
-            for level in cluster_levels
-        )
-
-        if all_labels_cached and os.path.exists(dc_tree_path):
-            print(f"All DC labels and tree cached for {embed_name}, loading tree from cache...")
+        if os.path.exists(dc_tree_path):
+            print(f"Loading cached DC tree from {dc_tree_path}...")
             with open(dc_tree_path, 'rb') as f:
                 tree = pickle.load(f)
-        elif all_labels_cached:
-            print(f"All DC labels cached for {embed_name}, fitting DC model to recover tree...")
-            dc_model = dc(min_clusters=1, max_iterations=5000, k=10, alpha=3)
-            dc_model.fit(embed_data)
-            tree = dc_model.tree_
-            node_list = dc_model.node_list_
-            if tree is not None:
-                os.makedirs(os.path.dirname(dc_tree_path), exist_ok=True)
-                with open(dc_tree_path, 'wb') as f:
-                    pickle.dump(tree, f)
-                print(f"Saved DC tree to {dc_tree_path}")
-        else:
-            print(f"Running Diffusion Condensation for {embed_name}")
-            # Set min_clusters=1 to force complete dendrogram that can be cut at any level
-            dc_model = dc(min_clusters=1, max_iterations=5000, k=10, alpha=3)
-            dc_model.fit(embed_data)
 
-            # DC builds ClusterNode tree directly (no linkage matrix needed)
-            tree = dc_model.tree_
-            node_list = dc_model.node_list_
+        print(f"Running Diffusion Condensation for {dim_reduction_method}")
+        dc_model = dc(min_clusters=1, max_iterations=5000, k=10, alpha=3)
+        dc_model.fit(embed_data)
+        tree = dc_model.tree_
 
-            # Cache tree for future runs where labels are already cached
-            if tree is not None:
-                os.makedirs(os.path.dirname(dc_tree_path), exist_ok=True)
-                with open(dc_tree_path, 'wb') as f:
-                    pickle.dump(tree, f)
-                print(f"Saved DC tree to {dc_tree_path}")
+        if tree is not None and not os.path.exists(dc_tree_path):
+            os.makedirs(os.path.dirname(dc_tree_path), exist_ok=True)
+            with open(dc_tree_path, 'wb') as f:
+                pickle.dump(tree, f)
+            print(f"Saved DC tree to {dc_tree_path}")
 
     # Convert full predicted tree to anytree once; used for both dendrogram purity and LCA-F1.
     pred_tree = None
     if tree is not None:
         pred_tree = clusternode_to_anytree(tree)
 
-    # Now iterate through cluster levels
+    # Iterate through cluster levels
     for level in cluster_levels:
         print(f"Testing cluster level: {level}")
 
-        if cluster_method == "Agglomerative":
-            label_path = os.path.join(
-                f"intermediate_data/{embedding_model}_labels", short, embed_name,
-                f"Agg_{level}_labels.npy"
-            )
+        paths = score_paths(level)
 
-            if os.path.exists(label_path):
-                print(f"Loading cached Agglomerative labels from {label_path}")
-                labels = np.load(label_path)
-            else:
-                labels = fcluster(Z, level, criterion='maxclust')
-                os.makedirs(os.path.dirname(label_path), exist_ok=True)
-                np.save(label_path, labels)
-                print(f"Agglomerative fcluster cut at {level}. Unique labels: {len(np.unique(labels))}")
+        # Load cached scores for this level if available
+        if all(os.path.exists(p) for p in paths.values()):
+            print(f"Loading cached scores for level {level}...")
+            combo_scores["FM"].append(float(np.load(paths["fm"])))
+            combo_scores["Rand"].append(float(np.load(paths["rand"])))
+            combo_scores["ARI"].append(float(np.load(paths["ari"])))
+            combo_scores["AMI"].append(float(np.load(paths["ami"])))
+            combo_scores["Dendrogram Purity"].append(float(np.load(paths["dp"])))
+            combo_scores["LCA_F1"].append(float(np.load(paths["lca"])))
+            continue
 
-        elif cluster_method == "HDBSCAN":
-            label_path = os.path.join(
-                f"intermediate_data/{embedding_model}_labels", short, embed_name,
-                f"HDB_{level}_labels.npy"
-            )
-
-            if os.path.exists(label_path):
-                print(f"Loading cached HDBSCAN labels from {label_path}")
-                labels = np.load(label_path)
-            else:
-                # Slice the tree at the requested level using SciPy
-                labels = fcluster(Z, level, criterion='maxclust')
-
-                os.makedirs(os.path.dirname(label_path), exist_ok=True)
-                np.save(label_path, labels)
-                print(f"HDBSCAN fcluster cut at {level}. Unique labels: {len(np.unique(labels))}")
-
+        # Compute labels for this level
+        if cluster_method in ("Agglomerative", "HDBSCAN"):
+            labels = fcluster(Z, level, criterion='maxclust')
+            print(f"{cluster_method} fcluster cut at {level}. Unique labels: {len(np.unique(labels))}")
         elif cluster_method == "DC":
-            label_path = os.path.join(
-                f"intermediate_data/{embedding_model}_labels", short, embed_name,
-                f"DC_{level}_labels.npy"
-            )
-
-            if os.path.exists(label_path):
-                print(f"Loading cached DC labels from {label_path}")
-                labels = np.load(label_path)
-            else:
-                # Cut the tree at the requested number of clusters
-                if dc_model is not None:
-                    dc_model.get_labels(n_clusters=level)
-                    labels = dc_model.labels_
-                else:
-                    # Fallback used ward linkage, use fcluster
-                    labels = fcluster(Z, level, criterion='maxclust')
-
-                os.makedirs(os.path.dirname(label_path), exist_ok=True)
-                np.save(label_path, labels)
-                print(f"DC tree cut at {level}. Unique labels: {len(np.unique(labels))}")
+            dc_model.get_labels(n_clusters=level)
+            labels = dc_model.labels_
+            print(f"DC tree cut at {level}. Unique labels: {len(np.unique(labels))}")
 
         # Match to closest ground truth level
         available_levels = np.array(sorted(topic_dict.keys()))
@@ -554,7 +521,6 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
         target_lst = topic_series[valid_idx]
         label_lst = labels[valid_idx]
 
-
         try:
             fm_score = FowlkesMallows.Bk({level: target_lst}, {level: label_lst})[level]['FM']
         except Exception:
@@ -565,17 +531,16 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
         ari = adjusted_rand_score(target_lst, label_lst)
         ami = adjusted_mutual_info_score(target_lst, label_lst)
 
-        # Compute hierarchical metrics using the full predicted tree.
-        # pred_tree is None only when DC labels were all cached and the model was not fit.
-        if pred_tree is not None:
-            dp = dendrogram_purity(pred_tree, topic_series)
-        else:
-            dp = np.nan
+        dp = dendrogram_purity(pred_tree, topic_series) if pred_tree is not None else np.nan
+        lca_f1_score = lca_f1(pred_tree, gt_tree_root, topic_series) if (pred_tree is not None and gt_tree_root is not None) else np.nan
 
-        if pred_tree is not None and gt_tree_root is not None:
-            lca_f1_score = lca_f1(pred_tree, gt_tree_root, topic_series)
-        else:
-            lca_f1_score = np.nan
+        # Cache all scores
+        np.save(paths["fm"],   np.array(fm_score))
+        np.save(paths["rand"], np.array(rand))
+        np.save(paths["ari"],  np.array(ari))
+        np.save(paths["ami"],  np.array(ami))
+        np.save(paths["dp"],   np.array(dp))
+        np.save(paths["lca"],  np.array(lca_f1_score))
 
         print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, "
               f"Dendrogram_Purity: {dp:.4f}, LCA_F1: {lca_f1_score:.4f}" if not np.isnan(lca_f1_score)
@@ -589,7 +554,7 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
         combo_scores["Dendrogram Purity"].append(dp)
         combo_scores["LCA_F1"].append(lca_f1_score)
 
-    return embedding_model, embed_name, cluster_method, combo_scores
+    return embedding_model, dim_reduction_method, cluster_method, combo_scores
 
 
 
@@ -620,7 +585,7 @@ def run_pipeline(dataset_name):
         "sentence-transformers/all-MiniLM-L6-v2",
     ]
 
-    embedding_models = {}  # Will store {model_name: {reduction_method: embeddings}}
+    reduced_embeddings = {}  # Will store {model_name: {reduction_method: embeddings}}
 
     # Prepare data once (same for all embedding models)
     topic_data = data.reset_index(drop=True)
@@ -690,46 +655,42 @@ def run_pipeline(dataset_name):
             reduction_methods=config["reduction_methods"]
         )
 
-        # Store the final dict for the global embedding_models
-        embedding_models[embedding_model] = embedding_methods_for_model
+        # Store the final dict for the global reduced_embeddings
+        reduced_embeddings[embedding_model] = embedding_methods_for_model
 
     # Run clustering and evaluation
     scores_all = defaultdict(lambda: defaultdict(list))
 
     combo_params = [
-        (embedding_model, embed_name, cluster_method)
-        for embedding_model in embedding_models.keys()
-        for embed_name in embedding_models[embedding_model].keys()
+        (embedding_model, dim_reduction_method, cluster_method)
+        for embedding_model in reduced_embeddings.keys()
+        for dim_reduction_method in reduced_embeddings[embedding_model].keys()
         for cluster_method in ["Agglomerative", "HDBSCAN", "DC"]
     ]
 
-    label_dir = f"intermediate_data/{embedding_model}_labels"
-    os.makedirs(label_dir, exist_ok=True)
-
     # Run each combo sequentially
     combo_results = []
-    for embedding_model, embed_name, cluster_method in tqdm(combo_params, desc="Processing embedding-clustering combos"):
+    for embedding_model, dim_reduction_method, cluster_method in tqdm(combo_params, desc="Processing embedding-clustering combos"):
         result = cluster_combo(
             embedding_model,
-            embed_name,
+            dim_reduction_method,
             cluster_method,
-            embedding_models,
+            reduced_embeddings,
             cluster_levels,
             topic_dict,
-            label_dir,
             short=config["short"],
             gt_tree_root=gt_tree_root,
             gt_node_map=gt_node_map,
         )
         combo_results.append(result)
 
-    for embedding_model, embed_name, cluster_method, combo_scores in combo_results:
-        scores_all[(embedding_model, embed_name, cluster_method)]["FM"] = combo_scores["FM"]
-        scores_all[(embedding_model, embed_name, cluster_method)]["Rand"] = combo_scores["Rand"]
-        scores_all[(embedding_model, embed_name, cluster_method)]["ARI"] = combo_scores["ARI"]
-        scores_all[(embedding_model, embed_name, cluster_method)]["AMI"] = combo_scores["AMI"]
-        scores_all[(embedding_model, embed_name, cluster_method)]["Dendrogram Purity"] = combo_scores["Dendrogram Purity"]
-        scores_all[(embedding_model, embed_name, cluster_method)]["LCA_F1"] = combo_scores["LCA_F1"]
+    for embedding_model, dim_reduction_method, cluster_method, combo_scores in combo_results:
+        scores_all[(embedding_model, dim_reduction_method, cluster_method)]["FM"] = combo_scores["FM"]
+        scores_all[(embedding_model, dim_reduction_method, cluster_method)]["Rand"] = combo_scores["Rand"]
+        scores_all[(embedding_model, dim_reduction_method, cluster_method)]["ARI"] = combo_scores["ARI"]
+        scores_all[(embedding_model, dim_reduction_method, cluster_method)]["AMI"] = combo_scores["AMI"]
+        scores_all[(embedding_model, dim_reduction_method, cluster_method)]["Dendrogram Purity"] = combo_scores["Dendrogram Purity"]
+        scores_all[(embedding_model, dim_reduction_method, cluster_method)]["LCA_F1"] = combo_scores["LCA_F1"]
 
     print(f"\n{'='*60}")
     print("All clustering and evaluation complete!")
@@ -738,12 +699,12 @@ def run_pipeline(dataset_name):
     # Save results to CSV
     rows = []
 
-    for (embedding_model, embed_name, cluster_method), score_dict in scores_all.items():
+    for (embedding_model, dim_reduction_method, cluster_method), score_dict in scores_all.items():
         n_levels = len(score_dict["FM"])
         for i in range(n_levels):
             rows.append({
                 "embedding_model": embedding_model,
-                "reduction_method": embed_name,
+                "reduction_method": dim_reduction_method,
                 "cluster_method": cluster_method,
                 "level": cluster_levels[i],
                 "FM": score_dict["FM"][i],
