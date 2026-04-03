@@ -59,8 +59,8 @@ Shepard diagrams show significant deviation from the diagonal across all methods
 Spearman rank correlation and DEMaP metrics further confirm that distance relationships between high-dimensional and low-dimensional spaces are only weakly preserved. Values are generally close to zero, indicating limited global structure preservation.
 
 We observe that shallow hierarchical datasets (depth3) consistently achieve higher DEMaP and Spearman scores than deeper hierarchies (depth5), suggesting that simpler structures are easier to preserve in low-dimensional space.
-
 Across methods, PHATE tends to achieve slightly higher DEMaP and Spearman values in some datasets, indicating improved preservation of manifold structure, although the differences are marginal. However, no single method consistently outperforms the others across all datasets.
+We additionally evaluate robustness to noise by introducing perturbations to the synthetic datasets. Under noisy conditions, global structure preservation further degrades, with Spearman and DEMaP values remaining close to zero, indicating that dimensionality reduction methods struggle to maintain meaningful distance relationships in the presence of noise.
 These results highlight that commonly used dimensionality reduction methods exhibit similar trade-offs between local and global structure preservation when applied to high-dimensional text embeddings.
 \begin{table*}[t]
     \centering
