@@ -459,26 +459,10 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
             tree, _ = to_tree(Z, rd=True)
 
     elif cluster_method == "DC":
-        dc_tree_path = os.path.join(
-            f"intermediate_data/{embedding_model}_linkage", short, dim_reduction_method,
-            "DC_tree.pkl"
-        )
-
-        if os.path.exists(dc_tree_path):
-            print(f"Loading cached DC tree from {dc_tree_path}...")
-            with open(dc_tree_path, 'rb') as f:
-                tree = pickle.load(f)
-
         print(f"Running Diffusion Condensation for {dim_reduction_method}")
         dc_model = dc(min_clusters=1, max_iterations=5000, k=10, alpha=3)
         dc_model.fit(embed_data)
         tree = dc_model.tree_
-
-        if tree is not None and not os.path.exists(dc_tree_path):
-            os.makedirs(os.path.dirname(dc_tree_path), exist_ok=True)
-            with open(dc_tree_path, 'wb') as f:
-                pickle.dump(tree, f)
-            print(f"Saved DC tree to {dc_tree_path}")
 
     # Convert full predicted tree to anytree once; used for both dendrogram purity and LCA-F1.
     pred_tree = None

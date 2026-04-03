@@ -35,6 +35,39 @@ def clusternode_to_anytree(cluster_node):
     return root
 
 
+def anytree_to_children_list(root):
+    """Convert anytree to a 2D children-list using pre-order traversal.
+
+    Returns a list indexed by node ID where each entry is the list of
+    that node's children IDs. Indices between 0 and max node ID with no
+    node will be empty lists.
+
+    Example: result[0] = [1, 3, 5], result[1] = [2], result[2] = []
+    """
+    # First pass: find max node id
+    max_id = 0
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        if node.name > max_id:
+            max_id = node.name
+        for child in node.children:
+            stack.append(child)
+
+    result = [[] for _ in range(max_id + 1)]
+
+    # Pre-order traversal to populate children lists
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        result[node.name] = [child.name for child in node.children]
+        # Push children in reverse so leftmost is processed first
+        for child in reversed(node.children):
+            stack.append(child)
+
+    return result
+
+
 def get_leaves(node):
     """Get all leaf node ids under a node using iterative DFS."""
     leaves = []
