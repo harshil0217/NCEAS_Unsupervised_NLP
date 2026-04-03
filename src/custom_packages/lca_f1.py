@@ -84,7 +84,7 @@ def find_lca(i, j, parent_map):
     return None
 
 
-def lca_f1(pred_tree, gt_tree, true_labels, n_samples=10_000, n_trials=30):
+def lca_f1(pred_tree, gt_tree, true_labels, n_samples=1000, n_trials=5):
     """
     Monte Carlo estimation of LCA-F1 for hierarchical clustering evaluation.
 

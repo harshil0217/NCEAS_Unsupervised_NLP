@@ -4,7 +4,7 @@ from scipy.cluster.hierarchy import ClusterNode
 from custom_packages.lca_f1 import clusternode_to_anytree, get_leaves, build_maps, find_lca
 
 
-def dendrogram_purity(tree, true_labels, n_samples=10_000, n_trials=30):
+def dendrogram_purity(tree, true_labels, n_samples=1000, n_trials=5):
     # Convert ClusterNode to anytree if needed
     if isinstance(tree, ClusterNode):
         tree = clusternode_to_anytree(tree)

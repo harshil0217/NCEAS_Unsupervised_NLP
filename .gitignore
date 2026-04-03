@@ -212,6 +212,7 @@ __marimo__/
 *.xlsx
 *.lock
 *.json
+*.pkl
 
 *.txt
 
@@ -220,3 +221,4 @@ core.*
 CLAUDE.md
 
 Miniconda3-latest-Linux-x86_64.sh
+
