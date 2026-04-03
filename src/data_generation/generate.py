@@ -301,7 +301,7 @@ def add_noise_row(df, column_name, num_samples=3):
 
     # Call GPT
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model=model,
         messages=[{"role": "user", "content": prompt}],
         temperature=1.0,
     )
@@ -408,5 +408,3 @@ if add_noise > 0.0:
         print(f"✓ Noise addition complete!\n")
     else:
         print(f"Noisy dataset already exists: {noise_file}\n")
-
-
