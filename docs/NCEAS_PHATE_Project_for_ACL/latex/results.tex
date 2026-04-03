@@ -10,7 +10,7 @@ Visualizations of text embeddings colored by top-level categories appear in Figu
 The trajectory of topics and themes in the visualizations can be analyzed in several different ways. We visualize how the sub-themes within the Ecosystems data transition between the two themes of "Economic Impact Metrics" and "Social Conflict Intensity" (Figure \ref{fig:ecosystems-trajectory}). Similarly with the Fisheries data, we use the specific concepts to determine how some of the sub-themes mapped between the categories of "Offshore Energy Infrastructure Development," "Marine Environmental Quality," and "Fish Population Metrics" (Figure \ref{fig:fisheries-trajectory}). We, furthermore, curate semantic trajectories in the Web of Science embedding on the basis of keywords associated to each data point as provided in the dataset (Figure \ref{fig:WoS-trajectory}). Lastly, we use the information at the docket level for the EPA data to determine thematic changes over space (Figure \ref{fig:epa-trajectory}). 
 
 \begin{figure*}
-    \centering
+    \centering 
 \begin{subfigure}{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{fisheries_trajectory.png}
@@ -50,7 +50,19 @@ The trajectory of topics and themes in the visualizations can be analyzed in sev
 
 The visualization of PHATE compared to PCA, t-SNE and UMAP colored by the top 20 dockets is shown in Figure \ref{fig:epa-fig}. While PCA produces a dense and overlapping projection with limited visible structure, and t-SNE and UMAP highlight isolated clusters with distorted global relationships, PHATE preserves both local and global geometry using branching structures which suggest underlying transitions in comment themes across EPA dockets.
 \FloatBarrier
+\subsection{Dimensionality Reduction Evaluation}
 
+Across all datasets, including both synthetic benchmarks and real-world datasets such as arXiv and RCV1, trustworthiness and continuity values are nearly identical across all dimensionality reduction methods, with values consistently around 0.5. This indicates that all methods preserve local neighborhood structure to a similar extent, and that performance is close to a random baseline, suggesting limited preservation of local neighborhood relationships when projecting high-dimensional embeddings to two dimensions.
+
+Shepard diagrams show significant deviation from the diagonal across all methods, indicating that global distances are not well preserved. This suggests that dimensionality reduction introduces non-linear distortion, where distances are compressed in some regions and expanded in others.
+
+Spearman rank correlation and DEMaP metrics further confirm that distance relationships between high-dimensional and low-dimensional spaces are only weakly preserved. Values are generally close to zero, indicating limited global structure preservation.
+
+We observe that shallow hierarchical datasets (depth3) consistently achieve higher DEMaP and Spearman scores than deeper hierarchies (depth5), suggesting that simpler structures are easier to preserve in low-dimensional space.
+
+Across methods, PHATE tends to achieve slightly higher DEMaP and Spearman values in some datasets, indicating improved preservation of manifold structure, although the differences are marginal. However, no single method consistently outperforms the others across all datasets.
+
+These results highlight that commonly used dimensionality reduction methods exhibit similar trade-offs between local and global structure preservation when applied to high-dimensional text embeddings.
 \subsection{Hierarchical clustering}
 A summary of the performance of each method on the hierarchical clustering task appears in Table \ref{tab:pivot_table}. The reported values are the means over all cluster levels of the medians over all parameters for each method. PHATE and UMAP with agglomerative clustering each achieve the best or second-best performance on five of seven datasets. HDBSCAN consistently performs poorly on average as compared to diffusion condensation and agglomerative, regardless of dimensionality reduction method.  
 
