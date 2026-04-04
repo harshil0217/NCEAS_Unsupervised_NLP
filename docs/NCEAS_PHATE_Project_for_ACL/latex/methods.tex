@@ -56,11 +56,8 @@ To mimic the irregularities of real-world ontologies, we varied the number of ch
 % These elements challenged models to infer latent structure and semantic grouping.
 The resulting datasets were used for both quantitative benchmarking and qualitative analysis of PHATE’s capacity to capture semantic and hierarchical organization in text.
 
-To assess performance across diverse hierarchical domains, we applied our methods to benchmark datasets with known hierarchies, including Web of Science paper keywords \cite{kowsari2017HDLTex}, Wikipedia article categories \cite{brummer2016dbpedia, NIPS2015_250cf8b5, yang2019xlnet}, Amazon product reviews \cite{yury_kashnitsky_2020}, arXiv \cite{arxiv_kaggle}, and RCV1 \cite{lewis2004rcv1}. Data set sizes appear in Table \ref{tab:dataset_counts}.
+To assess performance across diverse hierarchical domains, we applied our methods to benchmark datasets with known hierarchies, including Web of Science paper keywords \cite{kowsari2017HDLTex}, Wikipedia article categories \cite{brummer2016dbpedia, NIPS2015_250cf8b5, yang2019xlnet}, Amazon product reviews \cite{yury_kashnitsky_2020},arXiv \cite{arxiv_data}, with hierarchical labels derived from the arXiv category taxonomy \cite{arxiv_taxonomy}. The data was accessed via a publicly available Kaggle mirror. We also use the RCV1 dataset \cite{lewis2004rcv1}.
 
-The arXiv dataset \cite{arxiv_kaggle} consists of approximately 30,000 scientific documents (titles and abstracts) obtained from a publicly available metadata snapshot. Documents were filtered to relevant domains and constructed by concatenating titles and abstracts. Hierarchical subject categories were used to define ground truth labels at multiple levels of granularity.
-
-The RCV1 dataset \cite{lewis2004rcv1} contains news articles annotated with hierarchical topic codes. We used a processed subset of the corpus, where each document was represented by combining headline and body text. Ground truth labels were derived from professional topic codes defining a hierarchical structure. For both datasets, preprocessing, embedding, and evaluation procedures were consistent with those described in Section 3.4.
 \begin{table}[ht]
     \centering
     \caption{Number of datapoints in each dataset.}
@@ -84,5 +81,3 @@ The RCV1 dataset \cite{lewis2004rcv1} contains news articles annotated with hier
     \end{tabular}
     \label{tab:dataset_counts}
     \end{table}
-\bibliographystyle{acl_natbib}
-\bibliography{refs,custom}
