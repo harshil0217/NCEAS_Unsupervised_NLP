@@ -105,6 +105,11 @@ NCEAS_Unsupervised_NLP/
 ├── notebooks/                    # Demo notebook
 │   └── demo.ipynb
 │
+├── docs/                         # Project documentation and report
+│   ├── project_plan.md
+│   └── NCEAS_PHATE_Project_for_ACL/
+│       └── latex/
+│
 ├── src/
 │   ├── custom_packages/          # Custom algorithm implementations
 │   │   ├── diffusion_condensation.py
