@@ -15,7 +15,6 @@ Example:
 
 import os
 import sys
-import subprocess
 from dotenv import load_dotenv
 import json
 import argparse
@@ -69,11 +68,13 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # ==========================
 import phate
 import pacmap
-# cuML GPU-accelerated dimensionality reduction
+# cuML / cuGraph GPU-accelerated compute
+import cudf
+import cugraph
 import cuml
 from cuml.decomposition import PCA as cuPCA
 from cuml.manifold import TSNE as cuTSNE
-from cuml.manifold import UMAP as cuUMAP 
+from cuml.manifold import UMAP as cuUMAP
 
 # ========================
 # Clustering
@@ -92,7 +93,6 @@ from cuml.cluster import HDBSCAN as cuHDBSCAN
 from custom_packages.fowlkes_mallows import FowlkesMallows
 from custom_packages.dendrogram_purity import dendrogram_purity
 from custom_packages.lca_f1 import lca_f1, clusternode_to_anytree
-from custom_packages.TED_preprocess import write_ted_input
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
 import pickle
 
@@ -379,39 +379,48 @@ def apply_dimensionality_reduction(embeddings, reduction_dir, embed_filename, re
     return embedding_methods
 
 
-def _compute_ted(pred_tree, gt_tree_root, scores_dir, method_prefix):
+def _anytree_to_cugraph(root):
+    """Convert an anytree Node hierarchy to a directed cuGraph Graph.
+
+    Each parent→child relationship becomes a directed edge. Node .name values
+    are used as vertex IDs (they are already unique integers in this codebase).
     """
-    Compute Tree Edit Distance between pred_tree and gt_tree_root using X-TED_GPU.
+    src, dst = [], []
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        for child in node.children:
+            src.append(node.name)
+            dst.append(child.name)
+            stack.append(child)
 
-    Writes both trees to a txt file (and copy) via write_ted_input, then shells
-    out to custom_packages/X-TED_GPU passing both file paths as arguments.
+    df = cudf.DataFrame({
+        "src": cudf.Series(src, dtype="int32"),
+        "dst": cudf.Series(dst, dtype="int32"),
+    })
+    G = cugraph.Graph(directed=True)
+    G.from_cudf_edgelist(df, source="src", destination="dst")
+    return G
 
-    Returns the TED score as a float, or np.nan on failure.
+
+def _compute_ted(pred_tree, gt_tree_root):
+    """
+    Compute Tree Edit Distance via cuGraph graph_edit_distance.
+
+    Converts both anytree hierarchies to directed cuGraph Graphs, then calls
+    cugraph.graph_edit_distance(). Returns the GED as a float, or np.nan on
+    failure.
     """
     if pred_tree is None or gt_tree_root is None:
         return np.nan
 
-    ted_input_path = os.path.join(scores_dir, f"{method_prefix}_ted_input.txt")
-    copy_path = write_ted_input(pred_tree, gt_tree_root, ted_input_path)
-
-    x_ted_binary = os.path.abspath("custom_packages/X-TED_GPU")
-    if not os.path.exists(x_ted_binary):
-        print(f"WARNING: X-TED_GPU binary not found at {x_ted_binary}. Skipping TED.")
-        return np.nan
-
     try:
-        result = subprocess.run(
-            [x_ted_binary, ted_input_path, copy_path],
-            capture_output=True,
-            text=True,
-            timeout=600,
-        )
-        if result.returncode != 0:
-            print(f"WARNING: X-TED_GPU exited with code {result.returncode}: {result.stderr.strip()}")
-            return np.nan
-        return float(result.stdout.strip())
+        G_pred = _anytree_to_cugraph(pred_tree)
+        G_gt   = _anytree_to_cugraph(gt_tree_root)
+        ged = cugraph.graph_edit_distance(G_pred, G_gt)
+        return float(ged)
     except Exception as e:
-        print(f"WARNING: TED computation failed: {e}")
+        print(f"WARNING: GED computation failed: {e}")
         return np.nan
 
 
@@ -524,7 +533,7 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
         ted_score = float(np.load(ted_path))
     else:
         print("Computing Tree Edit Distance (X-TED_GPU)...")
-        ted_score = _compute_ted(pred_tree, gt_tree_root, scores_dir, method_prefix)
+        ted_score = _compute_ted(pred_tree, gt_tree_root)
         np.save(ted_path, np.array(ted_score))
         print(f"TED score: {ted_score}")
 
