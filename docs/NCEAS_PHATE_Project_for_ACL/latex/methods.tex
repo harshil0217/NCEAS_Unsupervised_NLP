@@ -12,7 +12,7 @@ To evaluate its utility for text, we compare PHATE visualizations against those 
     \item[t-SNE] forms a probability distribution over pairwise dissimilarities and embeds points such that the KL divergence between the original and embedded distributions is minimized \cite{van2008visualizing}
     \item[PHATE] also constructs a weighted kNN graph, row-normalizes its adjacency matrix to a Markov operator, amplifies global structure by powering the operator, computes information distances using row-wise log-transforms, and applies metric multidimensional scaling to derive low-dimensional coordinates \cite{moon2019visualizing}.
     \item[PaCMAP] (Pairwise Controlled Manifold Approximation) balances preservation of both local and global structure by explicitly controlling pairwise relationships during embedding optimization \cite{wang2021pacmap}.
-    \item[TriMAP] emphasizes preservation of global structure by optimizing triplet relationships between points, ensuring that relative distances are maintained in the low-dimensional embedding.
+    \item[TriMAP] emphasizes preservation of global structure by optimizing triplet relationships between points, ensuring that relative distances are maintained in the low-dimensional embeddingTriMAP \cite{trimap}.
 \end{description}
 \textit{Qualitative comparisons} are made using datasets with ground-truth metadata. Evaluation criteria include cluster coherence, separation of known categories, and preservation of trajectories or arcs in embedding space.
 \subsection{Text Embeddings}
@@ -56,7 +56,7 @@ To mimic the irregularities of real-world ontologies, we varied the number of ch
 % These elements challenged models to infer latent structure and semantic grouping.
 The resulting datasets were used for both quantitative benchmarking and qualitative analysis of PHATE’s capacity to capture semantic and hierarchical organization in text.
 
-To assess performance across diverse hierarchical domains, we applied our methods to benchmark datasets with known hierarchies, including Web of Science paper keywords \cite{kowsari2017HDLTex}, Wikipedia article categories \cite{brummer2016dbpedia, NIPS2015_250cf8b5, yang2019xlnet}, Amazon product reviews \cite{yury_kashnitsky_2020},arXiv \cite{arxiv_data}, with hierarchical labels derived from the arXiv category taxonomy \cite{arxiv_taxonomy}. The data was accessed via a publicly available Kaggle mirror. We also use the RCV1 dataset \cite{lewis2004rcv1}.
+To assess performance across diverse hierarchical domains, we applied our methods to benchmark datasets with known hierarchies, including Web of Science paper keywords \cite{kowsari2017HDLTex}, Wikipedia article categories \cite{brummer2016dbpedia, NIPS2015_250cf8b5, yang2019xlnet}, Amazon product reviews \cite{yury_kashnitsky_2020}, arXiv \cite{arxiv_kaggle}, with hierarchical labels derived from the arXiv category taxonomy \cite{arxiv_taxonomy}. The data was accessed via a publicly available Kaggle mirror. We also use the RCV1 dataset \cite{lewis2004rcv1}.
 
 \begin{table}[ht]
     \centering
