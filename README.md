@@ -1,5 +1,7 @@
 # NCEAS Unsupervised NLP
 
+⚠️ **Note:** This project requires a Linux environment with a CUDA-enabled GPU (tested on MSU HPCC).
+
 NCEAS Project for SS26 CMSE 495 Data Science Capstone, Michigan State University
 
 ## Project Video
@@ -87,7 +89,14 @@ python src/run_models/benchmark_datasets/eval_pipeline.py --dataset wos
 ```
 
 ---
+## Expected Output
 
+Running the benchmark pipeline will generate:
+- CSV files with clustering evaluation metrics saved in `results/`
+- Visualizations produced through the demo notebook
+- Additional logs and intermediate outputs depending on the experiment
+
+---
 ## Project Structure
 
 ```
@@ -131,6 +140,12 @@ NCEAS_Unsupervised_NLP/
 ```
 
 ---
+
+## Report
+
+The project report (ACL-style paper draft) is available in:
+
+docs/NCEAS_PHATE_Project_for_ACL/latex/
 
 ## Authors
 
