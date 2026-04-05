@@ -1,0 +1,153 @@
+\begin{thebibliography}{30}
+\providecommand{\natexlab}[1]{#1}
+
+\bibitem[{Amid and Warmuth(2019)}]{trimap}
+Ehsan Amid and Manfred~K. Warmuth. 2019.
+\newblock Trimap: Large-scale dimensionality reduction using triplets.
+\newblock \emph{arXiv preprint arXiv:1910.00204}.
+
+\bibitem[{{arXiv}(2023)}]{arxiv_taxonomy}
+{arXiv}. 2023.
+\newblock arxiv category taxonomy.
+\newblock \url{https://arxiv.org/category_taxonomy}.
+
+\bibitem[{Benkler et~al.(2024)Benkler, Friedman, Schmer-Galunder, Mosaphir, Goldman, Wheelock, Sarathy, Kantharaju, and McLure}]{benkler2024recognizing}
+Noam~K Benkler, Scott Friedman, Sonja Schmer-Galunder, Drisana~Marissa Mosaphir, Robert~P Goldman, Ruta Wheelock, Vasanth Sarathy, Pavan Kantharaju, and Matthew~D McLure. 2024.
+\newblock Recognizing value resonance with resonance-tuned roberta task definition, experimental validation, and robust modeling.
+\newblock In \emph{Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING 2024)}, pages 13688--13698.
+
+\bibitem[{Berijanian et~al.(2024)Berijanian, Dork, Singh, Millikan, Riggs, Swaminathan, Gibbs, Friedman, and Brugnone}]{berijanian2024soft}
+Maryam Berijanian, Spencer Dork, Kuldeep Singh, Michael Millikan, Ashlin Riggs, Aadarsh Swaminathan, Sarah Gibbs, Scott Friedman, and Nathan Brugnone. 2024.
+\newblock Soft measures for extracting causal collective intelligence.
+\newblock In \emph{Proceedings of the 1st Workshop on NLP for Science (NLP4Science)}, pages 99--116.
+
+\bibitem[{Brugnone et~al.(2024)Brugnone, Benkler, Revay, Myhre, Friedman, Schmer-Galunder, Gray, and Gentile}]{brugnone2024ought}
+Nathan Brugnone, Noam Benkler, Peter Revay, Rebecca Myhre, Scott Friedman, Sonja Schmer-Galunder, Steven Gray, and James Gentile. 2024.
+\newblock Is from ought? a comparison of unsupervised methods for structuring values-based wisdom-of-crowds estimates.
+\newblock \emph{Journal of Computational Social Science}, 7(2):1327--1377.
+
+\bibitem[{Brugnone et~al.(2019)Brugnone, Gonopolskiy, Moyle, Kuchroo, van Dijk, Moon, Colon-Ramos, Wolf, Hirn, and Krishnaswamy}]{brugnone2019coarse}
+Nathan Brugnone, Alex Gonopolskiy, Mark~W Moyle, Manik Kuchroo, David van Dijk, Kevin~R Moon, Daniel Colon-Ramos, Guy Wolf, Matthew~J Hirn, and Smita Krishnaswamy. 2019.
+\newblock Coarse graining of data via inhomogeneous diffusion condensation.
+\newblock In \emph{2019 IEEE International Conference on Big Data (Big Data)}, pages 2624--2633. IEEE.
+
+\bibitem[{Br{\"u}mmer et~al.(2016)Br{\"u}mmer, Dojchinovski, and Hellmann}]{brummer2016dbpedia}
+Martin Br{\"u}mmer, Milan Dojchinovski, and Sebastian Hellmann. 2016.
+\newblock Dbpedia abstracts: A large-scale, open, multilingual nlp training corpus.
+\newblock In \emph{Proceedings of the Tenth International Conference on Language Resources and Evaluation (LREC'16)}, pages 3339--3343.
+
+\bibitem[{Coifman and Lafon(2006)}]{coifman2006diffusion}
+Ronald~R Coifman and St{\'e}phane Lafon. 2006.
+\newblock Diffusion maps.
+\newblock \emph{Applied and computational harmonic analysis}, 21(1):5--30.
+
+\bibitem[{{Cornell University}(2023)}]{arxiv_kaggle}
+{Cornell University}. 2023.
+\newblock arxiv dataset.
+\newblock \url{https://www.kaggle.com/datasets/Cornell-University/arxiv}.
+
+\bibitem[{Friedman et~al.(2024)Friedman, Benkler, Mosaphir, Rye, Schmer-Galunder, Goldwater, McLure, Wheelock, Gottlieb, Goldman et~al.}]{friedman2024bottom}
+Scott~E Friedman, Noam Benkler, Drisana Mosaphir, Jeffrey Rye, Sonja~M Schmer-Galunder, Micah Goldwater, Matthew McLure, Ruta Wheelock, Jeremy Gottlieb, Robert~P Goldman, and 1 others. 2024.
+\newblock Bottom-up and top-down analysis of values, agendas, and observations in corpora and llms.
+\newblock In \emph{Pluralistic Alignment Workshop at NeurIPS 2024}.
+
+\bibitem[{Grootendorst(2022)}]{grootendorst2022bertopic}
+Maarten Grootendorst. 2022.
+\newblock Bertopic: Neural topic modeling with a class-based tf-idf procedure.
+\newblock \emph{arXiv preprint arXiv:2203.05794}.
+
+\bibitem[{Haghverdi et~al.(2015)Haghverdi, Buettner, and Theis}]{haghverdi2015diffusion}
+Laleh Haghverdi, Florian Buettner, and Fabian~J Theis. 2015.
+\newblock Diffusion maps for high-dimensional single-cell analysis of differentiation data.
+\newblock \emph{Bioinformatics}, 31(18):2989--2998.
+
+\bibitem[{Heller and Ghahramani(2005)}]{heller2005bayesian}
+Katherine~A. Heller and Zoubin Ghahramani. 2005.
+\newblock Bayesian hierarchical clustering.
+\newblock In \emph{Proceedings of the 22nd International Conference on Machine Learning}.
+
+\bibitem[{Kashnitsky(2020)}]{yury_kashnitsky_2020}
+Yury Kashnitsky. 2020.
+\newblock \href {https://doi.org/10.34740/KAGGLE/DSV/1054619} {Hierarchical text classification}.
+
+\bibitem[{Kosmopoulos et~al.(2015)Kosmopoulos, Partalas, Gaussier, Paliouras, and Androutsopoulos}]{kosmopoulos2015}
+Aris Kosmopoulos, Ioannis Partalas, Eric Gaussier, Georgios Paliouras, and Ion Androutsopoulos. 2015.
+\newblock Evaluation measures for hierarchical classification: a unified view and novel approaches.
+\newblock In \emph{Machine Learning and Knowledge Discovery in Databases}.
+
+\bibitem[{Kowsari et~al.(2017)Kowsari, Brown, Heidarysafa, Jafari~Meimandi, , Gerber, and Barnes}]{kowsari2017HDLTex}
+Kamran Kowsari, Donald~E Brown, Mojtaba Heidarysafa, Kiana Jafari~Meimandi, , Matthew~S Gerber, and Laura~E Barnes. 2017.
+\newblock Hdltex: Hierarchical deep learning for text classification.
+\newblock In \emph{Machine Learning and Applications (ICMLA), 2017 16th IEEE International Conference on}. IEEE.
+
+\bibitem[{Kuchroo et~al.(2022)Kuchroo, Huang, Wong, Grenier, Shung, Tong, Lucas, Klein, Burkhardt, Gigante et~al.}]{kuchroo2022multiscale}
+Manik Kuchroo, Jessie Huang, Patrick Wong, Jean-Christophe Grenier, Dennis Shung, Alexander Tong, Carolina Lucas, Jon Klein, Daniel~B Burkhardt, Scott Gigante, and 1 others. 2022.
+\newblock Multiscale phate identifies multimodal signatures of covid-19.
+\newblock \emph{Nature biotechnology}, 40(5):681--691.
+
+\bibitem[{Lewis et~al.(2004)Lewis, Yang, Rose, and Li}]{lewis2004rcv1}
+David~D. Lewis, Yiming Yang, Tony~G. Rose, and Fan Li. 2004.
+\newblock Rcv1: A new benchmark collection for text categorization research.
+\newblock \emph{Journal of Machine Learning Research}, 5:361--397.
+
+\bibitem[{McInnes et~al.(2018)McInnes, Healy, and Melville}]{mcinnes2018umap}
+Leland McInnes, John Healy, and James Melville. 2018.
+\newblock Umap: Uniform manifold approximation and projection for dimension reduction.
+\newblock \emph{arXiv preprint arXiv:1802.03426}.
+
+\bibitem[{Moon et~al.(2017)Moon, van Dijk, Wang, Chen, Hirn, Coifman, Ivanova, Wolf, and Krishnaswamy}]{moon2017phate}
+Kevin~R Moon, David van Dijk, Zheng Wang, William Chen, Matthew~J Hirn, Ronald~R Coifman, Natalia~B Ivanova, Guy Wolf, and Smita Krishnaswamy. 2017.
+\newblock Phate: a dimensionality reduction method for visualizing trajectory structures in high-dimensional biological data. biorxiv.
+\newblock \emph{Published online January}, 1:120378.
+
+\bibitem[{Moon et~al.(2019)Moon, Van~Dijk, Wang, Gigante, Burkhardt, Chen, Yim, Elzen, Hirn, Coifman et~al.}]{moon2019visualizing}
+Kevin~R Moon, David Van~Dijk, Zheng Wang, Scott Gigante, Daniel~B Burkhardt, William~S Chen, Kristina Yim, Antonia van~den Elzen, Matthew~J Hirn, Ronald~R Coifman, and 1 others. 2019.
+\newblock Visualizing structure and transitions in high-dimensional biological data.
+\newblock \emph{Nature biotechnology}, 37(12):1482--1492.
+
+\bibitem[{Narayanan and Mitter(2010)}]{narayanan2010sample}
+Hariharan Narayanan and Sanjoy Mitter. 2010.
+\newblock Sample complexity of testing the manifold hypothesis.
+\newblock \emph{Advances in neural information processing systems}, 23.
+
+\bibitem[{Park et~al.(2024)Park, Choe, Jiang, and Veitch}]{park2024the}
+Kiho Park, Yo~Joong Choe, Yibo Jiang, and Victor Veitch. 2024.
+\newblock \href {https://openreview.net/forum?id=KXuYjuBzKo} {The geometry of categorical and hierarchical concepts in large language models}.
+\newblock In \emph{ICML 2024 Workshop on Mechanistic Interpretability}.
+
+\bibitem[{Sanderson and Croft(1999)}]{sanderson1999deriving}
+Mark Sanderson and Bruce Croft. 1999.
+\newblock Deriving concept hierarchies from text.
+\newblock In \emph{Proceedings of the 22nd annual international ACM SIGIR conference on Research and development in information retrieval}, pages 206--213.
+
+\bibitem[{Sun et~al.(2019)Sun, Qiu, Xu, and Huang}]{sun2019fine}
+Chi Sun, Xipeng Qiu, Yige Xu, and Xuanjing Huang. 2019.
+\newblock How to fine-tune bert for text classification?
+\newblock In \emph{China national conference on Chinese computational linguistics}, pages 194--206. Springer.
+
+\bibitem[{Van~der Maaten and Hinton(2008)}]{van2008visualizing}
+Laurens Van~der Maaten and Geoffrey Hinton. 2008.
+\newblock Visualizing data using t-sne.
+\newblock \emph{Journal of machine learning research}, 9(11).
+
+\bibitem[{Wang et~al.(2021)Wang, Huang, Rudin, and Shaposhnik}]{wang2021pacmap}
+Yingfan Wang, Hao Huang, Cynthia Rudin, and Yaron Shaposhnik. 2021.
+\newblock Pacmap: Pairwise controlled manifold approximation projection.
+\newblock \emph{Journal of Machine Learning Research}.
+
+\bibitem[{Yang et~al.(2019)Yang, Dai, Yang, Carbonell, Salakhutdinov, and Le}]{yang2019xlnet}
+Zhilin Yang, Zihang Dai, Yiming Yang, Jaime Carbonell, Russ~R Salakhutdinov, and Quoc~V Le. 2019.
+\newblock Xlnet: Generalized autoregressive pretraining for language understanding.
+\newblock \emph{Advances in neural information processing systems}, 32.
+
+\bibitem[{Young et~al.(2018)Young, Hermida, and Fulda}]{young2018makes}
+Mary~Lynn Young, Alfred Hermida, and Johanna Fulda. 2018.
+\newblock What makes for great data journalism? a content analysis of data journalism awards finalists 2012--2015.
+\newblock \emph{Journalism practice}, 12(1):115--135.
+
+\bibitem[{Zhang et~al.(2015)Zhang, Zhao, and LeCun}]{NIPS2015_250cf8b5}
+Xiang Zhang, Junbo Zhao, and Yann LeCun. 2015.
+\newblock \href {https://proceedings.neurips.cc/paper_files/paper/2015/file/250cf8b51c773f3f8dc8b4be867a9a02-Paper.pdf} {Character-level convolutional networks for text classification}.
+\newblock In \emph{Advances in Neural Information Processing Systems}, volume~28. Curran Associates, Inc.
+
+\end{thebibliography}
