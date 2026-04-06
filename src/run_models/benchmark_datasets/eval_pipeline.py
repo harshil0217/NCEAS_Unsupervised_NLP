@@ -68,12 +68,9 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # ==========================
 import phate
 import pacmap
-<<<<<<< Updated upstream
-# cuML GPU-accelerated compute
-=======
 import trimap
+
 # cuML GPU-accelerated dimensionality reduction
->>>>>>> Stashed changes
 import cuml
 from cuml.decomposition import PCA as cuPCA
 from cuml.manifold import TSNE as cuTSNE
