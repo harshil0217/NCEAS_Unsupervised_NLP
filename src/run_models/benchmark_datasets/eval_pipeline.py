@@ -68,9 +68,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # ==========================
 import phate
 import pacmap
-# cuML / cuGraph GPU-accelerated compute
-import cudf
-import cugraph
+# cuML GPU-accelerated compute
 import cuml
 from cuml.decomposition import PCA as cuPCA
 from cuml.manifold import TSNE as cuTSNE
@@ -378,50 +376,6 @@ def apply_dimensionality_reduction(embeddings, reduction_dir, embed_filename, re
 
     return embedding_methods
 
-
-def _anytree_to_cugraph(root):
-    """Convert an anytree Node hierarchy to a directed cuGraph Graph.
-
-    Each parent→child relationship becomes a directed edge. Node .name values
-    are used as vertex IDs (they are already unique integers in this codebase).
-    """
-    src, dst = [], []
-    stack = [root]
-    while stack:
-        node = stack.pop()
-        for child in node.children:
-            src.append(node.name)
-            dst.append(child.name)
-            stack.append(child)
-
-    df = cudf.DataFrame({
-        "src": cudf.Series(src, dtype="int32"),
-        "dst": cudf.Series(dst, dtype="int32"),
-    })
-    G = cugraph.Graph(directed=True)
-    G.from_cudf_edgelist(df, source="src", destination="dst")
-    return G
-
-
-def _compute_ted(pred_tree, gt_tree_root):
-    """
-    Compute Tree Edit Distance via cuGraph graph_edit_distance.
-
-    Converts both anytree hierarchies to directed cuGraph Graphs, then calls
-    cugraph.graph_edit_distance(). Returns the GED as a float, or np.nan on
-    failure.
-    """
-    if pred_tree is None or gt_tree_root is None:
-        return np.nan
-
-    try:
-        G_pred = _anytree_to_cugraph(pred_tree)
-        G_gt   = _anytree_to_cugraph(gt_tree_root)
-        ged = cugraph.graph_edit_distance(G_pred, G_gt)
-        return float(ged)
-    except Exception as e:
-        print(f"WARNING: GED computation failed: {e}")
-        return np.nan
 
 
 def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced_embeddings,
