@@ -68,7 +68,12 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # ==========================
 import phate
 import pacmap
+<<<<<<< Updated upstream
 # cuML GPU-accelerated compute
+=======
+import trimap
+# cuML GPU-accelerated dimensionality reduction
+>>>>>>> Stashed changes
 import cuml
 from cuml.decomposition import PCA as cuPCA
 from cuml.manifold import TSNE as cuTSNE
@@ -223,7 +228,7 @@ DATASET_CONFIGS = {
         "short": "amz",
         "results_filename": "amazon_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["Raw", "PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
+        "reduction_methods": ["Raw", "PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
     },
     "dbpedia": {
         "load_function": load_dbpedia,
@@ -231,7 +236,7 @@ DATASET_CONFIGS = {
         "short": "db",
         "results_filename": "db_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["Raw", "PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
+        "reduction_methods": ["Raw", "PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", 'TriMAP'],
     },
     "arxiv": {
         "load_function": load_arxiv,
@@ -239,7 +244,7 @@ DATASET_CONFIGS = {
         "short": "arx",
         "results_filename": "arxiv_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["Raw", "PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
+        "reduction_methods": ["Raw", "PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", 'TriMAP'],
     },
     "rcv1": {
         "load_function": load_rcv1,
@@ -247,7 +252,7 @@ DATASET_CONFIGS = {
         "short": "rcv1",
         "results_filename": "rcv1_clustering_scores.csv",
         "batch_size": 8,
-        "reduction_methods": ["Raw", "PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
+        "reduction_methods": ["Raw", "PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", 'TriMAP'],
     },
     "wos": {
         "load_function": load_wos,
@@ -255,7 +260,7 @@ DATASET_CONFIGS = {
         "short": "wos",
         "results_filename": "wos_clustering_scores.csv",
         "batch_size": 64,
-        "reduction_methods": ["Raw", "PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
+        "reduction_methods": ["Raw", "PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", 'TriMAP'],
     },
 }
 
