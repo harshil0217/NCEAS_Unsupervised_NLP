@@ -131,33 +131,46 @@ for dataset in datasets:
     x_high = np.load(embed_path)
     print(f"  Embeddings shape: {x_high.shape}")
 
-    x_high_sub = x_high
-    print(f"  Using full dataset ({x_high.shape[0]} points)")
+    x_high_full = x_high
+    print(f"  Using full dataset ({x_high.shape[0]} points) for 2D reductions")
 
-    suffix = f"{dataset}_sub{len(x_high_sub)}"
+    suffix = f"{dataset}_full{len(x_high_full)}"
 
-    # compute 2D reductions
+    # compute 2D reductions on full dataset
     reductions = {}
     reductions["PCA"] = load_or_compute_2d(
         "PCA", f"{reduction_2d_dir}/PCA_2d_{suffix}.npy",
-        lambda: skPCA(n_components=2, random_state=67).fit_transform(x_high_sub)
+        lambda: skPCA(n_components=2, random_state=67).fit_transform(x_high_full)
     )
     reductions["UMAP"] = load_or_compute_2d(
         "UMAP", f"{reduction_2d_dir}/UMAP_2d_{suffix}.npy",
-        lambda: umap_pkg.UMAP(n_components=2, min_dist=0.05, n_neighbors=10, random_state=67).fit_transform(x_high_sub)
+        lambda: umap_pkg.UMAP(n_components=2, min_dist=0.05, n_neighbors=10, random_state=67).fit_transform(x_high_full)
     )
     reductions["PHATE"] = load_or_compute_2d(
         "PHATE", f"{reduction_2d_dir}/PHATE_2d_{suffix}.npy",
-        lambda: phate.PHATE(n_jobs=-2, random_state=67, n_components=2).fit_transform(x_high_sub)
+        lambda: phate.PHATE(n_jobs=-2, random_state=67, n_components=2).fit_transform(x_high_full)
     )
     reductions["PaCMAP"] = load_or_compute_2d(
         "PaCMAP", f"{reduction_2d_dir}/PaCMAP_2d_{suffix}.npy",
-        lambda: pacmap.PaCMAP(n_components=2, random_state=67).fit_transform(x_high_sub)
+        lambda: pacmap.PaCMAP(n_components=2, random_state=67).fit_transform(x_high_full)
     )
+
+    # subsample for metrics — pairwise distances scale as n^2, too much memory on large datasets
+    max_metrics = 10000
+    if x_high_full.shape[0] > max_metrics:
+        np.random.seed(42)
+        met_idx    = np.random.choice(x_high_full.shape[0], max_metrics, replace=False)
+        x_high_sub = x_high_full[met_idx]
+        reductions_sub = {name: arr[met_idx] for name, arr in reductions.items()}
+        print(f"  Subsampled to {max_metrics} points for metrics")
+    else:
+        x_high_sub     = x_high_full
+        reductions_sub = reductions
+        print(f"  No subsampling needed for metrics ({x_high_full.shape[0]} points)")
 
     # compute metrics
     stats = []
-    for name, x_low_2d in reductions.items():
+    for name, x_low_2d in reductions_sub.items():
         t_score = trustworthiness(x_high_sub, x_low_2d, n_neighbors=15)
         c_score = compute_continuity(x_high_sub, x_low_2d, n_neighbors=15)
         d_high_flat = pairwise_distances(x_high_sub).flatten()
@@ -180,7 +193,7 @@ for dataset in datasets:
     print(f"  Saved metrics to {output_path}")
 
     # save Shepard diagrams
-    for name, x_low_2d in reductions.items():
+    for name, x_low_2d in reductions_sub.items():
         f = plot_shepard(x_high_sub, x_low_2d, name, dataset)
         print(f"  Saved Shepard: {f}")
 
