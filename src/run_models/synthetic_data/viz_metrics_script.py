@@ -29,6 +29,7 @@ matplotlib.use('Agg')  # non-interactive backend for script use
 import matplotlib.pyplot as plt
 import phate
 import pacmap
+import trimap
 import umap as umap_pkg
 from sklearn.decomposition import PCA as skPCA
 from sklearn.manifold import trustworthiness
@@ -170,6 +171,10 @@ for theme, max_sub, depth, add_noise in configs:
     reductions["PaCMAP"] = load_or_compute_2d(
         "PaCMAP", f"{reduction_2d_dir}/PaCMAP_2d_{stem}.npy",
         lambda: pacmap.PaCMAP(n_components=2, random_state=67).fit_transform(x_high_sub)
+    )
+    reductions["TriMAP"] = load_or_compute_2d(
+        "TriMAP", f"{reduction_2d_dir}/TriMAP_2d_{stem}.npy",
+        lambda: trimap.TRIMAP(n_dims=2).fit_transform(x_high_sub)
     )
 
     # compute metrics

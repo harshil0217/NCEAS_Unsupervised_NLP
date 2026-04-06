@@ -2,6 +2,8 @@ name: phate-env
 channels:
   - conda-forge
   - bioconda
+  - rapidsai
+  - nvidia
 dependencies:
   - python=3.10
   - cuda-version=12
@@ -24,3 +26,11 @@ dependencies:
   - conda-forge::accelerate
   - jupyter
   - nltk
+  - python-annoy
+  - pip
+  - numba
+  - anytree
+  - hdbscan
+  - umap-learn
+  - pip:
+    - trimap

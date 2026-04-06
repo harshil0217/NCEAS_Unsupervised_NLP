@@ -52,7 +52,7 @@ import torch
 # ===========================
 import phate
 import pacmap
-#import trimap
+import trimap
 
 # cuML GPU-accelerated dimensionality reduction
 import cuml
@@ -439,16 +439,14 @@ for embedding_model in embedding_model_names:
     else:
         np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/PaCMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["PaCMAP"])
 
-    '''
     # TriMAP
     print("Running TriMAP...")
     tr = trimap.TRIMAP(n_dims=300)
     embedding_methods_for_model["TriMAP"] = tr.fit_transform(embeddings)
     if float(add_noise) > 0:
-        np.save(f"{embedding_model}_reduced_embeddings/TriMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embedding_methods_for_model["TriMAP"])
+        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/TriMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embedding_methods_for_model["TriMAP"])
     else:
-        np.save(f"{embedding_model}_reduced_embeddings/TriMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["TriMAP"])
-    '''
+        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/TriMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["TriMAP"])
     # Store the embedding methods for this model
     embedding_models[embedding_model] = embedding_methods_for_model
 
