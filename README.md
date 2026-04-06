@@ -1,8 +1,8 @@
 # NCEAS Unsupervised NLP
 
-NCEAS Project for SS26 CMSE 495 Data Science Capstone, Michigan State University
+⚠️ **Note:** This project requires a Linux environment with a CUDA-enabled GPU (tested on MSU HPCC).
 
-**Note:** This project requires a Linux environment with a CUDA-enabled GPU (tested on MSU HPCC).
+NCEAS Project for SS26 CMSE 495 Data Science Capstone, Michigan State University.
 
 ## Project Video
 
