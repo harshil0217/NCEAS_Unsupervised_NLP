@@ -155,18 +155,9 @@ for dataset in datasets:
         lambda: pacmap.PaCMAP(n_components=2, random_state=67).fit_transform(x_high_full)
     )
 
-    # subsample for metrics — pairwise distances scale as n^2, too much memory on large datasets
-    max_metrics = 10000
-    if x_high_full.shape[0] > max_metrics:
-        np.random.seed(42)
-        met_idx    = np.random.choice(x_high_full.shape[0], max_metrics, replace=False)
-        x_high_sub = x_high_full[met_idx]
-        reductions_sub = {name: arr[met_idx] for name, arr in reductions.items()}
-        print(f"  Subsampled to {max_metrics} points for metrics")
-    else:
-        x_high_sub     = x_high_full
-        reductions_sub = reductions
-        print(f"  No subsampling needed for metrics ({x_high_full.shape[0]} points)")
+    x_high_sub     = x_high_full
+    reductions_sub = reductions
+    print(f"  Using full dataset for metrics ({x_high_full.shape[0]} points)")
 
     # compute metrics
     stats = []
