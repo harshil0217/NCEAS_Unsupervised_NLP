@@ -1,8 +1,8 @@
 # NCEAS Unsupervised NLP
 
-⚠️ **Note:** This project requires a Linux environment with a CUDA-enabled GPU (tested on MSU HPCC).
-
 NCEAS Project for SS26 CMSE 495 Data Science Capstone, Michigan State University.
+
+**Note:** This project requires a Linux environment with a CUDA-enabled GPU (tested on MSU HPCC).
 
 ## Project Video
 
@@ -39,7 +39,7 @@ Documents are embedded using two models: `Qwen3-Embedding-0.6B` and `all-MiniLM-
 We compare five reduction methods: PHATE, PCA, UMAP, t-SNE, and PaCMAP. GPU-accelerated implementations (cuML) are used where available.
 
 ### Clustering
-Four clustering methods are applied at multiple hierarchy levels: Agglomerative Clustering, HDBSCAN, Diffusion Condensation, and Hercules
+Four clustering methods are applied at multiple hierarchy levels: Agglomerative Clustering, HDBSCAN, Diffusion Condensation, and Hercules.
 
 ### Evaluation
 Clustering quality is measured against ground truth labels using FM index, Adjusted Rand Index (ARI), Adjusted Mutual Information (AMI), and Rand Index.
@@ -89,6 +89,7 @@ python src/run_models/benchmark_datasets/eval_pipeline.py --dataset wos
 ```
 
 ---
+
 ## Expected Output
 
 Running the benchmark pipeline will generate:
@@ -103,10 +104,10 @@ Running the benchmark pipeline will generate:
 ```
 NCEAS_Unsupervised_NLP/
 │
-├── notebooks/                              # Demo and reproducibility notebooks
-│   ├── demo.ipynb                          # Full pipeline walkthrough
-│   ├── MVP_demo.ipynb                      # MVP demo
-│   └── NCEAS_Reproducibility.ipynb        # Reproduce Shepard Diagram figures
+├── notebooks/                              # Milestone notebooks
+│   ├── demo.ipynb                          
+│   ├── MVP_demo.ipynb                      
+│   └── NCEAS_Reproducibility.ipynb         
 │
 ├── docs/                                   # Project documentation and report
 │   ├── project_plan.md
