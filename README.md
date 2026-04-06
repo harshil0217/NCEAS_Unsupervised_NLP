@@ -1,8 +1,8 @@
 # NCEAS Unsupervised NLP
 
-⚠️ **Note:** This project requires a Linux environment with a CUDA-enabled GPU (tested on MSU HPCC).
-
 NCEAS Project for SS26 CMSE 495 Data Science Capstone, Michigan State University
+
+**Note:** This project requires a Linux environment with a CUDA-enabled GPU (tested on MSU HPCC).
 
 ## Project Video
 
@@ -69,7 +69,7 @@ This notebook demonstrates the full pipeline including loading data, generating 
 Instructions to reproduce the Shepard Diagram figures from our final report are in:
 
 ```
-NCEAS_Reproducibility.ipynb
+notebooks/NCEAS_Reproducibility.ipynb
 ```
 
 This notebook loads precomputed embeddings from the NCEAS Teams Data folder and generates Shepard Diagrams for PCA, UMAP, PHATE, and PaCMAP on the RCV1 dataset.
@@ -97,51 +97,74 @@ Running the benchmark pipeline will generate:
 - Additional logs and intermediate outputs depending on the experiment
 
 ---
+
 ## Project Structure
 
 ```
 NCEAS_Unsupervised_NLP/
 │
-├── notebooks/                    # Demo notebook
-│   └── demo.ipynb
+├── notebooks/                              # Demo and reproducibility notebooks
+│   ├── demo.ipynb                          # Full pipeline walkthrough
+│   ├── MVP_demo.ipynb                      # MVP demo
+│   └── NCEAS_Reproducibility.ipynb        # Reproduce Shepard Diagram figures
 │
-├── docs/                         # Project documentation and report
+├── docs/                                   # Project documentation and report
 │   ├── project_plan.md
-│   └── NCEAS_PHATE_Project_for_ACL/
+│   └── NCEAS_PHATE_Project_for_ACL/        # ACL-style paper draft
 │       └── latex/
 │
+├── results/                                # Top-level output (plots, CSVs)
+│
 ├── src/
-│   ├── custom_packages/          # Custom algorithm implementations
+│   ├── custom_packages/                    # Custom algorithm implementations
+│   │   ├── clusters.py
 │   │   ├── diffusion_condensation.py
 │   │   ├── fowlkes_mallows.py
 │   │   ├── hercules.py
-│   │   ├── hierarchical_kmeans_gpu.py
-│   │   └── clusters.py
+│   │   └── hierarchical_kmeans_gpu.py
 │   │
-│   ├── data/                     # Benchmark datasets (not included in repo)
+│   ├── data/                               # Benchmark datasets (not included in repo)
 │   │   ├── arxiv/
 │   │   ├── amazon/
 │   │   ├── dbpedia/
 │   │   ├── rcv1/
 │   │   └── WebOfScience/
 │   │
-│   ├── data_generation/          # Synthetic data generation using LLMs
-│   │   └── generate.py
+│   ├── data_generation/                    # Synthetic data generation using LLMs
+│   │   ├── generate.py
+│   │   ├── theme_keys.json
+│   │   └── generated_data/
 │   │
-│   └── run_models/               # Experiment pipelines
+│   ├── evaluations/                        # Analysis and evaluation notebooks
+│   │   ├── combine_results.ipynb
+│   │   ├── compare_eval_methods.ipynb
+│   │   ├── embedding_visuals.ipynb
+│   │   ├── final_table.ipynb
+│   │   ├── metric_tables.ipynb
+│   │   └── parameter_selection.ipynb
+│   │
+│   ├── results/                            # Clustering evaluation CSVs
+│   │
+│   └── run_models/                         # Experiment pipelines
 │       ├── benchmark_datasets/
-│       │   ├── eval_pipeline.py  # Main benchmark evaluation pipeline
-│       │   └── herc_pipeline.py  # HERCULES hierarchical clustering pipeline
+│       │   ├── eval_pipeline.py            # Main benchmark evaluation pipeline
+│       │   ├── herc_pipeline.py            # HERCULES hierarchical clustering pipeline
+│       │   └── run_eval_pipeline.sh        # Shell script to run all benchmarks
 │       ├── synthetic_data/
 │       │   ├── eval_script.py
-│       │   └── synth_herc_pipeline.py
-│       ├── visualization_metrics.ipynb           # Visualization quality metrics (benchmark)
-│       └── visualization_metrics_synthetic.ipynb # Visualization quality metrics (synthetic)
+│       │   ├── synth_herc_pipeline.py
+│       │   └── run_all.sh
+│       ├── epa.ipynb                       # EPA dataset analysis
+│       ├── slide_figures.py                # Figure generation for slides
+│       ├── viz_summary_figures.py          # Summary visualization figures
+│       ├── visualization_metrics.ipynb     # Visualization quality metrics (benchmark)
+│       └── visualization_metrics_synthetic.ipynb  # Visualization quality metrics (synthetic)
 │
-├── environment.yml               # Conda environment (Linux/CUDA)
-├── INSTALL.md                    # Installation instructions
-├── LICENSE                       # Apache 2.0 License
-└── README.md                     # Project overview
+├── environment.yml                         # Conda environment (Linux/CUDA)
+├── requirements.txt                        # Python package requirements
+├── INSTALL.md                              # Installation instructions
+├── LICENSE                                 # Apache 2.0 License
+└── README.md                              # Project overview
 ```
 
 ---
@@ -150,7 +173,9 @@ NCEAS_Unsupervised_NLP/
 
 The project report (ACL-style paper draft) is available in:
 
-docs/NCEAS_PHATE_Project_for_ACL/latex/
+[docs/NCEAS_PHATE_Project_for_ACL/latex/](docs/NCEAS_PHATE_Project_for_ACL/latex/)
+
+---
 
 ## Authors
 
