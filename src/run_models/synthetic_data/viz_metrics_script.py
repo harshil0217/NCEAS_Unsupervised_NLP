@@ -31,6 +31,7 @@ import phate
 import pacmap
 import trimap
 import umap as umap_pkg
+from cuml.manifold import TSNE as cuTSNE
 from sklearn.decomposition import PCA as skPCA
 from sklearn.manifold import trustworthiness
 from sklearn.metrics import pairwise_distances
@@ -181,6 +182,10 @@ for embedding_model in embedding_models:
         reductions["TriMAP"] = load_or_compute_2d(
             "TriMAP", f"{reduction_2d_dir}/TriMAP_2d_{stem}.npy",
             lambda: trimap.TRIMAP(n_dims=2).fit_transform(x_high_sub)
+        )
+        reductions["tSNE"] = load_or_compute_2d(
+            "tSNE", f"{reduction_2d_dir}/tSNE_2d_{stem}.npy",
+            lambda: np.array(cuTSNE(n_components=2).fit_transform(x_high_sub))
         )
 
         # compute metrics

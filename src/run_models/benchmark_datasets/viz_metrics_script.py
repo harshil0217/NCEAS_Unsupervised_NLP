@@ -5,6 +5,11 @@ Runs Trustworthiness, Continuity, Spearman Correlation, and DEMaP
 for all benchmark datasets. Results and Shepard diagrams are saved
 to intermediate_data/{embedding_model}_results/.
 
+2D reductions are computed on the full dataset. For large datasets
+(> SUBSAMPLE_THRESHOLD points), metrics are computed on N_SUBSAMPLES
+random subsamples of SUBSAMPLE_SIZE points and the CSV reports
+mean ± std across subsamples.
+
 Usage:
     python src/run_models/benchmark_datasets/viz_metrics_script.py
 """
@@ -31,6 +36,7 @@ import phate
 import pacmap
 import trimap
 import umap as umap_pkg
+from cuml.manifold import TSNE as cuTSNE
 from sklearn.decomposition import PCA as skPCA
 from sklearn.manifold import trustworthiness
 from sklearn.metrics import pairwise_distances
@@ -48,6 +54,10 @@ embedding_models = [
 ]
 
 datasets = ["rcv1", "arxiv", "amazon", "dbpedia", "wos"]
+
+SUBSAMPLE_THRESHOLD = 10_000   # use subsampling for datasets larger than this
+SUBSAMPLE_SIZE      = 10_000   # points per subsample
+N_SUBSAMPLES        = 30       # number of subsamples (mean ± std reported)
 
 # ========================
 # Helper functions
@@ -92,6 +102,15 @@ def compute_demap(x_high, x_low_2d, k_min=3, k_max=15):
     geo_flat = geo[idx]
     euc_flat = pairwise_distances(x_low_2d)[idx]
     return spearmanr(geo_flat, euc_flat)[0]
+
+def compute_metrics_once(x_high_sub, x_low_sub):
+    t_score = trustworthiness(x_high_sub, x_low_sub, n_neighbors=15)
+    c_score = compute_continuity(x_high_sub, x_low_sub, n_neighbors=15)
+    d_high_flat = pairwise_distances(x_high_sub).flatten()
+    d_low_flat  = pairwise_distances(x_low_sub).flatten()
+    spearman_corr, _ = spearmanr(d_high_flat, d_low_flat)
+    demap_score = compute_demap(x_high_sub, x_low_sub)
+    return t_score, c_score, spearman_corr, demap_score
 
 def plot_shepard(x_high, x_low, name, dataset, sample_size=500):
     indices = np.random.choice(len(x_high), min(sample_size, len(x_high)), replace=False)
@@ -165,38 +184,78 @@ for embedding_model in embedding_models:
             "TriMAP", f"{reduction_2d_dir}/TriMAP_2d_{suffix}.npy",
             lambda: trimap.TRIMAP(n_dims=2).fit_transform(x_high_full)
         )
+        reductions["tSNE"] = load_or_compute_2d(
+            "tSNE", f"{reduction_2d_dir}/tSNE_2d_{suffix}.npy",
+            lambda: np.array(cuTSNE(n_components=2).fit_transform(x_high_full))
+        )
 
-        x_high_sub     = x_high_full
-        reductions_sub = reductions
-        print(f"  Using full dataset for metrics ({x_high_full.shape[0]} points)")
+        n_total = x_high_full.shape[0]
+        use_subsampling = n_total > SUBSAMPLE_THRESHOLD
+
+        if use_subsampling:
+            print(f"  Dataset has {n_total} points — using {N_SUBSAMPLES}x subsamples of {SUBSAMPLE_SIZE} for metrics")
+        else:
+            print(f"  Dataset has {n_total} points — computing metrics on full dataset")
 
         # compute metrics
         stats = []
-        for name, x_low_2d in reductions_sub.items():
-            t_score = trustworthiness(x_high_sub, x_low_2d, n_neighbors=15)
-            c_score = compute_continuity(x_high_sub, x_low_2d, n_neighbors=15)
-            d_high_flat = pairwise_distances(x_high_sub).flatten()
-            d_low_flat  = pairwise_distances(x_low_2d).flatten()
-            spearman_corr, _ = spearmanr(d_high_flat, d_low_flat)
-            print(f"  Computing DEMaP for {name}...")
-            demap_score = compute_demap(x_high_sub, x_low_2d)
-            stats.append({
-                "Method": name,
-                "Trustworthiness": round(t_score, 4),
-                "Continuity": round(c_score, 4),
-                "Spearman Correlation": round(spearman_corr, 4),
-                "DEMaP": round(demap_score, 4)
-            })
-            print(f"  {name}: T={t_score:.4f}, C={c_score:.4f}, Spearman={spearman_corr:.4f}, DEMaP={demap_score:.4f}")
+        for name, x_low_2d in reductions.items():
+            print(f"  Computing metrics for {name}...")
+
+            if use_subsampling:
+                t_scores, c_scores, sp_scores, demap_scores = [], [], [], []
+                for s in range(N_SUBSAMPLES):
+                    idx = np.random.choice(n_total, SUBSAMPLE_SIZE, replace=False)
+                    t, c, sp, dm = compute_metrics_once(x_high_full[idx], x_low_2d[idx])
+                    t_scores.append(t)
+                    c_scores.append(c)
+                    sp_scores.append(sp)
+                    demap_scores.append(dm)
+                    if (s + 1) % 10 == 0:
+                        print(f"    subsample {s+1}/{N_SUBSAMPLES} done")
+
+                stats.append({
+                    "Method":                   name,
+                    "Trustworthiness_mean":      round(np.mean(t_scores),     4),
+                    "Trustworthiness_std":       round(np.std(t_scores),      4),
+                    "Continuity_mean":           round(np.mean(c_scores),     4),
+                    "Continuity_std":            round(np.std(c_scores),      4),
+                    "Spearman_Correlation_mean": round(np.mean(sp_scores),    4),
+                    "Spearman_Correlation_std":  round(np.std(sp_scores),     4),
+                    "DEMaP_mean":                round(np.mean(demap_scores), 4),
+                    "DEMaP_std":                 round(np.std(demap_scores),  4),
+                    "n_subsamples":              N_SUBSAMPLES,
+                    "subsample_size":            SUBSAMPLE_SIZE,
+                })
+                print(f"  {name}: T={np.mean(t_scores):.4f}±{np.std(t_scores):.4f}, "
+                      f"C={np.mean(c_scores):.4f}±{np.std(c_scores):.4f}, "
+                      f"Spearman={np.mean(sp_scores):.4f}±{np.std(sp_scores):.4f}, "
+                      f"DEMaP={np.mean(demap_scores):.4f}±{np.std(demap_scores):.4f}")
+            else:
+                t, c, sp, dm = compute_metrics_once(x_high_full, x_low_2d)
+                stats.append({
+                    "Method":                   name,
+                    "Trustworthiness_mean":      round(t,  4),
+                    "Trustworthiness_std":       0.0,
+                    "Continuity_mean":           round(c,  4),
+                    "Continuity_std":            0.0,
+                    "Spearman_Correlation_mean": round(sp, 4),
+                    "Spearman_Correlation_std":  0.0,
+                    "DEMaP_mean":                round(dm, 4),
+                    "DEMaP_std":                 0.0,
+                    "n_subsamples":              1,
+                    "subsample_size":            n_total,
+                })
+                print(f"  {name}: T={t:.4f}, C={c:.4f}, Spearman={sp:.4f}, DEMaP={dm:.4f}")
 
         # save metrics CSV
         output_path = os.path.join(results_dir, f"viz_metrics_{dataset}.csv")
         pd.DataFrame(stats).to_csv(output_path, index=False)
         print(f"  Saved metrics to {output_path}")
 
-        # save Shepard diagrams
-        for name, x_low_2d in reductions_sub.items():
-            f = plot_shepard(x_high_sub, x_low_2d, name, dataset)
+        # save Shepard diagrams (sampled from full dataset)
+        for name, x_low_2d in reductions.items():
+            f = plot_shepard(x_high_full, x_low_2d, name, dataset)
             print(f"  Saved Shepard: {f}")
 
 print(f"\n{'='*60}")
