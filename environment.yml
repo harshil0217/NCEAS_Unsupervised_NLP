@@ -31,5 +31,6 @@ dependencies:
   - numba
   - anytree
   - hdbscan
+  - openpyxl
   - pip:
     - trimap
