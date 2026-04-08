@@ -11,11 +11,15 @@ random subsamples of SUBSAMPLE_SIZE points and the CSV reports
 mean ± std across subsamples.
 
 Usage:
+    # run all datasets
     python src/run_models/benchmark_datasets/viz_metrics_script.py
+    # run a single dataset
+    python src/run_models/benchmark_datasets/viz_metrics_script.py --dataset arxiv
 """
 
 import os
 import sys
+import argparse
 
 # navigate to src/
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -26,6 +30,11 @@ while os.path.basename(current_dir) != 'src':
     current_dir = parent
 os.chdir(current_dir)
 sys.path.insert(0, current_dir)
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--dataset", type=str, default=None,
+                    help="Run a single dataset (e.g. arxiv). Omit to run all.")
+args = parser.parse_args()
 
 import numpy as np
 import pandas as pd
@@ -53,7 +62,8 @@ embedding_models = [
     "Qwen/Qwen3-Embedding-0.6B",
 ]
 
-datasets = ["rcv1", "arxiv", "amazon", "dbpedia", "wos"]
+all_datasets = ["rcv1", "arxiv", "amazon", "dbpedia", "wos"]
+datasets = [args.dataset] if args.dataset else all_datasets
 
 SUBSAMPLE_THRESHOLD = 10_000   # use subsampling for datasets larger than this
 SUBSAMPLE_SIZE      = 10_000   # points per subsample
