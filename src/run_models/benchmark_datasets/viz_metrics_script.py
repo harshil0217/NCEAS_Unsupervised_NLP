@@ -11,10 +11,14 @@ random subsamples of SUBSAMPLE_SIZE points and the CSV reports
 mean ± std across subsamples.
 
 Usage:
-    # run all datasets
+    # run all datasets, all models
     python src/run_models/benchmark_datasets/viz_metrics_script.py
     # run a single dataset
     python src/run_models/benchmark_datasets/viz_metrics_script.py --dataset arxiv
+    # run a single model
+    python src/run_models/benchmark_datasets/viz_metrics_script.py --model sentence-transformers/all-MiniLM-L6-v2
+    # run a single dataset + single model
+    python src/run_models/benchmark_datasets/viz_metrics_script.py --dataset arxiv --model Qwen/Qwen3-Embedding-0.6B
 """
 
 import os
@@ -34,6 +38,8 @@ sys.path.insert(0, current_dir)
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset", type=str, default=None,
                     help="Run a single dataset (e.g. arxiv). Omit to run all.")
+parser.add_argument("--model", type=str, default=None,
+                    help="Run a single embedding model (e.g. sentence-transformers/all-MiniLM-L6-v2). Omit to run all.")
 args = parser.parse_args()
 
 import numpy as np
@@ -57,10 +63,11 @@ from scipy.stats import spearmanr
 # Config
 # ========================
 
-embedding_models = [
+all_embedding_models = [
     "sentence-transformers/all-MiniLM-L6-v2",
     "Qwen/Qwen3-Embedding-0.6B",
 ]
+embedding_models = [args.model] if args.model else all_embedding_models
 
 all_datasets = ["rcv1", "arxiv", "amazon", "dbpedia", "wos"]
 datasets = [args.dataset] if args.dataset else all_datasets
