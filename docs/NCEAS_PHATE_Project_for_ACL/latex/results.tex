@@ -1,10 +1,32 @@
-\subsection{Visualization}
-\begin{figure*}
+\begin{figure*}[t]
     \centering
-    \includegraphics[width=1\textwidth]{all_embeddings_subplot_copy.png}
-    \caption{Visualizations of datasets with known hierarchical structure; (d) and (s) correspond to generated deep and shallow hierarchies, respectively. Multiclass noise in generated data is depicted in gray.}
+    
+    \begin{subfigure}{\textwidth}
+        \includegraphics[width=\textwidth]{all_embeddings_subplot_copy.png}
+        \caption{Original visualization of datasets with known hierarchical structure.}
+    \end{subfigure}
+    
     \label{fig:panel-fig}
-\end{figure*}
+    \end{figure*}
+    
+    \begin{figure*}[t]
+    \ContinuedFloat
+    \centering
+    
+    \begin{subfigure}{\textwidth}
+        \includegraphics[width=\textwidth]{fig2_scatter_grid_minilm.png}
+        \caption{MiniLM embeddings}
+    \end{subfigure}
+    
+    \vspace{0.5em}
+    
+    \begin{subfigure}{\textwidth}
+        \includegraphics[width=\textwidth]{fig2_scatter_grid_qwen.png}
+        \caption{Qwen embeddings}
+    \end{subfigure}
+    
+    \caption{Embedding visualizations: (b) MiniLM and (c) Qwen.}
+    \end{figure*}
 Visualizations of text embeddings colored by top-level categories appear in Figure \ref{fig:panel-fig}. The generated hierarchies with 25\% noise are visualized. PHATE and PCA are better able to separate the noise class as compared with t-SNE and UMAP, but PHATE better preserves noise semantics by its centralized location, indicating a relation with multiple classes. PCA and t-SNE plots are globally quite similar, but t-SNE provides more class discriminability. PHATE, by contrast, displays top-level categories as extremal points of the embedding and provides cleaner class separation than PCA and t-SNE. UMAP collapses most of the information onto a single dimension in some cases and in others bears similarity to PHATE although compressing points and, in some cases, shattering the global structure. Additional visualizations with default parameter settings for UMAP and PHATE are provided in the appendices in Figure \ref{fig:default-visuals}.
 
 The trajectory of topics and themes in the visualizations can be analyzed in several different ways. We visualize how the sub-themes within the Ecosystems data transition between the two themes of "Economic Impact Metrics" and "Social Conflict Intensity" (Figure \ref{fig:ecosystems-trajectory}). Similarly with the Fisheries data, we use the specific concepts to determine how some of the sub-themes mapped between the categories of "Offshore Energy Infrastructure Development," "Marine Environmental Quality," and "Fish Population Metrics" (Figure \ref{fig:fisheries-trajectory}). We, furthermore, curate semantic trajectories in the Web of Science embedding on the basis of keywords associated to each data point as provided in the dataset (Figure \ref{fig:WoS-trajectory}). Lastly, we use the information at the docket level for the EPA data to determine thematic changes over space (Figure \ref{fig:epa-trajectory}). 
