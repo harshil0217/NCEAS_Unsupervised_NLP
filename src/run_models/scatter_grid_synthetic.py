@@ -33,7 +33,7 @@ EMBEDDING_MODELS = [
 ]
 
 LABEL_DIR = "data_generation/generated_data"
-OUT_DIR   = "intermediate_data/sentence-transformers/all-MiniLM-L6-v2_results/summary_figures"
+OUT_DIR   = "intermediate_data/summary_figures"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 METHODS = ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"]
