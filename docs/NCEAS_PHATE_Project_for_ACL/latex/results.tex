@@ -175,13 +175,39 @@ Overall, UMAP demonstrates the most consistent performance across both local and
     \end{table*}
 
 \subsection{Hierarchical clustering}
-A summary of the performance of each method on the hierarchical clustering task appears in Table \ref{tab:pivot_table}. The reported values are the means over all cluster levels of the medians over all parameters for each method. PHATE and UMAP with agglomerative clustering each achieve the best or second-best performance on five of seven datasets. HDBSCAN consistently performs poorly on average as compared to diffusion condensation and agglomerative, regardless of dimensionality reduction method.  
+
+A summary of overall clustering performance across all datasets and embedding models is shown in Table \ref{tab:overall_clustering}. The reported values correspond to the median performance across all datasets and embeddings.
+
+\begin{table}[t]
+    \centering
+    \caption{Overall clustering performance (median across runs, datasets, and embeddings). Best is \textbf{bold}, second is \underline{underlined}.}
+    \begin{tabular}{lccc}
+    \toprule
+    Configuration & ARI & AMI & FM \\
+    \midrule
+    \textbf{UMAP + Agglomerative} & \textbf{0.2567} & \textbf{0.4583} & \textbf{0.3504} \\
+    \underline{PaCMAP + Agglomerative} & \underline{0.2519} & \underline{0.4538} & \underline{0.3133} \\
+    PHATE + Agglomerative & 0.2264 & 0.4190 & 0.2935 \\
+    UMAP + DC & 0.2119 & 0.4207 & 0.3032 \\
+    PaCMAP + DC & 0.2117 & 0.4182 & 0.2944 \\
+    PCA + DC & 0.2027 & 0.4258 & 0.2927 \\
+    PCA + Agglomerative & 0.1983 & 0.4234 & 0.2947 \\
+    PHATE + DC & 0.1869 & 0.3935 & 0.2827 \\
+    tSNE + Agglomerative & 0.1712 & 0.3763 & 0.2460 \\
+    PaCMAP + HDBSCAN & 0.1613 & 0.4127 & 0.3059 \\
+    tSNE + DC & 0.1253 & 0.3433 & 0.1972 \\
+    UMAP + HDBSCAN & 0.0339 & 0.1229 & 0.2641 \\
+    tSNE + HDBSCAN & 0.0067 & 0.1205 & 0.2609 \\
+    PHATE + HDBSCAN & 0.0011 & 0.0446 & 0.2501 \\
+    PCA + HDBSCAN & 0.0000 & 0.0006 & 0.2578 \\
+    \bottomrule
+    \end{tabular}
+    \end{table}
+Overall, UMAP and PaCMAP combined with agglomerative clustering achieve the strongest performance across both ARI and AMI, while HDBSCAN-based methods consistently underperform across configurations.
 
 \input{ari_table}
 
-
-A more detailed presentation of the clustering results on the generated datasets appears in Figure \ref{fig:ARI-combined}. Reported values are means across datasets of medians at each cluster level for each method. While UMAP and PHATE coupled with HDBSCAN perform well at finer scales, these methods coupled with aggolomerative perform best at coarser scales. PHATE with diffusion condensation performs comparably to PCA with agglomerative, while slightly outperforming it on the deep hierarchies.
-
+A more detailed presentation of the clustering results on the generated datasets appears in Figure \ref{fig:ARI-combined}. Reported values are means across datasets of medians at each cluster level for each method. While UMAP and PHATE can show competitive performance at finer scales in some settings, HDBSCAN generally underperforms compared to agglomerative clustering across most configurations.
 % A PHATE comparison of ground truth, top-level hierarchy labels, and those identified by diffusion condensation appears in [FIG]. Diffusion condensation differentiates clusters well, especially the noise class, with exceptions within class overlaps and notably the gold standard orange class. 
 
 \begin{figure*}[htbp]
@@ -206,5 +232,5 @@ A more detailed presentation of the clustering results on the generated datasets
         \includegraphics[width=\linewidth]{legend_None_t1.0_maxsub3_depth5_noiseNone_random.png}
     \end{minipage}
     \caption{Line plot of performance at each cluster level averaged across deep and shallow generated datasets. Lower numbers on the x-axis correspond to coarser scales (i.e., fewer clusters). \textit{None} means no dimensionality reduction. Bars represent standard error.}
-    \label{fig:ARI-combined}
+    \label{fig:ARI-combined-alt}
 \end{figure*}
