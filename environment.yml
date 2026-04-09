@@ -31,5 +31,9 @@ dependencies:
   - numba
   - anytree
   - hdbscan
+  - cython
+  - pandas
+  - seaborn
   - pip:
     - trimap
+    - git+https://github.com/chilligerchief/GED4py.py
