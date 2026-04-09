@@ -1,8 +1,8 @@
 """
 scatter_grid_synthetic.py
 
-Produces a Figure-2-style scatter grid for synthetic datasets:
-- Rows: 4 configs (Ecosystems deep, Ecosystems shallow, Fisheries deep, Fisheries shallow)
+Produces a Figure-2-style scatter grid for synthetic datasets with both embedding models:
+- Rows: 8 (4 configs × 2 models: MiniLM top half, Qwen bottom half)
 - Columns: 6 DR methods (PHATE, PCA, UMAP, t-SNE, PaCMAP, TriMAP)
 - Points colored by top-level category (category 0)
 
@@ -27,15 +27,18 @@ src_dir = current
 os.chdir(src_dir)
 sys.path.insert(0, src_dir)
 
-REDUCTION_2D_DIR = "intermediate_data/sentence-transformers/all-MiniLM-L6-v2_reduced_2d"
-LABEL_DIR        = "data_generation/generated_data"
-OUT_DIR          = "intermediate_data/sentence-transformers/all-MiniLM-L6-v2_results/summary_figures"
+EMBEDDING_MODELS = [
+    ("MiniLM", "intermediate_data/sentence-transformers/all-MiniLM-L6-v2_reduced_2d"),
+    ("Qwen",   "intermediate_data/Qwen/Qwen3-Embedding-0.6B_reduced_2d"),
+]
+
+LABEL_DIR = "data_generation/generated_data"
+OUT_DIR   = "intermediate_data/sentence-transformers/all-MiniLM-L6-v2_results/summary_figures"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 METHODS = ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"]
 METHOD_LABELS = {"tSNE": "t-SNE"}
 
-# 4 clean configs: (stem, label_csv_stem, row_label)
 CONFIGS = [
     (
         "Energy_Ecosystems_and_Humans_hierarchy_t1.0_maxsub3_depth5_synonyms0_random",
@@ -59,7 +62,6 @@ CONFIGS = [
     ),
 ]
 
-# distinct, saturated palette
 PALETTE = [
     "#E63946", "#457B9D", "#2A9D8F", "#E9C46A",
     "#F4A261", "#6A4C93", "#80B918", "#FF6B6B",
@@ -77,65 +79,75 @@ def encode_labels(labels):
     mapping = {v: i for i, v in enumerate(unique)}
     return np.array([mapping[l] for l in labels]), unique
 
-n_rows = len(CONFIGS)
 n_cols = len(METHODS)
-fig, axes = plt.subplots(n_rows, n_cols, figsize=(n_cols * 4, n_rows * 3.5),
-                         facecolor="white")
-fig.patch.set_facecolor("white")
 
-for r, (stem, label_stem, row_label) in enumerate(CONFIGS):
-    labels = load_labels(label_stem)
-    encoded, unique_cats = encode_labels(labels)
-    point_colors = [PALETTE[i % len(PALETTE)] for i in encoded]
+def make_scatter_grid(model_name, reduction_dir, out_filename, title):
+    n_rows = len(CONFIGS)
+    fig, axes = plt.subplots(n_rows, n_cols,
+                             figsize=(n_cols * 4, n_rows * 3.5),
+                             facecolor="white")
+    fig.patch.set_facecolor("white")
 
-    for c, method in enumerate(METHODS):
-        ax = axes[r, c]
-        ax.set_facecolor("#F7F7F7")
-        for spine in ax.spines.values():
-            spine.set_edgecolor("#CCCCCC")
-            spine.set_linewidth(0.8)
+    for r, (stem, label_stem, row_label) in enumerate(CONFIGS):
+        labels = load_labels(label_stem)
+        encoded, unique_cats = encode_labels(labels)
+        point_colors = [PALETTE[i % len(PALETTE)] for i in encoded]
 
-        npy_path = os.path.join(REDUCTION_2D_DIR, f"{method}_2d_{stem}.npy")
+        for c, method in enumerate(METHODS):
+            ax = axes[r, c]
+            ax.set_facecolor("#F7F7F7")
+            for spine in ax.spines.values():
+                spine.set_edgecolor("#CCCCCC")
+                spine.set_linewidth(0.8)
 
-        if not os.path.exists(npy_path):
-            ax.text(0.5, 0.5, "missing", ha="center", va="center",
-                    transform=ax.transAxes, fontsize=9, color="gray")
-        else:
-            x2d = np.load(npy_path)
-            ax.scatter(x2d[:, 0], x2d[:, 1], c=point_colors,
-                       s=12, alpha=0.85, linewidths=0, rasterized=True)
+            npy_path = os.path.join(reduction_dir, f"{method}_2d_{stem}.npy")
 
-        ax.set_xticks([])
-        ax.set_yticks([])
+            if not os.path.exists(npy_path):
+                ax.text(0.5, 0.5, "missing", ha="center", va="center",
+                        transform=ax.transAxes, fontsize=9, color="gray")
+            else:
+                x2d = np.load(npy_path)
+                ax.scatter(x2d[:, 0], x2d[:, 1], c=point_colors,
+                           s=12, alpha=0.85, linewidths=0, rasterized=True)
 
-        if r == 0:
-            ax.set_title(METHOD_LABELS.get(method, method),
-                         fontsize=12, fontweight="bold", pad=6)
-        if c == 0:
-            ax.set_ylabel(row_label, fontsize=11, fontweight="bold", labelpad=8)
+            ax.set_xticks([])
+            ax.set_yticks([])
 
-    # legend to the right of the last column
-    patches = [
-        mpatches.Patch(color=PALETTE[i % len(PALETTE)], label=cat)
-        for i, cat in enumerate(unique_cats)
-    ]
-    axes[r, -1].legend(
-        handles=patches,
-        loc="center left",
-        bbox_to_anchor=(1.03, 0.5),
-        fontsize=8,
-        frameon=True,
-        framealpha=0.9,
-        edgecolor="#CCCCCC",
-        title="Category",
-        title_fontsize=9,
+            if r == 0:
+                ax.set_title(METHOD_LABELS.get(method, method),
+                             fontsize=12, fontweight="bold", pad=6)
+            if c == 0:
+                ax.set_ylabel(row_label, fontsize=11, fontweight="bold", labelpad=8)
+
+        patches = [
+            mpatches.Patch(color=PALETTE[i % len(PALETTE)], label=cat)
+            for i, cat in enumerate(unique_cats)
+        ]
+        axes[r, -1].legend(
+            handles=patches,
+            loc="center left",
+            bbox_to_anchor=(1.03, 0.5),
+            fontsize=8,
+            frameon=True,
+            framealpha=0.9,
+            edgecolor="#CCCCCC",
+            title="Category",
+            title_fontsize=9,
+        )
+
+    plt.suptitle(title, fontsize=14, fontweight="bold", y=1.005)
+    plt.tight_layout(h_pad=1.5, w_pad=1.0)
+
+    out_path = os.path.join(OUT_DIR, out_filename)
+    plt.savefig(out_path, dpi=300, bbox_inches="tight", facecolor="white")
+    plt.close()
+    print(f"Saved: {out_path}")
+
+for model_name, reduction_dir in EMBEDDING_MODELS:
+    slug = "minilm" if "MiniLM" in model_name else "qwen"
+    make_scatter_grid(
+        model_name=model_name,
+        reduction_dir=reduction_dir,
+        out_filename=f"fig2_scatter_grid_{slug}.png",
+        title=f"Synthetic Dataset Visualizations ({model_name})",
     )
-
-plt.suptitle("Synthetic Dataset Visualizations", fontsize=14,
-             fontweight="bold", y=1.01)
-plt.tight_layout(h_pad=1.5, w_pad=1.0)
-
-out_path = os.path.join(OUT_DIR, "fig2_scatter_grid_synthetic.png")
-plt.savefig(out_path, dpi=300, bbox_inches="tight", facecolor="white")
-plt.close()
-print(f"Saved: {out_path}")
