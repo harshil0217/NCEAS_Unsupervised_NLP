@@ -89,6 +89,18 @@ class DiffusionCondensation:
 
         return data
 
+    def chunked_pairwise_distances(self, data_gpu, chunk_size=10000):
+        n = data_gpu.shape[0]
+        distances = cupy.zeros((n, n), dtype=cupy.float32)
+        for i in range(0, n, chunk_size):
+            end_i = min(i + chunk_size, n)
+            for j in range(0, n, chunk_size):
+                end_j = min(j + chunk_size, n)
+                distances[i:end_i, j:end_j] = pairwise_distances(
+                    data_gpu[i:end_i], data_gpu[j:end_j], metric='euclidean'
+                )
+        return cupy.asnumpy(distances)
+
     def merge_data_points(self, data, row_to_cluster, cluster_sizes, next_cluster_id):
         """
         Merges data points that are within the merge_threshold distance of each other.
@@ -108,7 +120,7 @@ class DiffusionCondensation:
             merges: list of (cluster_a, cluster_b, new_cluster_id, distance, size) tuples
         """
         data_gpu = cupy.asarray(data)
-        distance_matrix = cupy.asnumpy(pairwise_distances(data_gpu, metric='euclidean'))
+        distance_matrix = self.chunked_pairwise_distances(data_gpu)
         numpoints = distance_matrix.shape[0]
 
         merged = set()  # indices of rows that have been merged into another
