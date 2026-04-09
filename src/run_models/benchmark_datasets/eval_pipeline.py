@@ -93,6 +93,7 @@ from cuml.cluster import HDBSCAN as cuHDBSCAN
 from custom_packages.fowlkes_mallows import FowlkesMallows
 from custom_packages.dendrogram_purity import dendrogram_purity
 from custom_packages.lca_f1 import lca_f1, clusternode_to_anytree
+from custom_packages.tree_edit_distance import anytree_to_networkx, GreedyEditDistance
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
 import pickle
 
@@ -384,7 +385,7 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
                    cluster_levels, topic_dict, short,
                    gt_tree_root=None, gt_node_map=None):
     embed_data = reduced_embeddings[embedding_model][dim_reduction_method]
-    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": [], "Dendrogram Purity": [], "LCA_F1": []}
+    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": [], "Dendrogram Purity": [], "LCA_F1": [], "TED": None}
 
     print(f"\n{'='*60}")
     print(f"Processing Embedding Method: {dim_reduction_method}")
@@ -395,6 +396,8 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
     method_prefix = {"Agglomerative": "Agg", "HDBSCAN": "HDB", "DC": "DC"}[cluster_method]
     scores_dir = os.path.join(f"intermediate_data/{embedding_model}_scores", short, dim_reduction_method)
     os.makedirs(scores_dir, exist_ok=True)
+
+    ted_cache_path = os.path.join(scores_dir, f"{method_prefix}_ted.npy")
 
     def score_paths(level):
         return {
@@ -408,8 +411,10 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
 
 
     # Short-circuit: if all scores for every level load and return immediately.
-    if all(all(os.path.exists(p) for p in score_paths(level).values()) for level in cluster_levels):
+    if (all(all(os.path.exists(p) for p in score_paths(level).values()) for level in cluster_levels)
+            and os.path.exists(ted_cache_path)):
         print(f"All scores cached for {dim_reduction_method} / {cluster_method}, loading from cache...")
+        combo_scores["TED"] = float(np.load(ted_cache_path))
         for level in cluster_levels:
             paths = score_paths(level)
             combo_scores["FM"].append(float(np.load(paths["fm"])))
@@ -477,6 +482,24 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
     pred_tree = None
     if tree is not None:
         pred_tree = clusternode_to_anytree(tree)
+
+    # Tree Edit Distance (computed once per method, not per level)
+    if pred_tree is not None and gt_tree_root is not None:
+        if os.path.exists(ted_cache_path):
+            print(f"Loading cached TED from {ted_cache_path}")
+            combo_scores["TED"] = float(np.load(ted_cache_path))
+        else:
+            print("Computing Tree Edit Distance...")
+            g_pred = anytree_to_networkx(pred_tree)
+            g_gt = anytree_to_networkx(gt_tree_root)
+            ged = GreedyEditDistance(1, 1, 1, 1)
+            result = ged.compare([g_pred, g_gt], None)
+            ted_score = result[0][1]
+            np.save(ted_cache_path, np.array(ted_score))
+            combo_scores["TED"] = ted_score
+            print(f"TED: {ted_score:.1f}")
+    else:
+        combo_scores["TED"] = np.nan
 
     # Iterate through cluster levels
     for level in cluster_levels:
@@ -682,6 +705,7 @@ def run_pipeline(dataset_name):
         scores_all[(embedding_model, dim_reduction_method, cluster_method)]["AMI"] = combo_scores["AMI"]
         scores_all[(embedding_model, dim_reduction_method, cluster_method)]["Dendrogram Purity"] = combo_scores["Dendrogram Purity"]
         scores_all[(embedding_model, dim_reduction_method, cluster_method)]["LCA_F1"] = combo_scores["LCA_F1"]
+        scores_all[(embedding_model, dim_reduction_method, cluster_method)]["TED"] = combo_scores["TED"]
 
     print(f"\n{'='*60}")
     print("All clustering and evaluation complete!")
@@ -704,6 +728,7 @@ def run_pipeline(dataset_name):
                 "AMI": score_dict["AMI"][i],
                 "Dendrogram_Purity": score_dict["Dendrogram Purity"][i],
                 "LCA_F1": score_dict["LCA_F1"][i],
+                "TED": score_dict["TED"],
             })
 
     # Create DataFrame
