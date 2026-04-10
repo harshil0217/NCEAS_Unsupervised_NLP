@@ -214,9 +214,22 @@ for embedding_model in embedding_models:
         else:
             print(f"  Dataset has {n_total} points — computing metrics on full dataset")
 
+        # load existing cached metrics if available
+        output_path = os.path.join(results_dir, f"viz_metrics_{dataset}.csv")
+        if os.path.exists(output_path):
+            cached_df = pd.read_csv(output_path)
+            cached_methods = set(cached_df["Method"].tolist())
+            stats = cached_df.to_dict("records")
+            print(f"  Loaded cached metrics for: {cached_methods}")
+        else:
+            cached_methods = set()
+            stats = []
+
         # compute metrics
-        stats = []
         for name, x_low_2d in reductions.items():
+            if name in cached_methods:
+                print(f"  Skipping {name} (already cached)")
+                continue
             print(f"  Computing metrics for {name}...")
 
             if use_subsampling:
@@ -265,10 +278,9 @@ for embedding_model in embedding_models:
                 })
                 print(f"  {name}: T={t:.4f}, C={c:.4f}, Spearman={sp:.4f}, DEMaP={dm:.4f}")
 
-        # save metrics CSV
-        output_path = os.path.join(results_dir, f"viz_metrics_{dataset}.csv")
-        pd.DataFrame(stats).to_csv(output_path, index=False)
-        print(f"  Saved metrics to {output_path}")
+            # save after each method (incremental caching)
+            pd.DataFrame(stats).to_csv(output_path, index=False)
+            print(f"  Saved metrics to {output_path}")
 
         # save Shepard diagrams (sampled from full dataset)
         for name, x_low_2d in reductions.items():
