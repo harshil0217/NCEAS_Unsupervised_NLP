@@ -94,8 +94,6 @@ from custom_packages.fowlkes_mallows import FowlkesMallows
 from custom_packages.dendrogram_purity import dendrogram_purity
 from custom_packages.lca_f1 import lca_f1
 from custom_packages.graph_utils import clusternode_to_anytree
-from custom_packages.graph_utils import anytree_to_networkx
-from GED4py import GreedyEditDistance
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
 import pickle
 
@@ -485,23 +483,7 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
     if tree is not None:
         pred_tree = clusternode_to_anytree(tree)
 
-    # Tree Edit Distance (computed once per method, not per level)
-    if pred_tree is not None and gt_tree_root is not None:
-        if os.path.exists(ted_cache_path):
-            print(f"Loading cached TED from {ted_cache_path}")
-            combo_scores["TED"] = float(np.load(ted_cache_path))
-        else:
-            print("Computing Tree Edit Distance...")
-            g_pred = anytree_to_networkx(pred_tree)
-            g_gt = anytree_to_networkx(gt_tree_root)
-            ged = GreedyEditDistance(1, 1, 1, 1)
-            result = ged.compare([g_pred, g_gt], None)
-            ted_score = result[0][1]
-            np.save(ted_cache_path, np.array(ted_score))
-            combo_scores["TED"] = ted_score
-            print(f"TED: {ted_score:.1f}")
-    else:
-        combo_scores["TED"] = np.nan
+    combo_scores["TED"] = np.nan
 
     # Iterate through cluster levels
     for level in cluster_levels:

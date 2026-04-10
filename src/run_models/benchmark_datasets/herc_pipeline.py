@@ -55,8 +55,6 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from custom_packages.fowlkes_mallows import FowlkesMallows
 from custom_packages.dendrogram_purity import dendrogram_purity
 from custom_packages.lca_f1 import lca_f1
-from custom_packages.graph_utils import anytree_to_networkx
-from GED4py import GreedyEditDistance
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
 
 from tqdm import tqdm
@@ -372,16 +370,7 @@ def run_pipeline(dataset_name, rep_mode):
         top_cluster = top_clusters[0]
         pred_tree = cluster_to_anytree(top_cluster)
 
-        # Tree Edit Distance (once per embedding model)
         ted_score = np.nan
-        if gt_tree_root is not None:
-            print("Computing Tree Edit Distance...")
-            g_pred = anytree_to_networkx(pred_tree)
-            g_gt = anytree_to_networkx(gt_tree_root)
-            ged = GreedyEditDistance(1, 1, 1, 1)
-            result = ged.compare([g_pred, g_gt], None)
-            ted_score = result[0][1]
-            print(f"TED: {ted_score:.1f}")
 
         # Per-level scoring
         for i, cluster_level in enumerate(cluster_levels):

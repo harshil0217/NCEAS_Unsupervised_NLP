@@ -83,8 +83,8 @@ from tqdm import tqdm
 from custom_packages.fowlkes_mallows import FowlkesMallows
 from custom_packages.dendrogram_purity import dendrogram_purity
 from custom_packages.lca_f1 import lca_f1
-from custom_packages.graph_utils import clusternode_to_anytree, anytree_to_networkx
-from GED4py import GreedyEditDistance
+from custom_packages.graph_utils import clusternode_to_anytree, anytree_to_zss
+import zss
 from run_models.benchmark_datasets.build_ground_truth_trees import build_ground_truth_tree
 
 
@@ -216,11 +216,7 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
                 combo_scores["TED"] = float(np.load(ted_cache_path))
             else:
                 print("Computing Tree Edit Distance...")
-                g_pred = anytree_to_networkx(pred_tree)
-                g_gt = anytree_to_networkx(gt_tree_root)
-                ged = GreedyEditDistance(1, 1, 1, 1)
-                result = ged.compare([g_pred, g_gt], None)
-                ted_score = result[0][1]
+                ted_score = zss.simple_distance(anytree_to_zss(pred_tree), anytree_to_zss(gt_tree_root))
                 np.save(ted_cache_path, np.array(ted_score))
                 combo_scores["TED"] = ted_score
                 print(f"TED: {ted_score:.1f}")
