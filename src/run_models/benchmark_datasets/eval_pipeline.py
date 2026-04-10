@@ -92,8 +92,10 @@ from cuml.cluster import HDBSCAN as cuHDBSCAN
 # ======================
 from custom_packages.fowlkes_mallows import FowlkesMallows
 from custom_packages.dendrogram_purity import dendrogram_purity
-from custom_packages.lca_f1 import lca_f1, clusternode_to_anytree
-from custom_packages.tree_edit_distance import anytree_to_networkx, GreedyEditDistance
+from custom_packages.lca_f1 import lca_f1
+from custom_packages.graph_utils import clusternode_to_anytree
+from custom_packages.graph_utils import anytree_to_networkx
+from GED4py import GreedyEditDistance
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
 import pickle
 

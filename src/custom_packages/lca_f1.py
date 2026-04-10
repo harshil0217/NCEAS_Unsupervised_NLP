@@ -1,120 +1,9 @@
 import numpy as np
 from scipy.cluster.hierarchy import ClusterNode
-from anytree import Node
 
-
-def clusternode_to_anytree(cluster_node):
-    """
-    Convert scipy ClusterNode (binary tree) to anytree Node (multi-way tree).
-    Uses iterative approach to avoid recursion depth issues.
-
-    Parameters
-    ----------
-    cluster_node : ClusterNode
-        Root of the scipy ClusterNode tree
-
-    Returns
-    -------
-    Node
-        Root of the anytree Node tree
-    """
-    root = Node(name=cluster_node.id)
-    stack = [(cluster_node, root)]
-
-    while stack:
-        cn, an_parent = stack.pop()
-
-        if not cn.is_leaf():
-            if cn.left is not None:
-                left_node = Node(name=cn.left.id, parent=an_parent)
-                stack.append((cn.left, left_node))
-            if cn.right is not None:
-                right_node = Node(name=cn.right.id, parent=an_parent)
-                stack.append((cn.right, right_node))
-
-    return root
-
-
-def anytree_to_children_list(root):
-    """Convert anytree to a 2D children-list using pre-order traversal.
-
-    Returns a list indexed by node ID where each entry is the list of
-    that node's children IDs. Indices between 0 and max node ID with no
-    node will be empty lists.
-
-    Example: result[0] = [1, 3, 5], result[1] = [2], result[2] = []
-    """
-    # First pass: find max node id
-    max_id = 0
-    stack = [root]
-    while stack:
-        node = stack.pop()
-        if node.name > max_id:
-            max_id = node.name
-        for child in node.children:
-            stack.append(child)
-
-    result = [[] for _ in range(max_id + 1)]
-
-    # Pre-order traversal to populate children lists
-    stack = [root]
-    while stack:
-        node = stack.pop()
-        result[node.name] = [child.name for child in node.children]
-        # Push children in reverse so leftmost is processed first
-        for child in reversed(node.children):
-            stack.append(child)
-
-    return result
-
-
-def get_leaves(node):
-    """Get all leaf node ids under a node using iterative DFS."""
-    leaves = []
-    stack = [node]
-    while stack:
-        current = stack.pop()
-        if current.is_leaf:
-            leaves.append(current.name)
-        else:
-            for child in current.children:
-                stack.append(child)
-    return leaves
-
-
-def build_maps(root):
-    """Build node map and parent map in a single traversal."""
-    node_map = {}
-    parent_map = {root.name: None}
-    stack = [root]
-    while stack:
-        node = stack.pop()
-        node_map[node.name] = node
-        for child in node.children:
-            parent_map[child.name] = node.name
-            stack.append(child)
-    return node_map, parent_map
-
-
-def get_ancestors(node_id, parent_map):
-    """Get list of ancestors from node to root (inclusive) using parent pointers."""
-    ancestors = []
-    current = node_id
-    while current is not None:
-        ancestors.append(current)
-        current = parent_map[current]
-    return ancestors
-
-
-def find_lca(i, j, parent_map):
-    """Find LCA by comparing ancestor sets."""
-    ancestors_i = get_ancestors(i, parent_map)
-    ancestors_j_set = set(get_ancestors(j, parent_map))
-
-    for ancestor in ancestors_i:
-        if ancestor in ancestors_j_set:
-            return ancestor
-    return None
+from custom_packages.graph_utils import (
+    clusternode_to_anytree, get_leaves, build_maps, find_lca
+)
 
 
 def lca_f1(pred_tree, gt_tree, true_labels, n_samples=1000):
@@ -154,12 +43,11 @@ def lca_f1(pred_tree, gt_tree, true_labels, n_samples=1000):
     true_clusters = np.unique(true_labels)
     cluster_counts = np.array([np.sum(true_labels == c) for c in true_clusters])
 
-    # pair-weighted sampling: larger clusters contribute more pairs
     sort_idx = np.argsort(cluster_counts)[::-1]
     true_clusters_sorted = true_clusters[sort_idx]
     cluster_counts_sorted = cluster_counts[sort_idx]
 
-    weights = cluster_counts_sorted * (cluster_counts_sorted - 1) / 2  # C(k,2) pairs
+    weights = cluster_counts_sorted * (cluster_counts_sorted - 1) / 2
     weights = weights / weights.sum()
 
     f1_scores = []
@@ -169,7 +57,6 @@ def lca_f1(pred_tree, gt_tree, true_labels, n_samples=1000):
         cluster_idx = np.where(true_labels == c)[0]
         i, j = np.random.choice(cluster_idx, size=2, replace=False)
 
-        # skip if either point is absent from a tree (e.g. DC produced incomplete tree)
         if i not in pred_parent_map or j not in pred_parent_map:
             continue
         if i not in gt_parent_map or j not in gt_parent_map:

@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.cluster.hierarchy import ClusterNode
 
-from custom_packages.lca_f1 import clusternode_to_anytree, get_leaves, build_maps, find_lca
+from custom_packages.graph_utils import clusternode_to_anytree, get_leaves, build_maps, find_lca
 
 
 def dendrogram_purity(tree, true_labels, n_samples=1000):
