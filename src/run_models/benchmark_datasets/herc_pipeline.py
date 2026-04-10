@@ -2,39 +2,31 @@ import os
 import sys
 from dotenv import load_dotenv
 import json
-load_dotenv() 
+import pickle
+load_dotenv()
 
-# Set the target folder name you want to reach
 target_folder = "src"
 
-# Get the current working directory
-current_dir = os.getcwd()
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Loop to move up the directory tree until we reach the target folder
 while os.path.basename(current_dir) != target_folder:
     parent_dir = os.path.abspath(os.path.join(current_dir, ".."))
     if parent_dir == current_dir:
-        # If we reach the root directory and haven't found the target, exit
         raise FileNotFoundError(f"{target_folder} not found in the directory tree.")
     current_dir = parent_dir
 
-# Change the working directory to the folder where "src" is found
 os.chdir(current_dir)
-
-# Add 'src' directory to sys.path
 sys.path.insert(0, current_dir)
 
 # ===================
 # Standard Libraries
 # ===================
 import importlib
-import os
 import re
-from pathlib import Path
 import warnings
 from collections import defaultdict
-import torch
 import argparse
+import torch
 
 torch.cuda.empty_cache()
 
@@ -48,9 +40,8 @@ import pandas as pd
 # Embeddings
 # ====================
 from sentence_transformers import SentenceTransformer
+from anytree import Node
 device = "cuda" if torch.cuda.is_available() else "cpu"
-
-
 
 # ========================
 # Clustering
@@ -58,17 +49,18 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 from pyhercules import Hercules
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-
-
 # ======================
 # Evaluation Metrics
 # ======================
 from custom_packages.fowlkes_mallows import FowlkesMallows
+from custom_packages.dendrogram_purity import dendrogram_purity
+from custom_packages.lca_f1 import lca_f1
+from custom_packages.graph_utils import anytree_to_networkx
+from GED4py import GreedyEditDistance
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
 
-
 from tqdm import tqdm
-from joblib import Parallel, delayed
+
 # ==============
 # Global Config
 # ==============
@@ -190,7 +182,7 @@ DATASET_CONFIGS = {
     },
     "arxiv": {
         "load_function": load_arxiv,
-        "depth": 2, 
+        "depth": 2,
         "short": "arx",
         "results_filename": "arxiv_herc_clustering_scores.csv",
         "topic_seed": "arxiv abstracts",
@@ -219,75 +211,83 @@ DATASET_CONFIGS = {
 # Core Pipeline Functions
 # =====================================
 
-model_name = "Qwen/Qwen3-4B-Instruct-2507"
+qwen_model_name = "Qwen/Qwen3-4B-Instruct-2507"
 
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-# Define the 4-bit configuration
+tokenizer = AutoTokenizer.from_pretrained(qwen_model_name)
 
-model = AutoModelForCausalLM.from_pretrained(model_name,torch_dtype="auto", device_map = 'auto')
+model = AutoModelForCausalLM.from_pretrained(qwen_model_name, torch_dtype="auto", device_map='auto')
 print(model.hf_device_map)
 
 
 def qwen_caller(prompt: str) -> str:
-    """
-    generates text using the Qwen model and returns the generated text.
-    """
-    
+    """Generates text using the Qwen model and returns the generated text."""
     messages = [
         {"role": "system", "content": "You are a helpful assistant providing concise summaries."},
         {"role": "user", "content": prompt}
     ]
-    
-    text = tokenizer.apply_chat_template(messages, add_generation_prompt=True, tokenize = False)
+
+    text = tokenizer.apply_chat_template(messages, add_generation_prompt=True, tokenize=False)
     inputs = tokenizer([text], return_tensors="pt").to(model.device)
-    
-    generated_ids = model.generate(**inputs, 
-                                   max_new_tokens=16384)
-    
-    output_ids = generated_ids[0][len(inputs["input_ids"][0]):].tolist() # Get only the generated part
-    
-    
+
+    generated_ids = model.generate(**inputs, max_new_tokens=16384)
+
+    output_ids = generated_ids[0][len(inputs["input_ids"][0]):].tolist()
+
     content = tokenizer.decode(output_ids, skip_special_tokens=True).strip("\n")
-    
+
     print(content)
     return content
 
+
 def get_sentence_transformer_embeddings(texts: list[str], model_name: str = "all-MiniLM-L6-v2") -> np.ndarray:
-    """
-    Embeds text using a specified SentenceTransformer model.
-    """
+    """Embeds text using a specified SentenceTransformer model."""
     if not texts:
         return np.array([])
 
-    model = SentenceTransformer(model_name, device=device)
+    st_model = SentenceTransformer(model_name, device=device)
 
     try:
-        # encode() handles the list input and returns a numpy array by default
-        embeddings = model.encode(
-            texts, 
-            convert_to_numpy=True, 
+        embeddings = st_model.encode(
+            texts,
+            convert_to_numpy=True,
             show_progress_bar=False
         )
-        
-        # Ensure output is 2D even for single strings
+
         if embeddings.ndim == 1:
             embeddings = embeddings[np.newaxis, :]
-            
+
         return embeddings
 
     except Exception as e:
         print(f"Error during embedding generation with '{model_name}': {e}")
-    
+
+
+def cluster_to_anytree(top_cluster) -> Node:
+    """Convert a pyhercules Cluster hierarchy to an anytree Node tree.
+
+    Leaf nodes (level 0) get name = original_id (row index in input data).
+    Internal nodes get name = n_items + cluster.id to avoid collision with leaf IDs.
+    """
+    n_items = top_cluster.num_items
+
+    def _build(cluster, parent=None):
+        if cluster.level == 0:
+            node = Node(name=int(cluster.original_id), parent=parent)
+        else:
+            node = Node(name=n_items + cluster.id, parent=parent)
+        for child in cluster.children:
+            _build(child, parent=node)
+        return node
+
+    return _build(top_cluster)
 
 
 def run_pipeline(dataset_name, rep_mode):
-
 
     if dataset_name not in DATASET_CONFIGS:
         raise ValueError(f"Unknown dataset: {dataset_name}. Available: {list(DATASET_CONFIGS.keys())}")
 
     config = DATASET_CONFIGS[dataset_name]
-
 
     print(f"\n{'='*80}")
     print(f"Running pipeline for dataset: {dataset_name.upper()}")
@@ -300,10 +300,7 @@ def run_pipeline(dataset_name, rep_mode):
 
     data = config['load_function']()
 
-    # Prepare data once (same for all embedding models)
-    shuffle_idx = np.random.RandomState(seed=67).permutation(len(data))
-    topic_data = data.iloc[shuffle_idx].reset_index(drop=True)
-    reverse_idx = np.argsort(shuffle_idx)
+    topic_data = data.reset_index(drop=True)
 
     # Build topic_dict from ground truth categories
     topic_dict = {}
@@ -311,7 +308,7 @@ def run_pipeline(dataset_name, rep_mode):
         if re.match(r'^category_\d+$', col):
             unique_count = len(topic_data[col].unique())
             topic_dict[unique_count] = np.array(topic_data[col])
-            
+
     # Determine cluster levels from hierarchy depth
     depth = config['depth']
     print(f"Depth: {depth}")
@@ -325,53 +322,70 @@ def run_pipeline(dataset_name, rep_mode):
 
     print(f"\nFinal cluster_levels (from deepest to shallowest): {cluster_levels}\n")
 
+    # Load pre-built ground truth tree (leaf IDs = row indices 0..n-1)
+    gt_tree_path = f"intermediate_data/ground_truth_trees/{dataset_name}_tree.pkl"
+    gt_tree_root = None
+    if os.path.exists(gt_tree_path):
+        with open(gt_tree_path, 'rb') as f:
+            gt_data = pickle.load(f)
+        gt_tree_root = gt_data['root']
+        print(f"Loaded ground truth tree from {gt_tree_path}")
+    else:
+        print(f"WARNING: Ground truth tree not found at {gt_tree_path}. "
+              f"Run build_ground_truth_trees.py first. TED/LCA-F1/DP will be NaN.")
 
-    scores_all = defaultdict(lambda: defaultdict(list))
+    rows = []
 
-
-    for model_name in embedding_model_names:
+    for embedding_model in embedding_model_names:
         save_path = f"../../hercules_run/{config['short']}/{rep_mode}"
         hercules = None
 
         if os.path.exists(save_path):
-            print(f"Loading existing model from {save_path}...")
-            hercules = Hercules.load_model(filepath=save_path, 
-                                            text_embedding_client=get_sentence_transformer_embeddings,
-                                            llm_client = quen_caller)[0]
+            print(f"Loading existing Hercules model from {save_path}...")
+            hercules = Hercules.load_model(
+                filepath=save_path,
+                text_embedding_client=get_sentence_transformer_embeddings,
+                llm_client=qwen_caller
+            )[0]
+            top_clusters = hercules.top_clusters
         else:
             torch.cuda.empty_cache()
             hercules = Hercules(
-                level_cluster_counts=cluster_levels,
+                level_cluster_counts=cluster_levels + [1],  # +[1] forces a single root
                 representation_mode=rep_mode,
                 text_embedding_client=get_sentence_transformer_embeddings,
                 llm_client=qwen_caller,
                 verbose=2,
                 llm_initial_batch_size=32
             )
-            
-            # 3. Run clustering
+
             top_clusters = hercules.cluster(data['topic'].tolist(), topic_seed=config['topic_seed'])
 
-
-            # Save model
             hercules.save_model(filepath=save_path, top_clusters=top_clusters)
 
-        #get labels
-        
+        # Save cluster membership CSV
         cluster_df = hercules.get_cluster_membership_dataframe(include_l0_details=data['topic'].tolist())
-
-        print("printing number of l1 labels")
-        print(np.unique(cluster_df['L1_cluster_title']))
-
-        print("printing number of l2 labels")
-        print(np.unique(cluster_df['L2_cluster_title']))
-
         os.makedirs(os.path.dirname(f"results/cluster_assignments/{config['short']}_{rep_mode}.csv"), exist_ok=True)
-        cluster_df.to_csv(f"results/cluster_assignments/{config['short']}_{rep_mode}.csv", index = False)
+        cluster_df.to_csv(f"results/cluster_assignments/{config['short']}_{rep_mode}.csv", index=False)
 
+        # Build predicted tree from the single root cluster
+        top_cluster = top_clusters[0]
+        pred_tree = cluster_to_anytree(top_cluster)
+
+        # Tree Edit Distance (once per embedding model)
+        ted_score = np.nan
+        if gt_tree_root is not None:
+            print("Computing Tree Edit Distance...")
+            g_pred = anytree_to_networkx(pred_tree)
+            g_gt = anytree_to_networkx(gt_tree_root)
+            ged = GreedyEditDistance(1, 1, 1, 1)
+            result = ged.compare([g_pred, g_gt], None)
+            ted_score = result[0][1]
+            print(f"TED: {ted_score:.1f}")
+
+        # Per-level scoring
         for i, cluster_level in enumerate(cluster_levels):
             labels = hercules.get_level_assignments(level=i+1)[0]
-            print(labels)
 
             topic_series = topic_dict[cluster_level]
             valid_idx = ~pd.isna(topic_series)
@@ -386,17 +400,39 @@ def run_pipeline(dataset_name, rep_mode):
 
             rand = rand_score(target_lst, label_lst)
             ari = adjusted_rand_score(target_lst, label_lst)
-            print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}")
             ami = adjusted_mutual_info_score(target_lst, label_lst)
 
-        scores_all[model_name] = [np.mean(fm_score), np.mean(rand), np.mean(ari), np.mean(ami)]
-        
-    # Convert scores_all to a DataFrame and save to csv
-    scores_df = pd.DataFrame.from_dict(scores_all, orient = 'index')
-    scores_df.reset_index(inplace=True)
-    scores_df.columns = ['Embedding Model Name', 'FM', 'Rand', 'ARI', 'AMI']
+            dp = dendrogram_purity(pred_tree, topic_series) if pred_tree is not None else np.nan
+            lca_f1_score = lca_f1(pred_tree, gt_tree_root, topic_series) if (pred_tree is not None and gt_tree_root is not None) else np.nan
+
+            lca_str = f"{lca_f1_score:.4f}" if not np.isnan(lca_f1_score) else "NaN"
+            print(f"Level {cluster_level} — FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, "
+                  f"DP: {dp:.4f}, LCA_F1: {lca_str}")
+
+            rows.append({
+                "embedding_model": embedding_model,
+                "reduction_method": "Hercules",
+                "cluster_method": rep_mode,
+                "level": cluster_level,
+                "FM": fm_score,
+                "Rand": rand,
+                "ARI": ari,
+                "AMI": ami,
+                "Dendrogram_Purity": dp,
+                "LCA_F1": lca_f1_score,
+                "TED": ted_score,
+            })
+
+    scores_df = pd.DataFrame(rows)
+    scores_df = scores_df.sort_values(
+        by=["embedding_model", "level"]
+    ).reset_index(drop=True)
+
+    os.makedirs("results", exist_ok=True)
     results_filename = config['results_filename'].replace('.csv', f'_{rep_mode}.csv')
     scores_df.to_csv(f"results/{results_filename}", index=False)
+    print(f"\nResults saved to: results/{results_filename}")
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -414,7 +450,7 @@ def main():
             python herc_pipeline.py --dataset dbpedia --rep_mode direct
             python herc_pipeline.py --dataset amazon --rep_mode description
                     """
-                )
+    )
 
     parser.add_argument(
         '--dataset',
@@ -434,7 +470,6 @@ def main():
 
     args = parser.parse_args()
 
-    # Run pipeline for specified dataset
     run_pipeline(args.dataset, args.rep_mode)
 
 
