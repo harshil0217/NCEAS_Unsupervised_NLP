@@ -185,7 +185,9 @@ for embedding_model in embedding_models:
         )
         reductions["tSNE"] = load_or_compute_2d(
             "tSNE", f"{reduction_2d_dir}/tSNE_2d_{stem}.npy",
-            lambda: np.array(cuTSNE(n_components=2).fit_transform(x_high_sub))
+            lambda: np.array(cuTSNE(n_components=2).fit_transform(
+                skPCA(n_components=50, random_state=67).fit_transform(x_high_sub)
+            ))
         )
 
         # compute metrics
