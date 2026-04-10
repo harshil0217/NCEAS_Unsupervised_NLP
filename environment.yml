@@ -32,5 +32,6 @@ dependencies:
   - anytree
   - hdbscan
   - openpyxl
+  - zss
   - pip:
     - trimap
