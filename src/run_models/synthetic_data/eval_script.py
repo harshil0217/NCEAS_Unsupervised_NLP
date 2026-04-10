@@ -52,7 +52,7 @@ import torch
 # ===========================
 import phate
 import pacmap
-#import trimap
+import trimap
 
 # cuML GPU-accelerated dimensionality reduction
 import cuml
@@ -84,6 +84,48 @@ from tqdm import tqdm
 # Evaluation Metrics
 # ========================
 from custom_packages.fowlkes_mallows import FowlkesMallows
+
+
+def bootstrap_ci(target_labels, pred_labels, n_bootstrap=500):
+    """
+    Bootstrap 95% percentile confidence intervals for FM, Rand, ARI, AMI.
+
+    Resamples (target, pred) pairs with replacement and recomputes each metric.
+    Preferred over normal approximation when scores are bounded near zero.
+
+    Returns:
+        dict mapping each metric name to (lower, upper) CI tuple
+    """
+    rng = np.random.RandomState(67)
+    n = len(target_labels)
+    target_labels = np.asarray(target_labels)
+    pred_labels = np.asarray(pred_labels)
+
+    fm_boot, rand_boot, ari_boot, ami_boot = [], [], [], []
+    for _ in range(n_bootstrap):
+        idx = rng.choice(n, n, replace=True)
+        t, p = target_labels[idx], pred_labels[idx]
+        try:
+            fm = FowlkesMallows.fm_index(t, p)['FM']
+        except Exception:
+            fm = np.nan
+        fm_boot.append(fm)
+        rand_boot.append(rand_score(t, p))
+        ari_boot.append(adjusted_rand_score(t, p))
+        ami_boot.append(adjusted_mutual_info_score(t, p))
+
+    def pct_ci(scores):
+        valid = [s for s in scores if not np.isnan(s)]
+        if not valid:
+            return np.nan, np.nan
+        return float(np.percentile(valid, 2.5)), float(np.percentile(valid, 97.5))
+
+    return {
+        "FM":   pct_ci(fm_boot),
+        "Rand": pct_ci(rand_boot),
+        "ARI":  pct_ci(ari_boot),
+        "AMI":  pct_ci(ami_boot),
+    }
 
 
 # ===================
@@ -149,7 +191,12 @@ def make_noise_labels_unique(labels):
 # ===================
 def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, cluster_levels, topic_dict):
     """Run clustering on reduced embeddings and evaluate against ground truth."""
-    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": []}
+    combo_scores = {
+        "FM": [], "FM_lower": [], "FM_upper": [],
+        "Rand": [], "Rand_lower": [], "Rand_upper": [],
+        "ARI": [], "ARI_lower": [], "ARI_upper": [],
+        "AMI": [], "AMI_lower": [], "AMI_upper": [],
+    }
     try:
         print(f"\n{'='*60}")
         print(f"Processing Embedding Method: {embed_name}")
@@ -217,10 +264,20 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
             ami = adjusted_mutual_info_score(target_lst, label_lst)
             print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}")
 
+            ci = bootstrap_ci(np.asarray(target_lst), np.asarray(label_lst))
+
             combo_scores["FM"].append(fm_score)
+            combo_scores["FM_lower"].append(ci["FM"][0])
+            combo_scores["FM_upper"].append(ci["FM"][1])
             combo_scores["Rand"].append(rand)
+            combo_scores["Rand_lower"].append(ci["Rand"][0])
+            combo_scores["Rand_upper"].append(ci["Rand"][1])
             combo_scores["ARI"].append(ari)
+            combo_scores["ARI_lower"].append(ci["ARI"][0])
+            combo_scores["ARI_upper"].append(ci["ARI"][1])
             combo_scores["AMI"].append(ami)
+            combo_scores["AMI_lower"].append(ci["AMI"][0])
+            combo_scores["AMI_upper"].append(ci["AMI"][1])
 
         return embedding_model, embed_name, cluster_method, combo_scores
     except Exception as e:
@@ -324,7 +381,7 @@ for embedding_model in embedding_model_names:
     else:
         embedding_list = np.load(embed_file)
 
-    os.makedirs(f'{embedding_model}_reduced_embeddings', exist_ok=True)
+    os.makedirs(f'intermediate_data/{embedding_model}_reduced_embeddings', exist_ok=True)
 
     # Shuffle embeddings with the same index as topic_data
     data = np.array(embedding_list)[shuffle_idx]
@@ -382,16 +439,14 @@ for embedding_model in embedding_model_names:
     else:
         np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/PaCMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["PaCMAP"])
 
-    '''
     # TriMAP
     print("Running TriMAP...")
     tr = trimap.TRIMAP(n_dims=300)
     embedding_methods_for_model["TriMAP"] = tr.fit_transform(embeddings)
     if float(add_noise) > 0:
-        np.save(f"{embedding_model}_reduced_embeddings/TriMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embedding_methods_for_model["TriMAP"])
+        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/TriMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embedding_methods_for_model["TriMAP"])
     else:
-        np.save(f"{embedding_model}_reduced_embeddings/TriMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["TriMAP"])
-    '''
+        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/TriMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["TriMAP"])
     # Store the embedding methods for this model
     embedding_models[embedding_model] = embedding_methods_for_model
 
@@ -415,10 +470,9 @@ for embedding_model, embed_name, cluster_method in tqdm(combo_params, desc="Proc
 
 # Collect results
 for embedding_model, embed_name, cluster_method, combo_scores in combo_results:
-    scores_all[(embedding_model, embed_name, cluster_method)]["FM"] = combo_scores["FM"]
-    scores_all[(embedding_model, embed_name, cluster_method)]["Rand"] = combo_scores["Rand"]
-    scores_all[(embedding_model, embed_name, cluster_method)]["ARI"] = combo_scores["ARI"]
-    scores_all[(embedding_model, embed_name, cluster_method)]["AMI"] = combo_scores["AMI"]
+    for key in ["FM", "FM_lower", "FM_upper", "Rand", "Rand_lower", "Rand_upper",
+                "ARI", "ARI_lower", "ARI_upper", "AMI", "AMI_lower", "AMI_upper"]:
+        scores_all[(embedding_model, embed_name, cluster_method)][key] = combo_scores[key]
 
 print(f"\n{'='*60}")
 print("All clustering and evaluation complete!")
@@ -435,9 +489,17 @@ for (embedding_model, embed_name, cluster_method), score_dict in scores_all.item
             "cluster_method": cluster_method,
             "level": cluster_levels[i],
             "FM": score_dict["FM"][i],
+            "FM_lower": score_dict["FM_lower"][i],
+            "FM_upper": score_dict["FM_upper"][i],
             "Rand": score_dict["Rand"][i],
+            "Rand_lower": score_dict["Rand_lower"][i],
+            "Rand_upper": score_dict["Rand_upper"][i],
             "ARI": score_dict["ARI"][i],
+            "ARI_lower": score_dict["ARI_lower"][i],
+            "ARI_upper": score_dict["ARI_upper"][i],
             "AMI": score_dict["AMI"][i],
+            "AMI_lower": score_dict["AMI_lower"][i],
+            "AMI_upper": score_dict["AMI_upper"][i],
         })
 
 # Create DataFrame and save

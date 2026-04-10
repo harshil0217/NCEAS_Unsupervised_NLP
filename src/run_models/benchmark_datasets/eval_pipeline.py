@@ -66,7 +66,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # ==========================
 import phate
 import pacmap
-# import trimap  # removed: not compatible with Linux/CUDA environment
+import trimap
 
 # cuML GPU-accelerated dimensionality reduction
 import cuml
@@ -91,6 +91,48 @@ from cuml.cluster import HDBSCAN as cuHDBSCAN
 # ======================
 from custom_packages.fowlkes_mallows import FowlkesMallows
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
+
+
+def bootstrap_ci(target_labels, pred_labels, n_bootstrap=500):
+    """
+    Bootstrap 95% percentile confidence intervals for FM, Rand, ARI, AMI.
+
+    Resamples (target, pred) pairs with replacement and recomputes each metric.
+    Preferred over normal approximation when scores are bounded near zero.
+
+    Returns:
+        dict mapping each metric name to (lower, upper) CI tuple
+    """
+    rng = np.random.RandomState(67)
+    n = len(target_labels)
+    target_labels = np.asarray(target_labels)
+    pred_labels = np.asarray(pred_labels)
+
+    fm_boot, rand_boot, ari_boot, ami_boot = [], [], [], []
+    for _ in range(n_bootstrap):
+        idx = rng.choice(n, n, replace=True)
+        t, p = target_labels[idx], pred_labels[idx]
+        try:
+            fm = FowlkesMallows.fm_index(t, p)['FM']
+        except Exception:
+            fm = np.nan
+        fm_boot.append(fm)
+        rand_boot.append(rand_score(t, p))
+        ari_boot.append(adjusted_rand_score(t, p))
+        ami_boot.append(adjusted_mutual_info_score(t, p))
+
+    def pct_ci(scores):
+        valid = [s for s in scores if not np.isnan(s)]
+        if not valid:
+            return np.nan, np.nan
+        return float(np.percentile(valid, 2.5)), float(np.percentile(valid, 97.5))
+
+    return {
+        "FM":   pct_ci(fm_boot),
+        "Rand": pct_ci(rand_boot),
+        "ARI":  pct_ci(ari_boot),
+        "AMI":  pct_ci(ami_boot),
+    }
 
 from tqdm import tqdm
 
@@ -201,7 +243,7 @@ DATASET_CONFIGS = {
         "short": "amz",
         "results_filename": "amazon_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
     },
     "dbpedia": {
         "load_function": load_dbpedia,
@@ -209,7 +251,7 @@ DATASET_CONFIGS = {
         "short": "db",
         "results_filename": "db_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
     },
     "arxiv": {
         "load_function": load_arxiv,
@@ -217,7 +259,7 @@ DATASET_CONFIGS = {
         "short": "arx",
         "results_filename": "arxiv_clustering_scores.csv",
         "batch_size": 32,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
     },
     "rcv1": {
         "load_function": load_rcv1,
@@ -225,7 +267,7 @@ DATASET_CONFIGS = {
         "short": "rcv1",
         "results_filename": "rcv1_clustering_scores.csv",
         "batch_size": 8,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
     },
     "wos": {
         "load_function": load_wos,
@@ -233,7 +275,7 @@ DATASET_CONFIGS = {
         "short": "wos",
         "results_filename": "wos_clustering_scores.csv",
         "batch_size": 64,
-        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP"],
+        "reduction_methods": ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"],
     },
 }
 
@@ -318,6 +360,10 @@ def apply_dimensionality_reduction(embeddings, reduction_dir, embed_filename, re
         "PaCMAP": {
             "path": f"{reduction_dir}/PaCMAP_{embed_filename}.npy",
             "run": lambda: pacmap.PaCMAP(n_components=300, random_state=67).fit_transform(embeddings)
+        },
+        "TriMAP": {
+            "path": f"{reduction_dir}/TriMAP_{embed_filename}.npy",
+            "run": lambda: trimap.TRIMAP(n_dims=300).fit_transform(embeddings)
         }
     }
 
@@ -376,7 +422,12 @@ def make_noise_labels_unique(labels):
 def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
                    cluster_levels, topic_dict, label_dir, short):
     embed_data = embedding_models[embedding_model][embed_name]
-    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": []}
+    combo_scores = {
+        "FM": [], "FM_lower": [], "FM_upper": [],
+        "Rand": [], "Rand_lower": [], "Rand_upper": [],
+        "ARI": [], "ARI_lower": [], "ARI_upper": [],
+        "AMI": [], "AMI_lower": [], "AMI_upper": [],
+    }
 
     try:
         print(f"\n{'='*60}")
@@ -472,10 +523,20 @@ def cluster_combo(embedding_model, embed_name, cluster_method, embedding_models,
             ami = adjusted_mutual_info_score(target_lst, label_lst)
             print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}")
 
+            ci = bootstrap_ci(np.asarray(target_lst), np.asarray(label_lst))
+
             combo_scores["FM"].append(fm_score)
+            combo_scores["FM_lower"].append(ci["FM"][0])
+            combo_scores["FM_upper"].append(ci["FM"][1])
             combo_scores["Rand"].append(rand)
+            combo_scores["Rand_lower"].append(ci["Rand"][0])
+            combo_scores["Rand_upper"].append(ci["Rand"][1])
             combo_scores["ARI"].append(ari)
+            combo_scores["ARI_lower"].append(ci["ARI"][0])
+            combo_scores["ARI_upper"].append(ci["ARI"][1])
             combo_scores["AMI"].append(ami)
+            combo_scores["AMI_lower"].append(ci["AMI"][0])
+            combo_scores["AMI_upper"].append(ci["AMI"][1])
 
         return embedding_model, embed_name, cluster_method, combo_scores
 
@@ -612,10 +673,9 @@ def run_pipeline(dataset_name):
         combo_results.append(result)
 
     for embedding_model, embed_name, cluster_method, combo_scores in combo_results:
-        scores_all[(embedding_model, embed_name, cluster_method)]["FM"] = combo_scores["FM"]
-        scores_all[(embedding_model, embed_name, cluster_method)]["Rand"] = combo_scores["Rand"]
-        scores_all[(embedding_model, embed_name, cluster_method)]["ARI"] = combo_scores["ARI"]
-        scores_all[(embedding_model, embed_name, cluster_method)]["AMI"] = combo_scores["AMI"]
+        for key in ["FM", "FM_lower", "FM_upper", "Rand", "Rand_lower", "Rand_upper",
+                    "ARI", "ARI_lower", "ARI_upper", "AMI", "AMI_lower", "AMI_upper"]:
+            scores_all[(embedding_model, embed_name, cluster_method)][key] = combo_scores[key]
 
     print(f"\n{'='*60}")
     print("All clustering and evaluation complete!")
@@ -633,9 +693,17 @@ def run_pipeline(dataset_name):
                 "cluster_method": cluster_method,
                 "level": cluster_levels[i],
                 "FM": score_dict["FM"][i],
+                "FM_lower": score_dict["FM_lower"][i],
+                "FM_upper": score_dict["FM_upper"][i],
                 "Rand": score_dict["Rand"][i],
+                "Rand_lower": score_dict["Rand_lower"][i],
+                "Rand_upper": score_dict["Rand_upper"][i],
                 "ARI": score_dict["ARI"][i],
+                "ARI_lower": score_dict["ARI_lower"][i],
+                "ARI_upper": score_dict["ARI_upper"][i],
                 "AMI": score_dict["AMI"][i],
+                "AMI_lower": score_dict["AMI_lower"][i],
+                "AMI_upper": score_dict["AMI_upper"][i],
             })
 
     # Create DataFrame
