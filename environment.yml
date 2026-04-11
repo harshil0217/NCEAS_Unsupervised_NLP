@@ -36,3 +36,5 @@ dependencies:
   - pip:
     - trimap
     - zss
+    - pyhercules
+  
