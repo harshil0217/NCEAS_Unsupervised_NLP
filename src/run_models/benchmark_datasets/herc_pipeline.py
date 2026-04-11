@@ -192,7 +192,7 @@ DATASET_CONFIGS = {
         "short": "rcv1",
         "results_filename": "rcv1_herc_clustering_scores.csv",
         "topic_seed": "reuters headlines",
-        "batch_size": 8,
+        "batch_size": 16,
     },
     "wos": {
         "load_function": load_wos,
@@ -297,6 +297,7 @@ def run_pipeline(dataset_name, rep_mode):
     ]
 
     data = config['load_function']()
+    batch_size = config["batch_size"]
 
     topic_data = data.reset_index(drop=True)
 
@@ -354,7 +355,7 @@ def run_pipeline(dataset_name, rep_mode):
                 text_embedding_client=get_sentence_transformer_embeddings,
                 llm_client=qwen_caller,
                 verbose=2,
-                llm_initial_batch_size=32
+                llm_initial_batch_size=batch_size
             )
 
             top_clusters = hercules.cluster(data['topic'].tolist(), topic_seed=config['topic_seed'])
