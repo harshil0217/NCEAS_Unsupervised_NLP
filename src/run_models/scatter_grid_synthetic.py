@@ -68,11 +68,23 @@ PALETTE = [
     "#4CC9F0", "#F72585",
 ]
 
-def load_labels(label_csv_stem):
+# Extended palette for category 1 (up to 27 unique values)
+PALETTE_EXT = [
+    "#E63946", "#457B9D", "#2A9D8F", "#E9C46A", "#F4A261",
+    "#6A4C93", "#80B918", "#FF6B6B", "#4CC9F0", "#F72585",
+    "#264653", "#E76F51", "#A8DADC", "#F1FAEE", "#1D3557",
+    "#52B788", "#B7E4C7", "#D62828", "#023E8A", "#F77F00",
+    "#FCBF49", "#EAE2B7", "#003049", "#8338EC", "#3A86FF",
+    "#FB5607", "#FFBE0B",
+]
+
+def load_labels(label_csv_stem, cat_level=0):
     path = os.path.join(LABEL_DIR, f"{label_csv_stem}.csv")
     with open(path) as f:
         rows = list(csv.DictReader(f))
-    return [r["category 0"] for r in rows]
+    col = f"category {cat_level}"
+    fallback = "category 0"
+    return [r[col] if r[col] else r[fallback] for r in rows]
 
 def encode_labels(labels):
     unique = sorted(set(labels))
@@ -81,7 +93,12 @@ def encode_labels(labels):
 
 n_cols = len(METHODS)
 
-def make_scatter_grid(model_name, reduction_dir, out_filename, title):
+def make_scatter_grid(model_name, reduction_dir, out_filename, title,
+                      phate_cat_level=0):
+    """
+    phate_cat_level: category level used to color PHATE panels (0 or 1).
+    All other methods always use category 0.
+    """
     n_rows = len(CONFIGS)
     fig, axes = plt.subplots(n_rows, n_cols,
                              figsize=(n_cols * 4, n_rows * 3.5),
@@ -89,9 +106,14 @@ def make_scatter_grid(model_name, reduction_dir, out_filename, title):
     fig.patch.set_facecolor("white")
 
     for r, (stem, label_stem, row_label) in enumerate(CONFIGS):
-        labels = load_labels(label_stem)
-        encoded, unique_cats = encode_labels(labels)
-        point_colors = [PALETTE[i % len(PALETTE)] for i in encoded]
+        labels_cat0  = load_labels(label_stem, cat_level=0)
+        labels_phate = load_labels(label_stem, cat_level=phate_cat_level)
+        encoded_cat0,  unique_cat0  = encode_labels(labels_cat0)
+        encoded_phate, unique_phate = encode_labels(labels_phate)
+        colors_cat0  = [PALETTE[i % len(PALETTE)] for i in encoded_cat0]
+        # use extended palette for cat1 so colors don't repeat
+        pal_phate    = PALETTE_EXT if phate_cat_level != 0 else PALETTE
+        colors_phate = [pal_phate[i % len(pal_phate)] for i in encoded_phate]
 
         for c, method in enumerate(METHODS):
             ax = axes[r, c]
@@ -101,6 +123,9 @@ def make_scatter_grid(model_name, reduction_dir, out_filename, title):
                 spine.set_linewidth(0.8)
 
             npy_path = os.path.join(reduction_dir, f"{method}_2d_{stem}.npy")
+
+            use_phate_colors = (method == "PHATE" and phate_cat_level != 0)
+            point_colors = colors_phate if use_phate_colors else colors_cat0
 
             if not os.path.exists(npy_path):
                 ax.text(0.5, 0.5, "missing", ha="center", va="center",
@@ -114,14 +139,18 @@ def make_scatter_grid(model_name, reduction_dir, out_filename, title):
             ax.set_yticks([])
 
             if r == 0:
-                ax.set_title(METHOD_LABELS.get(method, method),
-                             fontsize=12, fontweight="bold", pad=6)
+                if method == "PHATE" and phate_cat_level != 0:
+                    col_label = f"PHATE\n(level {phate_cat_level})"
+                else:
+                    col_label = METHOD_LABELS.get(method, method)
+                ax.set_title(col_label, fontsize=12, fontweight="bold", pad=6)
             if c == 0:
                 ax.set_ylabel(row_label, fontsize=11, fontweight="bold", labelpad=8)
 
+        # legend always uses cat0 (5-6 entries) — keeps layout clean like original
         patches = [
             mpatches.Patch(color=PALETTE[i % len(PALETTE)], label=cat)
-            for i, cat in enumerate(unique_cats)
+            for i, cat in enumerate(unique_cat0)
         ]
         axes[r, -1].legend(
             handles=patches,
@@ -145,9 +174,19 @@ def make_scatter_grid(model_name, reduction_dir, out_filename, title):
 
 for model_name, reduction_dir in EMBEDDING_MODELS:
     slug = "minilm" if "MiniLM" in model_name else "qwen"
+    # category 0 versions (original)
     make_scatter_grid(
         model_name=model_name,
         reduction_dir=reduction_dir,
         out_filename=f"fig2_scatter_grid_{slug}.png",
         title=f"Synthetic Dataset Visualizations ({model_name})",
+        phate_cat_level=0,
+    )
+    # PHATE colored by category 1
+    make_scatter_grid(
+        model_name=model_name,
+        reduction_dir=reduction_dir,
+        out_filename=f"fig2_scatter_grid_{slug}_phate_cat1.png",
+        title=f"Synthetic Dataset Visualizations ({model_name}): PHATE Colored by Category 1",
+        phate_cat_level=1,
     )
