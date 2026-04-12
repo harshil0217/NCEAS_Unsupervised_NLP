@@ -212,11 +212,14 @@ __marimo__/
 *.xlsx
 *.lock
 *.json
+*.pkl
 
 *.txt
 
 core.*
+.out
 
 CLAUDE.md
 
 Miniconda3-latest-Linux-x86_64.sh
+

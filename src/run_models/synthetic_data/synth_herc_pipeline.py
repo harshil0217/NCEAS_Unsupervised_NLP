@@ -9,21 +9,16 @@ import sys
 # Set the target folder name you want to reach
 target_folder = "src"
 
-# Get the current working directory
-current_dir = os.getcwd()
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Loop to move up the directory tree until we reach the target folder
 while os.path.basename(current_dir) != target_folder:
     parent_dir = os.path.abspath(os.path.join(current_dir, ".."))
     if parent_dir == current_dir:
-        # If we reach the root directory and haven't found the target, exit
         raise FileNotFoundError(f"{target_folder} not found in the directory tree.")
     current_dir = parent_dir
 
-# Change the working directory to the folder where "src" is found
 os.chdir(current_dir)
-
-# Add the "src" directory to sys.path
 sys.path.insert(0, current_dir)
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -31,12 +26,10 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 # ========================
 # Standard Libraries
 # ========================
-import importlib
 import re
-import time
 import warnings
 import argparse
-from collections import defaultdict
+import pickle
 
 # ========================
 # Data Manipulation
@@ -56,6 +49,7 @@ torch.cuda.empty_cache()
 # ========================
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from anytree import Node
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # ========================
@@ -67,7 +61,12 @@ from pyhercules import Hercules
 # Evaluation Metrics
 # ========================
 from custom_packages.fowlkes_mallows import FowlkesMallows
+from custom_packages.dendrogram_purity import dendrogram_purity
+from custom_packages.lca_f1 import lca_f1
+from custom_packages.graph_utils import anytree_to_zss
+import zss
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
+from run_models.benchmark_datasets.build_ground_truth_trees import build_ground_truth_tree
 
 # ========================
 # Utilities
@@ -83,17 +82,15 @@ warnings.filterwarnings("ignore")
 # ===================
 # LLM Setup
 # ===================
-model_name = "Qwen/Qwen3-4B-Instruct-2507"
+qwen_model_name = "Qwen/Qwen3-4B-Instruct-2507"
 
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto", device_map='auto')
+tokenizer = AutoTokenizer.from_pretrained(qwen_model_name)
+model = AutoModelForCausalLM.from_pretrained(qwen_model_name, torch_dtype="auto", device_map='auto')
 print(model.hf_device_map)
 
 
 def qwen_caller(prompt: str) -> str:
-    """
-    Generates text using the Qwen model and returns the generated text.
-    """
+    """Generates text using the Qwen model and returns the generated text."""
     messages = [
         {"role": "system", "content": "You are a helpful assistant providing concise summaries."},
         {"role": "user", "content": prompt}
@@ -104,7 +101,7 @@ def qwen_caller(prompt: str) -> str:
 
     generated_ids = model.generate(**inputs, max_new_tokens=16384)
 
-    output_ids = generated_ids[0][len(inputs["input_ids"][0]):].tolist()  # Get only the generated part
+    output_ids = generated_ids[0][len(inputs["input_ids"][0]):].tolist()
 
     content = tokenizer.decode(output_ids, skip_special_tokens=True).strip("\n")
 
@@ -113,23 +110,19 @@ def qwen_caller(prompt: str) -> str:
 
 
 def get_sentence_transformer_embeddings(texts: list[str], model_name: str = "all-MiniLM-L6-v2") -> np.ndarray:
-    """
-    Embeds text using a specified SentenceTransformer model.
-    """
+    """Embeds text using a specified SentenceTransformer model."""
     if not texts:
         return np.array([])
 
-    model = SentenceTransformer(model_name, device=device)
+    st_model = SentenceTransformer(model_name, device=device)
 
     try:
-        # encode() handles the list input and returns a numpy array by default
-        embeddings = model.encode(
+        embeddings = st_model.encode(
             texts,
             convert_to_numpy=True,
             show_progress_bar=False
         )
 
-        # Ensure output is 2D even for single strings
         if embeddings.ndim == 1:
             embeddings = embeddings[np.newaxis, :]
 
@@ -137,6 +130,26 @@ def get_sentence_transformer_embeddings(texts: list[str], model_name: str = "all
 
     except Exception as e:
         print(f"Error during embedding generation with '{model_name}': {e}")
+
+
+def cluster_to_anytree(top_cluster) -> Node:
+    """Convert a pyhercules Cluster hierarchy to an anytree Node tree.
+
+    Leaf nodes (level 0) get name = original_id (row index in input data).
+    Internal nodes get name = n_items + cluster.id to avoid collision with leaf IDs.
+    """
+    n_items = top_cluster.num_items
+
+    def _build(cluster, parent=None):
+        if cluster.level == 0:
+            node = Node(name=int(cluster.original_id), parent=parent)
+        else:
+            node = Node(name=n_items + cluster.id, parent=parent)
+        for child in cluster.children:
+            _build(child, parent=node)
+        return node
+
+    return _build(top_cluster)
 
 
 # ====================
@@ -169,14 +182,9 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
         raise FileNotFoundError(f"Synthetic data file not found: {filename}\nPlease generate it first using generate.py")
 
     print(f"Loading data from: {filename}")
-    topic_data_original = pd.read_csv(filename)
+    topic_data = pd.read_csv(filename).reset_index(drop=True)
 
-    # Prepare data (same shuffle for consistency)
-    shuffle_idx = np.random.RandomState(seed=67).permutation(len(topic_data_original))
-    topic_data = topic_data_original.iloc[shuffle_idx].reset_index(drop=True)
-    reverse_idx = np.argsort(shuffle_idx)
-
-    # Build topic_dict from ground truth categories
+    # Build topic_dict from ground truth categories (column names use space: 'category 0')
     topic_dict = {}
     for col in topic_data.columns:
         if re.match(r'^category \d+$', col):
@@ -195,22 +203,25 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
 
     print(f"\nFinal cluster_levels (from deepest to shallowest): {cluster_levels}\n")
 
+    # Build ground truth tree (rename columns to category_0, category_1, ... as expected)
+    gt_df = topic_data.rename(columns={f'category {i}': f'category_{i}' for i in range(depth)})
+    gt_tree_root, _ = build_ground_truth_tree(gt_df, depth)
+    print(f"Ground truth tree built. Root id: {gt_tree_root.name}")
+
     # Embedding models to use
     embedding_model_names = [
         "Qwen/Qwen3-Embedding-0.6B",
         "sentence-transformers/all-MiniLM-L6-v2",
     ]
 
-    scores_all = defaultdict(lambda: defaultdict(list))
+    safe_theme = theme.replace(" ", "_").replace("/", "_")
+    rows = []
 
-    # Process each embedding model
     for embedding_model in embedding_model_names:
         print(f"\n{'='*60}")
         print(f"Processing embedding model: {embedding_model}")
         print(f"{'='*60}\n")
 
-        # Create save path for Hercules model
-        safe_theme = theme.replace(" ", "_").replace("/", "_")
         save_path = f"../../hercules_run/synthetic/{safe_theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}/{rep_mode}/{embedding_model.replace('/', '_')}"
 
         hercules = None
@@ -222,11 +233,12 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
                 text_embedding_client=get_sentence_transformer_embeddings,
                 llm_client=qwen_caller
             )[0]
+            top_clusters = hercules.top_clusters
         else:
             print(f"Creating new Hercules model...")
             torch.cuda.empty_cache()
             hercules = Hercules(
-                level_cluster_counts=cluster_levels,
+                level_cluster_counts=cluster_levels + [1],  # +[1] forces a single root
                 representation_mode=rep_mode,
                 text_embedding_client=get_sentence_transformer_embeddings,
                 llm_client=qwen_caller,
@@ -234,91 +246,78 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
                 llm_initial_batch_size=32
             )
 
-            # Run clustering on synthetic topics
             topic_seed = f"Synthetic hierarchical data about {theme}"
             print(f"Running Hercules clustering with topic seed: {topic_seed}")
             top_clusters = hercules.cluster(topic_data['topic'].tolist(), topic_seed=topic_seed)
 
-            # Save model
             print(f"Saving Hercules model to {save_path}...")
             os.makedirs(os.path.dirname(save_path), exist_ok=True)
             hercules.save_model(filepath=save_path, top_clusters=top_clusters)
 
-        # Get cluster assignments
-        cluster_df = hercules.get_cluster_membership_dataframe(include_l0_details=topic_data['topic'].tolist())
-
-        print(f"Hercules clustering complete. Evaluating against ground truth...")
-
-        # Print cluster statistics
-        for i in range(1, len(cluster_levels) + 1):
-            col_name = f'L{i}_cluster_title'
-            if col_name in cluster_df.columns:
-                unique_clusters = cluster_df[col_name].nunique()
-                print(f"Level {i}: {unique_clusters} clusters")
-
         # Save cluster assignments
+        cluster_df = hercules.get_cluster_membership_dataframe(include_l0_details=topic_data['topic'].tolist())
         assignments_dir = f"results/cluster_assignments/synthetic"
         os.makedirs(assignments_dir, exist_ok=True)
         assignment_file = f"{assignments_dir}/{safe_theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_{rep_mode}_{embedding_model.replace('/', '_')}.csv"
         cluster_df.to_csv(assignment_file, index=False)
         print(f"Cluster assignments saved to: {assignment_file}")
 
-        # Evaluate at each level
+        # Build predicted tree from the single root cluster
+        top_cluster = top_clusters[0]
+        pred_tree = cluster_to_anytree(top_cluster)
+
+        # Tree Edit Distance (once per embedding model)
+        ted_score = np.nan
+        if gt_tree_root is not None:
+            print("Computing Tree Edit Distance...")
+            ted_score = zss.simple_distance(anytree_to_zss(pred_tree), anytree_to_zss(gt_tree_root))
+            print(f"TED: {ted_score:.1f}")
+
+        # Per-level scoring
         for i, cluster_level in enumerate(cluster_levels):
             level_idx = i + 1
             print(f"\nEvaluating level {level_idx} (target clusters: {cluster_level})...")
 
             labels = hercules.get_level_assignments(level=level_idx)[0]
 
-            # Get ground truth for this level
             topic_series = topic_dict[cluster_level]
             valid_idx = ~pd.isna(topic_series)
             target_lst = topic_series[valid_idx]
             label_lst = labels[valid_idx]
 
-            # Compute metrics
             try:
                 fm_score = FowlkesMallows.Bk({cluster_level: target_lst}, {cluster_level: label_lst})[cluster_level]['FM']
-            except Exception as e:
+            except Exception:
                 fm_score = np.nan
-                print(f"WARNING: FM score computation failed: {e}")
+                print("WARNING: FM score computation failed!")
 
             rand = rand_score(target_lst, label_lst)
             ari = adjusted_rand_score(target_lst, label_lst)
             ami = adjusted_mutual_info_score(target_lst, label_lst)
 
-            print(f"Level {level_idx} Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}")
+            dp = dendrogram_purity(pred_tree, topic_series) if pred_tree is not None else np.nan
+            lca_f1_score = lca_f1(pred_tree, gt_tree_root, topic_series) if (pred_tree is not None and gt_tree_root is not None) else np.nan
 
-            # Store scores
-            scores_all[(embedding_model, level_idx)]["level"].append(cluster_level)
-            scores_all[(embedding_model, level_idx)]["FM"].append(fm_score)
-            scores_all[(embedding_model, level_idx)]["Rand"].append(rand)
-            scores_all[(embedding_model, level_idx)]["ARI"].append(ari)
-            scores_all[(embedding_model, level_idx)]["AMI"].append(ami)
+            lca_str = f"{lca_f1_score:.4f}" if not np.isnan(lca_f1_score) else "NaN"
+            print(f"Level {cluster_level} — FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, "
+                  f"DP: {dp:.4f}, LCA_F1: {lca_str}")
 
-    # Save results to CSV
-    print(f"\n{'='*60}")
-    print("Preparing results for export...")
-    print(f"{'='*60}\n")
-
-    rows = []
-    for (embedding_model, level_idx), metrics in scores_all.items():
-        for i in range(len(metrics["level"])):
             rows.append({
                 "embedding_model": embedding_model,
-                "cluster_method": "HERCULES",
-                "representation_mode": rep_mode,
-                "level": metrics["level"][i],
-                "level_idx": level_idx,
-                "FM": metrics["FM"][i],
-                "Rand": metrics["Rand"][i],
-                "ARI": metrics["ARI"][i],
-                "AMI": metrics["AMI"][i],
+                "reduction_method": "Hercules",
+                "cluster_method": rep_mode,
+                "level": cluster_level,
+                "FM": fm_score,
+                "Rand": rand,
+                "ARI": ari,
+                "AMI": ami,
+                "Dendrogram_Purity": dp,
+                "LCA_F1": lca_f1_score,
+                "TED": ted_score,
             })
 
-    # Create DataFrame and save
     scores_df = pd.DataFrame(rows)
-    scores_df = scores_df.sort_values(by=["embedding_model", "level_idx"]).reset_index(drop=True)
+    scores_df = scores_df.sort_values(by=["embedding_model", "level"]).reset_index(drop=True)
 
     os.makedirs("results", exist_ok=True)
     if float(add_noise) > 0:
@@ -386,7 +385,6 @@ Representation modes:
 
     args = parser.parse_args()
 
-    # Run pipeline
     run_synth_herc_pipeline(
         theme=args.theme,
         t=args.t,
