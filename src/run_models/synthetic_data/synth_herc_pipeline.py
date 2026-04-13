@@ -63,8 +63,7 @@ from pyhercules import Hercules
 from custom_packages.fowlkes_mallows import FowlkesMallows
 from custom_packages.dendrogram_purity import dendrogram_purity
 from custom_packages.lca_f1 import lca_f1
-from custom_packages.graph_utils import anytree_to_zss
-import zss
+from custom_packages.graph_utils import apted_distance
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
 from run_models.benchmark_datasets.build_ground_truth_trees import build_ground_truth_tree
 
@@ -279,7 +278,7 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
         ted_score = np.nan
         if gt_tree_root is not None:
             print("Computing Tree Edit Distance...")
-            ted_score = zss.simple_distance(anytree_to_zss(pred_tree), anytree_to_zss(gt_tree_root))
+            ted_score = apted_distance(pred_tree, gt_tree_root)
             print(f"TED: {ted_score:.1f}")
 
         # Per-level scoring
