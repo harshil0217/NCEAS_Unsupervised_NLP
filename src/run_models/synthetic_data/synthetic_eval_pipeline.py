@@ -63,7 +63,6 @@ from cuml.manifold import UMAP as cuUMAP
 from custom_packages.diffusion_condensation import DiffusionCondensation as dc
 
 # cuML GPU-accelerated clustering
-from cuml.cluster import AgglomerativeClustering as cuAgglomerativeClustering
 from cuml.cluster import HDBSCAN as cuHDBSCAN
 
 # ========================
@@ -215,10 +214,8 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
                 print(f"Loading cached Agglomerative linkage from {linkage_path}")
                 Z = np.load(linkage_path)
             else:
-                print("Using cuML Agglomerative Clustering (GPU)...")
-                model = cuAgglomerativeClustering(n_clusters=1)
-                model.fit(embed_data)
-                Z = model.single_linkage_tree_.to_numpy()
+                print("Building ward linkage tree for Agglomerative Clustering...")
+                Z = linkage(embed_data, method='ward')
                 os.makedirs(os.path.dirname(linkage_path), exist_ok=True)
                 np.save(linkage_path, Z)
                 print(f"Saved linkage matrix to {linkage_path}")
@@ -377,6 +374,15 @@ print(f"{filename} detected! Reading file...")
 
 topic_data_original = pd.read_csv(filename)
 
+# Keep only rows that reach the deepest category level (consistent depth across all rows)
+topic_data_original = topic_data_original.dropna(subset=[f'category {depth - 1}']).reset_index(drop=True)
+# Drop rows where the topic text is identical to its deepest category label (trivial samples)
+deepest_col = f'category {depth - 1}'
+topic_data_original = topic_data_original[
+    topic_data_original['topic'] != topic_data_original[deepest_col]
+].reset_index(drop=True)
+print(f"Filtered to {len(topic_data_original)} rows with full depth-{depth} labels and non-trivial topics.")
+
 # Embedding models to use
 embedding_model_names = [
     "Qwen/Qwen3-Embedding-0.6B",
@@ -430,69 +436,60 @@ for embedding_model in embedding_model_names:
     else:
         embedding_list = np.load(embed_file)
 
-    os.makedirs(f'intermediate_data/{embedding_model}_reduced_embeddings', exist_ok=True)
+    reduction_dir = f"intermediate_data/{embedding_model}_reduced_embeddings"
+    os.makedirs(reduction_dir, exist_ok=True)
 
     data = np.array(embedding_list)[shuffle_idx]
     embeddings = np.array(data)
+
+    if float(add_noise) > 0:
+        embed_filename = f"{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}"
+    else:
+        embed_filename = f"{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}"
+
+    reduction_tasks = {
+        "PHATE": {
+            "path": f"{reduction_dir}/PHATE_{embed_filename}_embed.npy",
+            "run": lambda: phate.PHATE(n_jobs=-2, random_state=67, n_components=300, decay=20, t="auto", n_pca=None).fit_transform(data),
+        },
+        "PCA": {
+            "path": f"{reduction_dir}/PCA_{embed_filename}_embed.npy",
+            "run": lambda: cuPCA(n_components=300).fit_transform(embeddings),
+        },
+        "UMAP": {
+            "path": f"{reduction_dir}/UMAP_{embed_filename}_embed.npy",
+            "run": lambda: cuUMAP(n_components=300, min_dist=.05, n_neighbors=10).fit_transform(embeddings),
+        },
+        "tSNE": {
+            "path": f"{reduction_dir}/tSNE_{embed_filename}_embed.npy",
+            "run": lambda: cuTSNE(n_components=2).fit_transform(embeddings),
+        },
+        "PaCMAP": {
+            "path": f"{reduction_dir}/PaCMAP_{embed_filename}_embed.npy",
+            "run": lambda: pacmap.PaCMAP(n_components=300, random_state=67).fit_transform(embeddings),
+        },
+        "TriMAP": {
+            "path": f"{reduction_dir}/TriMAP_{embed_filename}_embed.npy",
+            "run": lambda: trimap.TRIMAP(n_dims=300).fit_transform(embeddings),
+        },
+    }
+
     embedding_methods_for_model = {}
+    for method_name, task in reduction_tasks.items():
+        if os.path.exists(task["path"]):
+            print(f"Loading cached {method_name} from {task['path']}...")
+            result = np.load(task["path"])
+        else:
+            print(f"Running {method_name}...")
+            result = task["run"]()
+            if hasattr(result, 'to_output'):
+                result = result.to_output('numpy')
+            elif not isinstance(result, np.ndarray):
+                result = np.array(result)
+            np.save(task["path"], result)
+            print(f"Saved {method_name} to {task['path']}")
+        embedding_methods_for_model[method_name] = result
 
-    # PHATE
-    print("Running PHATE...")
-    reducer_model = phate.PHATE(n_jobs=-2, random_state=67, n_components=300, decay=20, t="auto", n_pca=None)
-    embed_phate = reducer_model.fit_transform(data)
-    embedding_methods_for_model["PHATE"] = embed_phate
-    if float(add_noise) > 0:
-        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/PHATE_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embed_phate)
-    else:
-        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/PHATE_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embed_phate)
-
-    # PCA using cuML (GPU-accelerated)
-    print("Running PCA with cuML (GPU)...")
-    pca_model = cuPCA(n_components=300)
-    pca_result = pca_model.fit_transform(embeddings)
-    embedding_methods_for_model["PCA"] = pca_result.to_output('numpy') if hasattr(pca_result, 'to_output') else np.array(pca_result)
-    if float(add_noise) > 0:
-        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/PCA_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embedding_methods_for_model["PCA"])
-    else:
-        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/PCA_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["PCA"])
-
-    # UMAP using cuML (GPU-accelerated)
-    print("Running UMAP with cuML (GPU)...")
-    umap_model = cuUMAP(n_components=300, min_dist=.05, n_neighbors=10)
-    umap_result = umap_model.fit_transform(embeddings)
-    embedding_methods_for_model["UMAP"] = umap_result.to_output('numpy') if hasattr(umap_result, 'to_output') else np.array(umap_result)
-    if float(add_noise) > 0:
-        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/UMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embedding_methods_for_model["UMAP"])
-    else:
-        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/UMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["UMAP"])
-
-    # t-SNE using cuML (GPU-accelerated)
-    print("Running t-SNE with cuML (GPU)...")
-    tsne_model = cuTSNE(n_components=2)
-    tsne_result = tsne_model.fit_transform(embeddings)
-    embedding_methods_for_model["tSNE"] = tsne_result.to_output('numpy') if hasattr(tsne_result, 'to_output') else np.array(tsne_result)
-    if float(add_noise) > 0:
-        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/tSNE_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embedding_methods_for_model["tSNE"])
-    else:
-        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/tSNE_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["tSNE"])
-
-    # PaCMAP
-    print("Running PaCMAP...")
-    pac = pacmap.PaCMAP(n_components=300, random_state=67)
-    embedding_methods_for_model["PaCMAP"] = pac.fit_transform(embeddings)
-    if float(add_noise) > 0:
-        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/PaCMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embedding_methods_for_model["PaCMAP"])
-    else:
-        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/PaCMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["PaCMAP"])
-
-    # TriMAP
-    print("Running TriMAP...")
-    tr = trimap.TRIMAP(n_dims=300)
-    embedding_methods_for_model["TriMAP"] = tr.fit_transform(embeddings)
-    if float(add_noise) > 0:
-        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/TriMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy", embedding_methods_for_model["TriMAP"])
-    else:
-        np.save(f"intermediate_data/{embedding_model}_reduced_embeddings/TriMAP_{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy", embedding_methods_for_model["TriMAP"])
     # Store the embedding methods for this model
     embedding_models[embedding_model] = embedding_methods_for_model
 
