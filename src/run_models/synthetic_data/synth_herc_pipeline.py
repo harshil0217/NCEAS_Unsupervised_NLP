@@ -186,7 +186,12 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
 
     # Keep only rows that reach the deepest category level (consistent depth across all rows)
     topic_data = topic_data.dropna(subset=[f'category {depth - 1}']).reset_index(drop=True)
-    print(f"Filtered to {len(topic_data)} rows with full depth-{depth} labels.")
+    # Drop rows where the topic text is identical to its deepest category label (trivial samples)
+    deepest_col = f'category {depth - 1}'
+    topic_data = topic_data[
+        topic_data['topic'] != topic_data[deepest_col]
+    ].reset_index(drop=True)
+    print(f"Filtered to {len(topic_data)} rows with full depth-{depth} labels and non-trivial topics.")
 
     # Build topic_dict from ground truth categories (column names use space: 'category 0')
     topic_dict = {}

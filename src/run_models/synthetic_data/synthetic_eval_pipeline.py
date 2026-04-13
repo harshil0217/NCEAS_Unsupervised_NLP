@@ -376,7 +376,12 @@ topic_data_original = pd.read_csv(filename)
 
 # Keep only rows that reach the deepest category level (consistent depth across all rows)
 topic_data_original = topic_data_original.dropna(subset=[f'category {depth - 1}']).reset_index(drop=True)
-print(f"Filtered to {len(topic_data_original)} rows with full depth-{depth} labels.")
+# Drop rows where the topic text is identical to its deepest category label (trivial samples)
+deepest_col = f'category {depth - 1}'
+topic_data_original = topic_data_original[
+    topic_data_original['topic'] != topic_data_original[deepest_col]
+].reset_index(drop=True)
+print(f"Filtered to {len(topic_data_original)} rows with full depth-{depth} labels and non-trivial topics.")
 
 # Embedding models to use
 embedding_model_names = [
