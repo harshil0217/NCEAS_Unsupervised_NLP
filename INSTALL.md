@@ -4,8 +4,10 @@ NCEAS Unsupervised NLP – PHATE Benchmark Pipeline
 These instructions allow instructors, classmates, and community partners to reproduce the project environment and run the benchmark pipeline on a Linux system with CUDA support.
 
 
-### Note:
-This project requires a Linux system with a CUDA-compatible GPU. All experiments are designed to run on an HPC cluster (e.g., MSU HPCC). The pipeline uses GPU-accelerated libraries (cuML, cuPCA, cuUMAP) that are not available on macOS or Windows.
+## A few Important Notes
+1. This project requires a Linux system with a CUDA-compatible GPU. All experiments are designed to run on an HPC cluster (e.g., MSU HPCC). The pipeline uses GPU-accelerated libraries (cuML, cuPCA, cuUMAP) that are not available on macOS or Windows. For reference, the code in this library was developed and executed with a configuration of 8 CPU cores, 64 GB of RAM, and 2 V100 GPUs.
+
+2. Running the full pipeline for all real and synthetic data sources will take hours with most hardware configurations. If you simply wish to run our pipeline end to end, to ensure our code is reproducible, we recommend only running our pipelines for the **RCV1** dataset, which is the smallest of our data sources.
 
 ---
 
@@ -18,17 +20,7 @@ cd NCEAS_Unsupervised_NLP
 
 ---
 
-## 2. Install Conda (If Not Installed)
-
-Download and install **Miniconda** for Linux:
-
-https://docs.conda.io/en/latest/miniconda.html
-
-Follow the default installation instructions and open a new terminal after installation.
-
----
-
-## 3. Create the Project Environment
+## 2. Create the Project Environment with Conda
 
 From the root project directory:
 
@@ -41,7 +33,7 @@ This creates a fully reproducible environment using the provided `environment.ym
 
 ---
 
-## 4. Data Setup
+## 3. Benchmark Data Setup
 
 This repository does **not include benchmark datasets**. Datasets must be downloaded separately and placed in the correct folders.
 
@@ -68,32 +60,11 @@ src/data/
 
 The arXiv dataset used in this project is a **30,000 paper subset** of the full arXiv metadata.
 
-**Option 1: Use the preprocessed dataset (recommended)**
-
-1. Download `arxiv_30k_clean.csv` from the NCEAS Teams Data folder:
-   ```
-   Documents/NCEAS/Team_Management_Files/Data/arxiv/arxiv_30k_clean.csv
-   ```
+1. Download the full arxiv dataset from [https://www.kaggle.com/datasets/Cornell-University/arxiv](https://www.kaggle.com/datasets/Cornell-University/arxiv)
 
 2. Place it at:
    ```bash
-   src/data/arxiv/arxiv_30k_clean.csv
-   ```
-
-3. Run the cleaning notebook to generate `arxiv_clean.csv`:
-   ```
-   src/data/arxiv/clean_arxiv.ipynb
-   ```
-   This will save the cleaned file to `src/data/arxiv/arxiv_clean.csv`, which is what the pipeline loads.
-
-**Option 2: Download from source**
-
-1. Download the full arXiv metadata from Kaggle:
-   https://www.kaggle.com/datasets/Cornell-University/arxiv
-
-2. Subset to 30,000 papers and save as:
-   ```bash
-   src/data/arxiv/arxiv_30k_clean.csv
+   src/data/arxiv/arxiv.csv
    ```
 
 3. Run the cleaning notebook to generate `arxiv_clean.csv`:
@@ -105,110 +76,43 @@ The arXiv dataset used in this project is a **30,000 paper subset** of the full 
 
 ### Amazon Dataset
 
-**Option 1: Use the preprocessed dataset (recommended)**
+1. Download the files `train_40k.csv` and `val_10k.csv` from the following link
 
-Available in the NCEAS Teams Data folder:
+[https://nijianmo.github.io/amazon/index.html](https://www.kaggle.com/datasets/kashnitsky/hierarchical-text-classification)
 
-```
-Documents/NCEAS/Team_Management_Files/Data/Amazon/
-├── train_40k.csv.zip
-└── val_10k.csv.zip
-```
+2. Place them both at:
+ ```bash
+    src/data/amazon/train_40k.csv
+    src/data/amazon/val_10k.csv
+ ```
 
-Download and unzip both files, then place the extracted CSVs at:
-
-```bash
-src/data/amazon/train_40k.csv
-src/data/amazon/val_10k.csv
-```
-
-**Option 2: Download from source**
-
-https://nijianmo.github.io/amazon/index.html
 
 ---
 
 ### DBpedia Dataset
 
-**Option 1: Use the preprocessed dataset (recommended)**
 
-Available in the NCEAS Teams Data folder:
+1. Download from `DBPEDIA_test.csv` from kaggle (existing preprocessed dataset incorporated for ease of use)
 
-```
-Documents/NCEAS/Team_Management_Files/Data/DBpedia/DBPEDIA_test.csv
-```
+[https://github.com/le-scientifique/torchDatasets/tree/master/dbpedia_csv](https://www.kaggle.com/code/danofer/dbpedia-preprocessing/input)
 
-Place it at:
-
-```bash
-src/data/dbpedia/DBPEDIA_test.csv
-```
-
-**Option 2: Download from source**
-
-https://github.com/le-scientifique/torchDatasets/tree/master/dbpedia_csv
+2. Place at :
+ ```bash
+    src/data/dbpedia/DBPEDIA_test.csv
+ ```
 
 ---
 
 ### RCV1 Dataset
 
-**Option 1: Use the preprocessed dataset (recommended)**
-
-Available in the NCEAS Teams Data folder:
-
-```
-Documents/NCEAS/Team_Management_Files/Data/rcv1_v2/rcv1.csv
-```
-
-Place it at:
-
-```bash
-src/data/rcv1/rcv1.csv
-```
-
-**Option 2: Download from source**
-
-https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_rcv1.html
+1. Execute the python file located at `src/data/rcv1/import_rcv1.py`. This file will load in the RCV1 dataset using the [fetch_rcv1](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_rcv1.html) function, preprocess the data for use, and save the data to `rcv1.csv` 
 
 ---
 
 ### Web of Science Dataset
 
-**Option 1: Use the preprocessed dataset (recommended)**
-
-Available in the NCEAS Teams Data folder:
-
-```
-Documents/NCEAS/Team_Management_Files/Data/WebOfScience/Data.xlsx
-```
-
-Place it at:
-
-```bash
-src/data/WebOfScience/Data.xlsx
-```
-
-**Option 2: Download from source**
-
-https://github.com/kk7nc/Text_Classification
-
----
-
-## 5. Run the Demo
-
-Start Jupyter and open the demo notebook:
-
-```bash
-jupyter notebook
-```
-
-Open:
-
-```
-notebooks/demo.ipynb
-```
-
-Run all cells from top to bottom. This notebook verifies that the full pipeline (embeddings, dimensionality reduction, clustering, and visualization) is working correctly.
+1. Download from [https://data.mendeley.com/datasets/9rw3vkcfy4/6](https://data.mendeley.com/datasets/9rw3vkcfy4/6_)
+2. Place the `Meta-Data` folder, which contains a file named `Data.csv`, in `src/data/WebOfScience`
 
 ---
 
@@ -229,30 +133,6 @@ Results are saved to:
 ```bash
 results/{dataset}_clustering_scores.csv
 ```
-
----
-
-## 7. Verify Installation
-
-Installation is successful if:
-
-- The demo notebook runs without errors
-- A clustering visualization is generated
-- No missing package errors occur
-
----
-
-## 8. Troubleshooting
-
-If environment creation fails:
-
-```bash
-conda deactivate
-conda remove -n phate-env --all
-conda env create -f environment.yml
-```
-
-If issues persist, ensure Conda is installed correctly and that you are running commands from the project root directory.
 
 ---
 
