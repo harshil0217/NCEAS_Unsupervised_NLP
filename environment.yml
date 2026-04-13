@@ -31,9 +31,10 @@ dependencies:
   - numba
   - anytree
   - hdbscan
-  - cython
-  - pandas
-  - seaborn
+  - umap-learn
+  - openpyxl
   - pip:
     - trimap
-    - git+https://github.com/chilligerchief/GED4py.py
+    - zss
+    - pyhercules
+  

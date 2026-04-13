@@ -1,9 +1,6 @@
 # ========================
 # Environment Configuration
 # ========================
-from dotenv import load_dotenv
-load_dotenv()  # Loads variables from .env into environment
-
 import os
 import sys
 
@@ -43,7 +40,7 @@ model = 'openai/gpt-oss-120b'
 
 def generate_hierarchy(topics, theme, terms=None, depth=2, temperature=0.7, model=model, num=3,with_synonyms=0,branching="constant",max_num=20):
     """
-    Generate hierarchical data using the OpenAI API while maintaining context across API calls.
+    Generate hierarchical data using the Groq API while maintaining context across API calls.
     """
     hierarchy = {}
     seen_nodes = set()
@@ -304,7 +301,7 @@ def add_noise_row(df, column_name, num_samples=3):
 
     # Call GPT
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model=model,
         messages=[{"role": "user", "content": prompt}],
         temperature=1.0,
     )
@@ -411,5 +408,3 @@ if add_noise > 0.0:
         print(f"✓ Noise addition complete!\n")
     else:
         print(f"Noisy dataset already exists: {noise_file}\n")
-
-

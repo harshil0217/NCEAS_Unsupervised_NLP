@@ -1,17 +1,26 @@
-# NCEAS_Unsupervised_NLP
-NCEAS Project for SS26 Data Science Capstone
+# NCEAS Unsupervised NLP
 
-## Project Video 
+NCEAS Project for SS26 CMSE 495 Data Science Capstone, Michigan State University.
+
+**Note:** This project requires a Linux environment with a CUDA-enabled GPU (tested on MSU HPCC).
+
+## Project Video
+
 [![Video Thumbnail](https://img.youtube.com/vi/YqY4ENxIY1E/0.jpg)](https://www.youtube.com/watch?v=YqY4ENxIY1E)
 
-
+---
 
 ## Class Description
-The CMSE 495 data science capstone course is intended to provide students with an opportunity to put together what they have learned across multiple courses to develop a final project that demonstrates their ability to work in a team on real-world problems.
+
+CMSE 495 is the MSU Data Science Capstone course where student teams work with real-world community partners to solve data science problems. This project is developed in partnership with Dr. Nathan Brugnone, Maryam Berijanian, and Kuldeep Singh.
+
+---
 
 ## Objective
-The objective of the NCEAS_Unsupervised_NLP project is to support the development of improved methods for unsupervised analysis of unstructured textual data in the context of discourse and narratives surrounding US fisheries, particularly the ecological and social dynamics concerning commercial fishing and government regulation.
 
+The goal of this project is to benchmark dimensionality reduction methods combined with clustering algorithms on textual embeddings to support unsupervised NLP analysis for US fisheries discourse and narratives. We evaluate how well methods like PHATE, PCA, UMAP, t-SNE, and PaCMAP preserve hierarchical structure in text data when paired with clustering algorithms including Agglomerative, HDBSCAN, Diffusion Condensation, and Hercules. Results are measured using FM index, ARI, AMI, and Rand Index across five benchmark datasets.
+
+---
 
 ## Installation
 
@@ -19,61 +28,156 @@ For full installation instructions and environment setup, see:
 
 [INSTALL.md](INSTALL.md)
 
+---
 
 ## Key Components
-### Text Scraping and Data Collection
-We will develop a Python API to scrape text from audio transcriptions of fisheries podcasts and related unstructured text from public forums related to US fisheries. The collected data will then be stored in a structured database for analysis.
 
-### NLP and Data Modeling
-The project will employ natural language processing (NLP) techniques to analyze the textual data. Advancements in textual embeddings enabled by large language models (LLMs) will be explored
+### Text Embeddings
+Documents are embedded using two models: `Qwen3-Embedding-0.6B` and `all-MiniLM-L6-v2` via the `sentence-transformers` library.
 
-### Exploratory Data Analysis (EDA) & Visualization
-Visualizations will play a crucial role in representing the analysis and communicating results to fisheries researchers and expert NLP practitioners
+### Dimensionality Reduction
+We compare five reduction methods: PHATE, PCA, UMAP, t-SNE, and PaCMAP. GPU-accelerated implementations (cuML) are used where available.
 
-### Analysis and Quantification
-The team will apply a few standard and emerging methods for dimensionality reduction and hierarchical clustering to textual embeddings with the goal of advancing the state-of-the-art. The results will be compared through robust statistical analysis. Metrics will include the adjusted Rand index (ARI), mutual information (MI), the Fowlkes–Mallows index (FM), and others as identified by the team.
+### Clustering
+Four clustering methods are applied at multiple hierarchy levels: Agglomerative Clustering, HDBSCAN, Diffusion Condensation, and Hercules.
+
+### Evaluation
+Clustering quality is measured against ground truth labels using FM index, Adjusted Rand Index (ARI), Adjusted Mutual Information (AMI), and Rand Index.
+
+---
 
 ## Demo
+
 After installing the environment, run:
+
+```bash
 jupyter notebook
+```
 
 Then open:
 
+```
 notebooks/demo.ipynb
+```
 
-This notebook demonstrates the full PHATE benchmark pipeline including:
+This notebook demonstrates the full pipeline including loading data, generating embeddings, dimensionality reduction, clustering, and visualization.
 
-- loading example data
-- generating embeddings
-- dimensionality reduction
-- clustering
-- visualization
+---
+
+## Reproducibility
+
+Instructions to reproduce the Shepard Diagram figures from our final report are in:
+
+```
+notebooks/NCEAS_Reproducibility.ipynb
+```
+
+This notebook loads precomputed embeddings from the NCEAS Teams Data folder and generates Shepard Diagrams for PCA, UMAP, PHATE, and PaCMAP on the RCV1 dataset.
+
+---
+
+## Running Benchmark Experiments
+
+Once datasets are in place (see INSTALL.md), run:
 
 ```bash
-Project Structure
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset arxiv
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset amazon
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset dbpedia
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset rcv1
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset wos
+```
+
+---
+
+## Expected Output
+
+Running the benchmark pipeline will generate:
+- CSV files with clustering evaluation metrics saved in `results/`
+- Visualizations produced through the demo notebook
+- Additional logs and intermediate outputs depending on the experiment
+
+---
+
+## Project Structure
+
+```
 NCEAS_Unsupervised_NLP/
 │
-├── notebooks/               # Demo and exploratory notebooks
-│   └── demo.ipynb
+├── notebooks/                              # Milestone notebooks
+│   ├── demo.ipynb                          
+│   ├── MVP_demo.ipynb                      
+│   └── NCEAS_Reproducibility.ipynb         
+│
+├── docs/                                   # Project documentation and report
+│   ├── project_plan.md
+│   └── NCEAS_PHATE_Project_for_ACL/        # ACL-style paper draft
+│       └── latex/
+│
+├── results/                                # Top-level output (plots, CSVs)
 │
 ├── src/
-│   ├── data/                # Benchmark datasets (not included in repo)
+│   ├── custom_packages/                    # Custom algorithm implementations
+│   │   ├── clusters.py
+│   │   ├── diffusion_condensation.py
+│   │   ├── fowlkes_mallows.py
+│   │   ├── hercules.py
+│   │   └── hierarchical_kmeans_gpu.py
+│   │
+│   ├── data/                               # Benchmark datasets (not included in repo)
 │   │   ├── arxiv/
 │   │   ├── amazon/
 │   │   ├── dbpedia/
-│   │   └── wos/
+│   │   ├── rcv1/
+│   │   └── WebOfScience/
 │   │
-│   ├── run_models/          # Benchmark experiment scripts
-│   │   ├── arxiv_benchmark.py
-│   │   ├── amazon_benchmark.py
-│   │   └── ...
+│   ├── data_generation/                    # Synthetic data generation using LLMs
+│   │   ├── generate.py
+│   │   ├── theme_keys.json
+│   │   └── generated_data/
 │   │
-│   └── evaluations/         # Evaluation notebooks and analysis
+│   ├── evaluations/                        # Analysis and evaluation notebooks
+│   │   ├── combine_results.ipynb
+│   │   ├── compare_eval_methods.ipynb
+│   │   ├── embedding_visuals.ipynb
+│   │   ├── final_table.ipynb
+│   │   ├── metric_tables.ipynb
+│   │   └── parameter_selection.ipynb
+│   │
+│   ├── results/                            # Clustering evaluation CSVs
+│   │
+│   └── run_models/                         # Experiment pipelines
+│       ├── benchmark_datasets/
+│       │   ├── eval_pipeline.py            # Main benchmark evaluation pipeline
+│       │   ├── herc_pipeline.py            # HERCULES hierarchical clustering pipeline
+│       │   └── run_eval_pipeline.sh        # Shell script to run all benchmarks
+│       ├── synthetic_data/
+│       │   ├── eval_script.py
+│       │   ├── synth_herc_pipeline.py
+│       │   └── run_all.sh
+│       ├── epa.ipynb                       # EPA dataset analysis
+│       ├── slide_figures.py                # Figure generation for slides
+│       ├── viz_summary_figures.py          # Summary visualization figures
+│       ├── visualization_metrics.ipynb     # Visualization quality metrics (benchmark)
+│       └── visualization_metrics_synthetic.ipynb  # Visualization quality metrics (synthetic)
 │
-├── environment.yml          # Reproducible conda environment
-├── INSTALL.md               # Installation instructions
-└── README.md                # Project overview
+├── environment.yml                         # Conda environment (Linux/CUDA)
+├── requirements.txt                        # Python package requirements
+├── INSTALL.md                              # Installation instructions
+├── LICENSE                                 # Apache 2.0 License
+└── README.md                              # Project overview
 ```
+
+---
+
+## Report
+
+The project report (ACL-style paper draft) is available in:
+
+[docs/NCEAS_PHATE_Project_for_ACL/latex/](docs/NCEAS_PHATE_Project_for_ACL/latex/)
+
+---
+
 ## Authors
 
 [Jisha Goyal](https://github.com/goyaljis)
