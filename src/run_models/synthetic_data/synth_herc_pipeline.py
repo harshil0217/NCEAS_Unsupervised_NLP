@@ -184,6 +184,10 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
     print(f"Loading data from: {filename}")
     topic_data = pd.read_csv(filename).reset_index(drop=True)
 
+    # Keep only rows that reach the deepest category level (consistent depth across all rows)
+    topic_data = topic_data.dropna(subset=[f'category {depth - 1}']).reset_index(drop=True)
+    print(f"Filtered to {len(topic_data)} rows with full depth-{depth} labels.")
+
     # Build topic_dict from ground truth categories (column names use space: 'category 0')
     topic_dict = {}
     for col in topic_data.columns:

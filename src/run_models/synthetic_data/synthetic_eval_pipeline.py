@@ -374,6 +374,10 @@ print(f"{filename} detected! Reading file...")
 
 topic_data_original = pd.read_csv(filename)
 
+# Keep only rows that reach the deepest category level (consistent depth across all rows)
+topic_data_original = topic_data_original.dropna(subset=[f'category {depth - 1}']).reset_index(drop=True)
+print(f"Filtered to {len(topic_data_original)} rows with full depth-{depth} labels.")
+
 # Embedding models to use
 embedding_model_names = [
     "Qwen/Qwen3-Embedding-0.6B",
