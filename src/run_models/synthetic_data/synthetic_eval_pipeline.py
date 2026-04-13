@@ -497,7 +497,7 @@ for embedding_model in embedding_model_names:
         },
     }
 
-    embedding_methods_for_model = {}
+    embedding_methods_for_model = {"Raw": embeddings}
     for method_name, task in reduction_tasks.items():
         if os.path.exists(task["path"]):
             print(f"Loading cached {method_name} from {task['path']}...")
