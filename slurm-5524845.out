@@ -1,0 +1,391 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:01<00:02,  1.27s/it]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:02<00:01,  1.27s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:02<00:00,  1.16it/s]
+{'model.embed_tokens': 0, 'lm_head': 0, 'model.layers.0': 0, 'model.layers.1': 0, 'model.layers.2': 0, 'model.layers.3': 0, 'model.layers.4': 0, 'model.layers.5': 0, 'model.layers.6': 0, 'model.layers.7': 0, 'model.layers.8': 0, 'model.layers.9': 0, 'model.layers.10': 0, 'model.layers.11': 0, 'model.layers.12': 0, 'model.layers.13': 0, 'model.layers.14': 0, 'model.layers.15': 0, 'model.layers.16': 1, 'model.layers.17': 1, 'model.layers.18': 1, 'model.layers.19': 1, 'model.layers.20': 1, 'model.layers.21': 1, 'model.layers.22': 1, 'model.layers.23': 1, 'model.layers.24': 1, 'model.layers.25': 1, 'model.layers.26': 1, 'model.layers.27': 1, 'model.layers.28': 1, 'model.layers.29': 1, 'model.layers.30': 1, 'model.layers.31': 1, 'model.layers.32': 1, 'model.layers.33': 1, 'model.layers.34': 1, 'model.layers.35': 1, 'model.norm': 1, 'model.rotary_emb': 1}
+
+================================================================================
+Running pipeline for dataset: ARXIV
+================================================================================
+
+Depth: 2
+Building cluster levels by counting unique categories at each level...
+
+Level 1 (category_1): 62 unique categories
+Level 0 (category_0): 2 unique categories
+
+Final cluster_levels (from deepest to shallowest): [62, 2]
+
+Loaded ground truth tree from intermediate_data/ground_truth_trees/arxiv_tree.pkl
+INFO: `image_embedding_client` not provided. HERCULES will use a DUMMY image embedding function if image data is processed in 'direct' mode.
+INFO: `image_captioning_client` not provided. HERCULES will use a DUMMY image captioning function if image data descriptions are generated.
+--- Starting Hercules Clustering Run: 20260412_032830 ---
+Hercules Version: 1.0.2
+Verbosity Level: 2
+Representation Mode: direct
+Automatic K Mode: Disabled (Using level_cluster_counts: [62, 2, 1])
+Reduction Methods: ['pca'] (2 components)
+Topic Seed: 'arxiv abstracts'
+Prompting includes immediate children (Strategy: random, Size: 3).
+Starting input data preparation...
+Processing list input (30000 items, first item type: str)
+Detected input type: text (list)
+Input data preparation complete.
+Input data type detected: text
+  Input items count: 30000
+Initializing 30000 Level 0 Cluster objects...
+Generating Level 0 titles and descriptions...
+  Mode: LLM-free L0 Text/Numeric/Image descriptions (using snippets/defaults).
+  Assigning initial L0 titles based on content extraction/type...
+  Generating LLM-free L0 descriptions for TEXT items (using snippets).
+Generating description embeddings for 30000 clusters (L0)...
+  Calling text embedding client for 30000 combined descriptions (L0)...
+  Training 'text_embedding' space reducers using L0 description embeddings.
+Training reducers for 'text_embedding' space (data shape: (30000, 384))...
+    PCA trained for text_embedding (input dim: 384, output dim: 2).
+  Assigned 30000 description embeddings (L0).
+Generating Level 0 representations for clustering...
+  Mode: Direct Representation (using scaled numerics or item embeddings for L0).
+    Generating TEXT embeddings for 30000 items...
+    Assigning direct L0 representation vectors (space: text_embedding, dim: 384)...
+Applying reductions to 'representation_vector' vectors for 30000 clusters (L0)...
+  Applied reductions to 30000 'representation_vector' vectors (L0).
+Applying reductions to 'description_embedding' vectors for 30000 clusters (L0)...
+  Applied reductions to 30000 'description_embedding' vectors (L0).
+Level 0 processing complete. 30000 items represented.
+Starting hierarchical loop with 30000 valid L0 clusters.
+Using fixed level cluster counts: [62, 2, 1]
+
+--- Clustering Level 1 ---
+Level 1: Clustering 30000 prev level REPRESENTATION VECTORS (space: text_embedding).
+    Performing initial KMeans (k=62) on input I (shape: (30000, 384), space: text_embedding) for Level 1...
+    Initial KMeans for L1 complete. Centroids shape: (62, 384), Labels count: 30000
+  Resampling not applied for Level 1 (use_resampling=False, rt=10, m=10, k=62).
+Creating 62 new parent clusters for Level 1 based on final assignments...
+Processing 62 new Level 1 clusters...
+Generating LLM descriptions for 62 clusters (Level 1)...
+  LLM Retry Policy: 2 retries, 1.0s base delay.
+  Starting LLM batch iteration. Batch size <= 32, 62 items remaining.
+Building LLM prompt 5df88f53-f6b1-492d-b975-a5bb5f2bc155 for 32 Clusters (Level 1)...
+  Built prompt 5df88f53-f6b1-492d-b975-a5bb5f2bc155 with 32 items, estimated tokens: 8859.
+{
+  "30000": { "title": "LLM Reasoning and Strategy", "description": "Explores mathematical reasoning, strategy generation, and collaborative problem-solving in large language models." },
+  "30001": { "title": "Network Optimization and Offloading", "description": "Focuses on service migration, scheduling, and compute offloading in distributed network systems." },
+  "30002": { "title": "Privacy in Federated Learning", "description": "Addresses privacy leakage, attacks, and unlearning in collaborative machine learning systems." },
+  "30003": { "title": "Urban Mobility from Data", "description": "Analyzes human movement patterns using mobile and crowdsensed urban data." },
+  "30004": { "title": "Retrieval-Augmented Generation", "description": "Studies context-aware retrieval and summarization for generative language models." },
+  "30005": { "title": "Knowledge Graph and Scholarly Discovery", "description": "Enables structured knowledge extraction and literature mapping from scientific data." },
+  "30006": { "title": "Physics-Informed ML Models", "description": "Integrates physical laws into neural networks for accurate material and fluid dynamics modeling." },
+  "30007": { "title": "Fluid-Structure Interaction", "description": "Develops high-fidelity simulations of fluid-structure interactions using advanced numerical methods." },
+  "30008": { "title": "Complex Network Dynamics", "description": "Analyzes node importance, robustness, and diffusion processes in complex networks." },
+  "30009": { "title": "Protein and Nanodevice Electronics", "description": "Investigates electronic transport and device design in biomolecular and nanoscale systems." },
+  "30010": { "title": "Query Complexity and Lower Bounds", "description": "Studies computational limits in string measures and privacy under continual release." },
+  "30011": { "title": "Robustness and Unlearning in ML", "description": "Improves model resilience and enables secure unlearning in federated and adversarial settings." },
+  "30012": { "title": "Robotic Bimanual Manipulation", "description": "Advances dexterous robotic manipulation through imitation and end-to-end learning." },
+  "30013": { "title": "Multilingual Translation with LLMs", "description": "Enhances translation accuracy via continual pre-training and prompt engineering." },
+  "30014": { "title": "Resource Allocation in IoT Networks", "description": "Optimizes resource sharing and mobility-aware access in IoT and 6G wireless systems." },
+  "30015": { "title": "Vision Transformers and Detection", "description": "Presents real-time object detection and self-supervised vision learning with ViTs." },
+  "30016": { "title": "Plasma Turbulence and Astrophysics", "description": "Studies kinetic plasma turbulence and wave dynamics in laboratory and astrophysical settings." },
+  "30017": { "title": "Secure Data Aggregation in IoT", "description": "Enables private, fair, and fault-tolerant data sharing in industrial IoT systems." },
+  "30018": { "title": "Scalable HPC and Accelerator Design", "description": "Presents hardware-software co-design for efficient large-scale inference and memory systems." },
+  "30019": { "title": "Explainable Recommendation Systems", "description": "Improves recommendation accuracy and interpretability using language models and sequential learning." },
+  "30020": { "title": "Adversarial and Constrained Bandits", "description": "Studies online learning under resource constraints and adversarial feedback." },
+  "30021": { "title": "Multimodal Vision-Language Models", "title": "Multimodal Vision-Language Understanding", "description": "Advances image understanding through vision-language transformers and chart reasoning." },
+  "30022": { "title": "Image Generation and Representation", "description": "Decouples and improves image synthesis via invertible flows and adversarial code learning." },
+  "30023": { "title": "Efficient Network Pruning", "description": "Proposes structured sparsification and variance-based methods for lightweight deep networks." },
+  "30024": { "title": "Inclusive Software Development", "description": "Addresses diversity, equity, and stakeholder influence in software engineering practices." },
+  "30025": { "title": "Ptychographic Imaging Techniques", "description": "Develops advanced optical imaging methods for subdiffraction and non-invasive analysis." },
+  "30026": { "title": "Action Recognition in Videos", "description": "Improves action segmentation and detection via temporal modeling and multi-task learning." },
+  "30027": { "title": "Space Weather and Climate Modeling", "description": "Analyzes geomagnetic storms and energy transport in atmospheric and space systems." },
+  "30028": { "title": "3D LiDAR Localization and Tracking", "description": "Enables robust 3D localization and multi-object tracking using sensor fusion and neural fields." },
+  "30029": { "title": "Graph Partitioning and Optimization", "description": "Solves graph partitioning and independent set problems with reachability and move constraints." },
+  "30030": { "title": "Massive MIMO Network Design", "description": "Optimizes beamforming, interference, and security in massive MIMO cellular systems." },
+  "30031": { "title": "Cosmology and General Relativity", "description": "Explores dark energy, extra dimensions, and unified field theories in cosmological models." }
+}
+      Successfully parsed 32/32 descriptions from response 5df88f53-f6b1-492d-b975-a5bb5f2bc155 on attempt 1.
+Building LLM prompt 0eb2baba-0fff-48bd-ac8e-ff3e31dfe925 for 30 Clusters (Level 1)...
+  Built prompt 0eb2baba-0fff-48bd-ac8e-ff3e31dfe925 with 30 items, estimated tokens: 8327.
+{
+  "30032": { "title": "Mitigating Off-Policy Bias in RL", "description": "Addresses off-policy bias in actor-critic methods using one-step Q-learning and trajectory optimization." },
+  "30033": { "title": "Laser Wakefield Acceleration", "description": "Studies electron acceleration in plasma using laser pulses and wakefield dynamics." },
+  "30034": { "title": "Optical Parametric Oscillations", "description": "Explores coherent light generation and coupling in microresonators and nonlinear cavities." },
+  "30035": { "title": "3D Scene Reconstruction", "description": "Presents methods for single-view and sparse-view 3D scene modeling and depth prediction." },
+  "30036": { "title": "Mathematics and Physics Unity", "description": "Explores philosophical connections between mathematics and physics in complex systems." },
+  "30037": { "title": "Human-Centric AI Explanation", "description": "Focuses on explainable AI, trust, and human-AI collaboration in decision-making." },
+  "30038": { "title": "ML Reproducibility and Interpretability", "description": "Addresses reproducibility, interpretability, and benchmarking in machine learning systems." },
+  "30039": { "title": "Sparse PCA and Matrix Completion", "description": "Studies statistical and computational bounds in sparse linear regression and matrix recovery." },
+  "30040": { "title": "Interpretable Time Series Forecasting", "description": "Develops interpretable models for forecasting with causal and spatiotemporal attention." },
+  "30041": { "title": "Fair Division of Resources", "description": "Presents mechanisms for fair and envy-free allocation of indivisible items." },
+  "30042": { "title": "Formal Verification and Proof", "description": "Advances verification of temporal logic and proof assistants using constraint solving." },
+  "30043": { "title": "Fake News Detection on Social Media", "description": "Analyzes and detects misinformation using social media data and fact-checking language." },
+  "30044": { "title": "Robot Motion and Control", "description": "Focuses on agile motion planning and control for aerial and deformable robotic systems." },
+  "30045": { "title": "LLM Code Generation Benchmarks", "description": "Evaluates large language models for code generation and software engineering tasks." },
+  "30046": { "title": "Multi-Agent Motion Planning", "description": "Enables safe, efficient coordination and path planning for multi-robot teams." },
+  "30047": { "title": "Image Segmentation and Harmonization", "description": "Proposes metrics and methods for image segmentation, texture decomposition, and feature detection." },
+  "30048": { "title": "Face Recognition Robustness", "description": "Improves face recognition accuracy and fairness across demographics and low-quality inputs." },
+  "30049": { "title": "Active Matter and Cell Motility", "description": "Models cell movement and self-organization in biological systems using energy minimization." },
+  "30050": { "title": "Quantum Molecular Bonding", "description": "Studies molecular properties and excited states using quantum simulation methods." },
+  "30051": { "title": "Turbulence and Flow Instability", "description": "Analyzes instability and transition mechanisms in fluid flows under various conditions." },
+  "30052": { "title": "Metamaterials and Optical Nonlocality", "description": "Engineers optical properties in nanostructured metamaterials for tunable wave control." },
+  "30053": { "title": "Speech Recognition and Synthesis", "description": "Advances self-supervised speech models and neural audio generation frameworks." },
+  "30054": { "title": "Error-Correcting Code Decoding", "description": "Studies list decoding, bounds, and efficient decoding of rank-metric and Reed-Solomon codes." },
+  "30055": { "title": "LLM Explanation and Artifactuality", "description": "Investigates veracity, verbosity, and artifact generation in large language models." },
+  "30056": { "title": "Medical Image Segmentation", "description": "Develops deep learning models for accurate and scalable medical image classification and segmentation." },
+  "30057": { "title": "Neutrino and Particle Detectors", "description": "Characterizes performance and response of particle detectors in high-rate environments." },
+  "30058": { "title": "Ultracold Atom Cooling", "description": "Explores laser cooling and manipulation of ultracold atoms and molecular states." },
+  "30059": { "title": "Graph Neural Networks", "description": "Advances graph learning through co-embedding, efficient training, and dataset taxonomy." },
+  "30060": { "title": "LLM Backdoor Attack Mitigation", "description": "Proposes defenses against backdoor attacks in large language models and generation tasks." },
+  "30061": { "title": "AI for Human-Centered Interaction", "description": "Designs intelligent companions and interfaces for inclusive, context-aware human-AI collaboration." }
+}
+      Successfully parsed 30/30 descriptions from response 0eb2baba-0fff-48bd-ac8e-ff3e31dfe925 on attempt 1.
+  Finished LLM batch iteration. Processed in iter: 62, Total Processed: 62, Iteration Failures: 0, Remaining: 0
+LLM description generation complete. Success: 62/62, Persistently Failed (default assigned): 0/62
+Generating description embeddings for 62 clusters (L1)...
+  Calling text embedding client for 62 combined descriptions (L1)...
+  Assigned 62 description embeddings (L1).
+Applying reductions to 'representation_vector' vectors for 62 clusters (L1)...
+  Applied reductions to 62 'representation_vector' vectors (L1).
+Applying reductions to 'description_embedding' vectors for 62 clusters (L1)...
+  Applied reductions to 62 'description_embedding' vectors (L1).
+Level 1 processing complete. 62 clusters created.
+
+--- Clustering Level 2 ---
+Level 2: Clustering 62 prev level REPRESENTATION VECTORS (space: text_embedding).
+    Performing initial KMeans (k=2) on input I (shape: (62, 384), space: text_embedding) for Level 2...
+    Initial KMeans for L2 complete. Centroids shape: (2, 384), Labels count: 62
+  Resampling not applied for Level 2 (use_resampling=False, rt=10, m=10, k=2).
+Creating 2 new parent clusters for Level 2 based on final assignments...
+Processing 2 new Level 2 clusters...
+Generating LLM descriptions for 2 clusters (Level 2)...
+  LLM Retry Policy: 2 retries, 1.0s base delay.
+  Starting LLM batch iteration. Batch size <= 2, 2 items remaining.
+Building LLM prompt a071e451-5917-41aa-b34c-7ea5434613b9 for 2 Clusters (Level 2)...
+  Built prompt a071e451-5917-41aa-b34c-7ea5434613b9 with 2 items, estimated tokens: 1123.
+{
+  "30062": {
+    "title": "LLM-Enhanced Vision & AI Explanation",
+    "description": "Explores LLMs in vision reasoning and explainable AI, with focus on human-centric interaction and privacy in federated settings."
+  },
+  "30063": {
+    "title": "Complex Systems & Network Dynamics",
+    "description": "Studies phase transitions, information dynamics, and network behaviors in complex systems, including IoT and active matter."
+  }
+}
+      Successfully parsed 2/2 descriptions from response a071e451-5917-41aa-b34c-7ea5434613b9 on attempt 1.
+  Finished LLM batch iteration. Processed in iter: 2, Total Processed: 2, Iteration Failures: 0, Remaining: 0
+LLM description generation complete. Success: 2/2, Persistently Failed (default assigned): 0/2
+Generating description embeddings for 2 clusters (L2)...
+  Calling text embedding client for 2 combined descriptions (L2)...
+  Assigned 2 description embeddings (L2).
+Applying reductions to 'representation_vector' vectors for 2 clusters (L2)...
+  Applied reductions to 2 'representation_vector' vectors (L2).
+Applying reductions to 'description_embedding' vectors for 2 clusters (L2)...
+  Applied reductions to 2 'description_embedding' vectors (L2).
+Level 2 processing complete. 2 clusters created.
+
+--- Clustering Level 3 ---
+Level 3: Clustering 2 prev level REPRESENTATION VECTORS (space: text_embedding).
+Determined k=1 for 2 items. Stopping hierarchy at Level 2.
+Saved prompt log to hercules_run/prompt_log_20260412_032830.json (and hercules_run/prompt_log_20260412_032830.txt)
+
+--- Hercules Clustering Run Finished ---
+Highest level achieved: 2
+Returning 2 top-level clusters.
+Saving Hercules model to ../../hercules_run/arx/direct.json...
+Model successfully saved to ../../hercules_run/arx/direct.json
+Generating L0 cluster membership DataFrame...
+Including L0 details: []
+Tracing ancestry for 30000 L0 items up to Level 2.
+Cluster membership DataFrame generated successfully.
+Generating assignments for level 1 (62 clusters)...
+Generated assignments for 30000/30000 L0 items at level 1.
+Level 62 — FM: 0.2354, Rand: 0.9367, ARI: 0.1726, AMI: 0.4993, DP: 0.2777, LCA_F1: 0.6205
+Generating assignments for level 2 (2 clusters)...
+Generated assignments for 30000/30000 L0 items at level 2.
+Level 2 — FM: 0.6825, Rand: 0.6243, ARI: 0.2458, AMI: 0.2632, DP: 0.9781, LCA_F1: 0.6633
+INFO: `image_embedding_client` not provided. HERCULES will use a DUMMY image embedding function if image data is processed in 'direct' mode.
+INFO: `image_captioning_client` not provided. HERCULES will use a DUMMY image captioning function if image data descriptions are generated.
+--- Starting Hercules Clustering Run: 20260412_033424 ---
+Hercules Version: 1.0.2
+Verbosity Level: 2
+Representation Mode: direct
+Automatic K Mode: Disabled (Using level_cluster_counts: [62, 2, 1])
+Reduction Methods: ['pca'] (2 components)
+Topic Seed: 'arxiv abstracts'
+Prompting includes immediate children (Strategy: random, Size: 3).
+Starting input data preparation...
+Processing list input (30000 items, first item type: str)
+Detected input type: text (list)
+Input data preparation complete.
+Input data type detected: text
+  Input items count: 30000
+Initializing 30000 Level 0 Cluster objects...
+Generating Level 0 titles and descriptions...
+  Mode: LLM-free L0 Text/Numeric/Image descriptions (using snippets/defaults).
+  Assigning initial L0 titles based on content extraction/type...
+  Generating LLM-free L0 descriptions for TEXT items (using snippets).
+Generating description embeddings for 30000 clusters (L0)...
+  Calling text embedding client for 30000 combined descriptions (L0)...
+  Training 'text_embedding' space reducers using L0 description embeddings.
+Training reducers for 'text_embedding' space (data shape: (30000, 384))...
+    PCA trained for text_embedding (input dim: 384, output dim: 2).
+  Assigned 30000 description embeddings (L0).
+Generating Level 0 representations for clustering...
+  Mode: Direct Representation (using scaled numerics or item embeddings for L0).
+    Generating TEXT embeddings for 30000 items...
+    Assigning direct L0 representation vectors (space: text_embedding, dim: 384)...
+Applying reductions to 'representation_vector' vectors for 30000 clusters (L0)...
+  Applied reductions to 30000 'representation_vector' vectors (L0).
+Applying reductions to 'description_embedding' vectors for 30000 clusters (L0)...
+  Applied reductions to 30000 'description_embedding' vectors (L0).
+Level 0 processing complete. 30000 items represented.
+Starting hierarchical loop with 30000 valid L0 clusters.
+Using fixed level cluster counts: [62, 2, 1]
+
+--- Clustering Level 1 ---
+Level 1: Clustering 30000 prev level REPRESENTATION VECTORS (space: text_embedding).
+    Performing initial KMeans (k=62) on input I (shape: (30000, 384), space: text_embedding) for Level 1...
+    Initial KMeans for L1 complete. Centroids shape: (62, 384), Labels count: 30000
+  Resampling not applied for Level 1 (use_resampling=False, rt=10, m=10, k=62).
+Creating 62 new parent clusters for Level 1 based on final assignments...
+Processing 62 new Level 1 clusters...
+Generating LLM descriptions for 62 clusters (Level 1)...
+  LLM Retry Policy: 2 retries, 1.0s base delay.
+  Starting LLM batch iteration. Batch size <= 32, 62 items remaining.
+Building LLM prompt 3634332e-cee4-4fd3-962c-4b412c806dfb for 32 Clusters (Level 1)...
+  Built prompt 3634332e-cee4-4fd3-962c-4b412c806dfb with 32 items, estimated tokens: 8859.
+{
+  "30000": { "title": "Mathematical Reasoning in LLMs", "description": "Explores chain-of-thought and collaborative reasoning in large language models for complex problem solving." },
+  "30001": { "title": "Network Optimization in Cloud", "description": "Focuses on service migration, autoscaling, and compute-offloading in distributed network environments." },
+  "30002": { "title": "Privacy in Federated Learning", "description": "Addresses privacy leakage, attacks, and unlearning in collaborative machine learning systems." },
+  "30003": { "title": "Urban Mobility from Data", "description": "Analyzes human movement patterns using crowdsensed and mobile phone data to understand city structures." },
+  "30004": { "title": "Retrieval-Augmented Generation", "description": "Improves language model performance through context-aware retrieval and answer summarization." },
+  "30005": { "title": "Knowledge Discovery in Graphs", "description": "Uses data-driven methods to extract and structure knowledge from scientific and semantic datasets." },
+  "30006": { "title": "Physics-Informed ML Models", "description": "Develops neural networks grounded in physical laws for material and fluid dynamics modeling." },
+  "30007": { "title": "Fluid-Structure Interaction", "description": "Presents isogeometric and immersed boundary methods for high-fidelity fluid-structure simulations." },
+  "30008": { "title": "Network Dynamics and Robustness", "description": "Studies diffusion, vital nodes, and robustness in complex networks with community structures." },
+  "30009": { "title": "Protein and Nanomaterial Electronics", "description": "Investigates electronic transport and device design in bioelectronics and 2D materials." },
+  "30010": { "title": "Query Complexity and Lower Bounds", "description": "Analyzes computational limits in randomized and quantum algorithms for string and constraint problems." },
+  "30011": { "title": "Robustness in Federated Learning", "description": "Enhances model resilience and calibration under non-IID data and adversarial conditions." },
+  "30012": { "title": "Bimanual Robotic Manipulation", "description": "Advances dexterous robot control through imitation learning and human-enhanced policies." },
+  "30013": { "title": "Multilingual Translation with LLMs", "description": "Improves translation quality via continual pre-training and prompt engineering in LLMs." },
+  "30014": { "title": "Resource Allocation in IoT Networks", "description": "Optimizes wireless resource sharing for IoT and UAV-assisted communication systems." },
+  "30015": { "title": "Vision Transformers in Detection", "description": "Presents self-supervised and hierarchical methods for real-time object detection and visual perception." },
+  "30016": { "title": "Plasma Turbulence and Dynamics", "description": "Studies plasma instabilities and spectral evolution in kinetic and turbulent regimes." },
+  "30017": { "title": "Secure Data Aggregation in IoT", "description": "Proposes secret sharing and blockchain-based methods for private and fair data reporting." },
+  "30018": { "title": "Scalable HPC Memory Architecture", "description": "Enables efficient LLM inference via hardware-software co-design and memory tiering." },
+  "30019": { "title": "Explainable Recommendation Systems", "description": "Fuses language models with collaborative filtering for scalable and interpretable recommendations." },
+  "30020": { "title": "Adversarial Bandit Learning", "description": "Develops robust online learning under stochastic and adversarial resource constraints." },
+  "30021": { "title": "Multimodal Vision-Language Models", "title": "Multimodal Understanding with Vision-LLMs", "description": "Advances image understanding through vision-language transformers and chart reasoning." },
+  "30022": { "title": "Image Generation with Generative Flows", "description": "Presents decoupled and adversarial methods for semantic image synthesis and translation." },
+  "30023": { "title": "Efficient Network Pruning", "description": "Introduces structured sparsification and variance-based methods for lightweight deep networks." },
+  "30024": { "title": "Inclusive Software Development", "description": "Examines diversity, cultural influence, and stakeholder dynamics in software ecosystems." },
+  "30025": { "title": "Ptychographic Imaging Techniques", "description": "Develops non-invasive, high-resolution imaging via coherent diffractive and ptychographic methods." },
+  "30026": { "title": "Action Recognition in Video", "description": "Improves action segmentation through temporal modeling and multi-task learning in videos." },
+  "30027": { "title": "Space Weather and Climate Modeling", "description": "Analyzes geomagnetic storms, energy transport, and solar influences on Earth's systems." },
+  "30028": { "title": "3D LiDAR Localization and Tracking", "description": "Enables robust 3D relocalization and multi-object tracking via sensor fusion and neural radiance fields." },
+  "30029": { "title": "Graph Partitioning and Optimization", "description": "Studies efficient graph decomposition under reachability and movement constraints." },
+  "30030": { "title": "Secure Massive MIMO Systems", "description": "Optimizes beamforming, interference, and security in massive MIMO cellular networks." },
+  "30031": { "title": "Cosmology and General Relativity", "description": "Explores dark energy, extra dimensions, and unified field theories in cosmological models." }
+}
+      Successfully parsed 32/32 descriptions from response 3634332e-cee4-4fd3-962c-4b412c806dfb on attempt 1.
+Building LLM prompt 72929f4d-3ce3-4bce-9b78-d3569a0451ee for 30 Clusters (Level 1)...
+  Built prompt 72929f4d-3ce3-4bce-9b78-d3569a0451ee with 30 items, estimated tokens: 8327.
+{
+  "30032": { "title": "Off-Policy Bias Mitigation in RL", "description": "Addresses off-policy bias in actor-critic methods using one-step Q-learning and latent trajectory optimization." },
+  "30033": { "title": "Laser Wakefield Acceleration", "description": "Studies electron acceleration in plasma using multi-pulse lasers and X-ray radiation generation." },
+  "30034": { "title": "Optical Parametric Oscillations", "description": "Explores coherent light generation and nonlinear coupling in microresonators and photonic circuits." },
+  "30035": { "title": "3D Scene Reconstruction", "description": "Presents methods for single-view and sparse-view 3D scene modeling using Gaussian radiance fields." },
+  "30036": { "title": "Mathematics and Physics Unity", "description": "Explores philosophical connections between mathematics and physics through cognitive and interpretive lenses." },
+  "30037": { "title": "Human-AI Collaboration", "description": "Investigates explainability, trust, and sociotechnical aspects of human-AI interaction and decision-making." },
+  "30038": { "title": "ML Reproducibility and Interpretability", "description": "Focuses on benchmarking, interpretability, and performance trade-offs in machine learning systems." },
+  "30039": { "title": "Sparse PCA and Matrix Completion", "description": "Studies statistical and computational bounds for sparse recovery and low-rank matrix estimation." },
+  "30040": { "title": "Interpretable Time Series Forecasting", "description": "Develops interpretable models for long-term forecasting with causal attention and probabilistic methods." },
+  "30041": { "title": "Fair Division of Resources", "description": "Addresses fair allocation of indivisible items with envy-freeness and strategic resource selection." },
+  "30042": { "title": "Formal Verification and Proof Assistants", "description": "Presents techniques for verification and reasoning in logic and coinductive type systems." },
+  "30043": { "title": "Fake News Detection on Social Media", "description": "Analyzes and detects misinformation using social media data and fact-checking language models." },
+  "30044": { "title": "Robot Motion and Control", "description": "Focuses on agile aerial motion, deformable object manipulation, and hexapod robot control." },
+  "30045": { "title": "LLM Code Generation Benchmarks", "description": "Evaluates large language models for code generation across functional and practical software tasks." },
+  "30046": { "title": "Multi-Agent Motion Planning", "description": "Enables safe, efficient, and robust coordination in multi-robot environments with path memory and planning." },
+  "30047": { "title": "Image Segmentation and Invariants", "description": "Proposes metrics and methods for evaluating image segmentation quality and feature invariance." },
+  "30048": { "title": "Face Recognition Robustness", "description": "Studies demographic fairness and robustness in face recognition using synthetic and low-quality data." },
+  "30049": { "title": "Active Matter and Cell Motility", "description": "Models collective behavior and transport in active particles and biological systems." },
+  "30050": { "title": "Quantum Molecular Bonding", "description": "Revisits molecular bonds and simulates response properties using quantum computing methods." },
+  "30051": { "title": "Turbulence and Flow Instability", "description": "Analyzes transient growth and instability in fluid flows such as Taylor-Couette and channel flows." },
+  "30052": { "title": "Metamaterials and Optical Nonlocality", "description": "Engineers optical properties in nanostructured metamaterials for tunable and reflectionless devices." },
+  "30053": { "title": "Speech Recognition and Synthesis", "description": "Advances self-supervised speech models and neural synthesis frameworks for voice processing." },
+  "30054": { "title": "Error-Correcting Code Decoding", "description": "Studies list decoding, bounds, and feedback-based decoding for rank-metric and Reed-Solomon codes." },
+  "30055": { "title": "LLM Explanation and Artifactuality", "description": "Examines veracity, verbosity, and artifact generation in large language model outputs." },
+  "30056": { "title": "Medical Image Segmentation", "description": "Proposes deep learning frameworks for thoracic disease classification and scalable medical imaging." },
+  "30057": { "title": "Neutrino and Particle Detectors", "description": "Characterizes detector performance in high-rate environments for neutrino and ionization experiments." },
+  "30058": { "title": "Ultracold Atom Cooling", "description": "Explores laser cooling and coherence in molecular photoionization and atomic scattering." },
+  "30059": { "title": "Graph Neural Networks", "description": "Advances co-embedding, training efficiency, and taxonomy for graph learning and representation." },
+  "30060": { "title": "LLM Backdoor Attack Mitigation", "description": "Develops defenses against backdoor attacks in large language model training and deployment." },
+  "30061": { "title": "AI for Human Accessibility", "description": "Presents AI companions and interfaces to enhance context awareness and inclusion in human-computer interaction." }
+}
+      Successfully parsed 30/30 descriptions from response 72929f4d-3ce3-4bce-9b78-d3569a0451ee on attempt 1.
+  Finished LLM batch iteration. Processed in iter: 62, Total Processed: 62, Iteration Failures: 0, Remaining: 0
+LLM description generation complete. Success: 62/62, Persistently Failed (default assigned): 0/62
+Generating description embeddings for 62 clusters (L1)...
+  Calling text embedding client for 62 combined descriptions (L1)...
+  Assigned 62 description embeddings (L1).
+Applying reductions to 'representation_vector' vectors for 62 clusters (L1)...
+  Applied reductions to 62 'representation_vector' vectors (L1).
+Applying reductions to 'description_embedding' vectors for 62 clusters (L1)...
+  Applied reductions to 62 'description_embedding' vectors (L1).
+Level 1 processing complete. 62 clusters created.
+
+--- Clustering Level 2 ---
+Level 2: Clustering 62 prev level REPRESENTATION VECTORS (space: text_embedding).
+    Performing initial KMeans (k=2) on input I (shape: (62, 384), space: text_embedding) for Level 2...
+    Initial KMeans for L2 complete. Centroids shape: (2, 384), Labels count: 62
+  Resampling not applied for Level 2 (use_resampling=False, rt=10, m=10, k=2).
+Creating 2 new parent clusters for Level 2 based on final assignments...
+Processing 2 new Level 2 clusters...
+Generating LLM descriptions for 2 clusters (Level 2)...
+  LLM Retry Policy: 2 retries, 1.0s base delay.
+  Starting LLM batch iteration. Batch size <= 2, 2 items remaining.
+Building LLM prompt 0b10c542-c507-4b17-ae86-1e9f2592ab8f for 2 Clusters (Level 2)...
+  Built prompt 0b10c542-c507-4b17-ae86-1e9f2592ab8f with 2 items, estimated tokens: 1123.
+{
+  "30062": {
+    "title": "Vision-LLM Collaboration",
+    "description": "Explores LLMs enhancing vision tasks like classification and event reasoning through language-guided models and human-AI interaction."
+  },
+  "30063": {
+    "title": "Complex Network Dynamics",
+    "description": "Focuses on phase transitions, information dynamics, and robustness in complex systems, including IoT and active matter."
+  }
+}
+      Successfully parsed 2/2 descriptions from response 0b10c542-c507-4b17-ae86-1e9f2592ab8f on attempt 1.
+  Finished LLM batch iteration. Processed in iter: 2, Total Processed: 2, Iteration Failures: 0, Remaining: 0
+LLM description generation complete. Success: 2/2, Persistently Failed (default assigned): 0/2
+Generating description embeddings for 2 clusters (L2)...
+  Calling text embedding client for 2 combined descriptions (L2)...
+  Assigned 2 description embeddings (L2).
+Applying reductions to 'representation_vector' vectors for 2 clusters (L2)...
+  Applied reductions to 2 'representation_vector' vectors (L2).
+Applying reductions to 'description_embedding' vectors for 2 clusters (L2)...
+  Applied reductions to 2 'description_embedding' vectors (L2).
+Level 2 processing complete. 2 clusters created.
+
+--- Clustering Level 3 ---
+Level 3: Clustering 2 prev level REPRESENTATION VECTORS (space: text_embedding).
+Determined k=1 for 2 items. Stopping hierarchy at Level 2.
+Saved prompt log to hercules_run/prompt_log_20260412_033424.json (and hercules_run/prompt_log_20260412_033424.txt)
+
+--- Hercules Clustering Run Finished ---
+Highest level achieved: 2
+Returning 2 top-level clusters.
+Saving Hercules model to ../../hercules_run/arx/direct.json...
+Model successfully saved to ../../hercules_run/arx/direct.json
+Generating L0 cluster membership DataFrame...
+Including L0 details: []
+Tracing ancestry for 30000 L0 items up to Level 2.
+Cluster membership DataFrame generated successfully.
+Generating assignments for level 1 (62 clusters)...
+Generated assignments for 30000/30000 L0 items at level 1.
+Level 62 — FM: 0.2354, Rand: 0.9367, ARI: 0.1726, AMI: 0.4993, DP: 0.2777, LCA_F1: 0.6205
+Generating assignments for level 2 (2 clusters)...
+Generated assignments for 30000/30000 L0 items at level 2.
+Level 2 — FM: 0.6825, Rand: 0.6243, ARI: 0.2458, AMI: 0.2632, DP: 0.9781, LCA_F1: 0.6633
+
+Results saved to: results/arxiv_herc_clustering_scores_direct.csv
