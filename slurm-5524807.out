@@ -1,0 +1,873 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:02<00:05,  2.80s/it]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:05<00:02,  2.81s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:05<00:00,  1.89s/it]
+{'model.embed_tokens': 0, 'lm_head': 0, 'model.layers.0': 0, 'model.layers.1': 0, 'model.layers.2': 0, 'model.layers.3': 0, 'model.layers.4': 0, 'model.layers.5': 0, 'model.layers.6': 0, 'model.layers.7': 0, 'model.layers.8': 0, 'model.layers.9': 0, 'model.layers.10': 0, 'model.layers.11': 0, 'model.layers.12': 0, 'model.layers.13': 0, 'model.layers.14': 0, 'model.layers.15': 0, 'model.layers.16': 1, 'model.layers.17': 1, 'model.layers.18': 1, 'model.layers.19': 1, 'model.layers.20': 1, 'model.layers.21': 1, 'model.layers.22': 1, 'model.layers.23': 1, 'model.layers.24': 1, 'model.layers.25': 1, 'model.layers.26': 1, 'model.layers.27': 1, 'model.layers.28': 1, 'model.layers.29': 1, 'model.layers.30': 1, 'model.layers.31': 1, 'model.layers.32': 1, 'model.layers.33': 1, 'model.layers.34': 1, 'model.layers.35': 1, 'model.norm': 1, 'model.rotary_emb': 1}
+
+================================================================================
+Running pipeline for dataset: WOS
+================================================================================
+
+Depth: 2
+Building cluster levels by counting unique categories at each level...
+
+Level 1 (category_1): 143 unique categories
+Level 0 (category_0): 7 unique categories
+
+Final cluster_levels (from deepest to shallowest): [143, 7]
+
+Loaded ground truth tree from intermediate_data/ground_truth_trees/wos_tree.pkl
+INFO: `image_embedding_client` not provided. HERCULES will use a DUMMY image embedding function if image data is processed in 'direct' mode.
+INFO: `image_captioning_client` not provided. HERCULES will use a DUMMY image captioning function if image data descriptions are generated.
+--- Starting Hercules Clustering Run: 20260412_030144 ---
+Hercules Version: 1.0.2
+Verbosity Level: 2
+Representation Mode: direct
+Automatic K Mode: Disabled (Using level_cluster_counts: [143, 7, 1])
+Reduction Methods: ['pca'] (2 components)
+Topic Seed: 'web of science articles'
+Prompting includes immediate children (Strategy: random, Size: 3).
+Starting input data preparation...
+Processing list input (46985 items, first item type: str)
+Detected input type: text (list)
+Input data preparation complete.
+Input data type detected: text
+  Input items count: 46985
+Initializing 46985 Level 0 Cluster objects...
+Generating Level 0 titles and descriptions...
+  Mode: LLM-free L0 Text/Numeric/Image descriptions (using snippets/defaults).
+  Assigning initial L0 titles based on content extraction/type...
+  Generating LLM-free L0 descriptions for TEXT items (using snippets).
+Generating description embeddings for 46985 clusters (L0)...
+  Calling text embedding client for 46985 combined descriptions (L0)...
+  Training 'text_embedding' space reducers using L0 description embeddings.
+Training reducers for 'text_embedding' space (data shape: (46985, 384))...
+    PCA trained for text_embedding (input dim: 384, output dim: 2).
+  Assigned 46985 description embeddings (L0).
+Generating Level 0 representations for clustering...
+  Mode: Direct Representation (using scaled numerics or item embeddings for L0).
+    Generating TEXT embeddings for 46985 items...
+    Assigning direct L0 representation vectors (space: text_embedding, dim: 384)...
+Applying reductions to 'representation_vector' vectors for 46985 clusters (L0)...
+  Applied reductions to 46985 'representation_vector' vectors (L0).
+Applying reductions to 'description_embedding' vectors for 46985 clusters (L0)...
+  Applied reductions to 46985 'description_embedding' vectors (L0).
+Level 0 processing complete. 46985 items represented.
+Starting hierarchical loop with 46985 valid L0 clusters.
+Using fixed level cluster counts: [143, 7, 1]
+
+--- Clustering Level 1 ---
+Level 1: Clustering 46985 prev level REPRESENTATION VECTORS (space: text_embedding).
+    Performing initial KMeans (k=143) on input I (shape: (46985, 384), space: text_embedding) for Level 1...
+    Initial KMeans for L1 complete. Centroids shape: (143, 384), Labels count: 46985
+  Resampling not applied for Level 1 (use_resampling=False, rt=10, m=10, k=143).
+Creating 143 new parent clusters for Level 1 based on final assignments...
+Processing 143 new Level 1 clusters...
+Generating LLM descriptions for 143 clusters (Level 1)...
+  LLM Retry Policy: 2 retries, 1.0s base delay.
+  Starting LLM batch iteration. Batch size <= 64, 143 items remaining.
+Building LLM prompt 69eca961-ca4e-47cf-b442-dea3f46c1659 for 64 Clusters (Level 1)...
+  Built prompt 69eca961-ca4e-47cf-b442-dea3f46c1659 with 64 items, estimated tokens: 15854.
+      LLM call failed on attempt 1: CUDA out of memory. Tried to allocate 29.09 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.60 GiB is free. Including non-PyTorch memory, this process has 7.13 GiB memory in use. Of the allocated memory 6.47 GiB is allocated by PyTorch, and 306.29 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 1.0s before next retry...
+      Attempt 2/3 for prompt 69eca961-ca4e-47cf-b442-dea3f46c1659 (64 items)...
+      LLM call failed on attempt 2: CUDA out of memory. Tried to allocate 29.09 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.60 GiB is free. Including non-PyTorch memory, this process has 7.13 GiB memory in use. Of the allocated memory 6.47 GiB is allocated by PyTorch, and 306.29 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 2.0s before next retry...
+      Attempt 3/3 for prompt 69eca961-ca4e-47cf-b442-dea3f46c1659 (64 items)...
+      LLM call failed on attempt 3: CUDA out of memory. Tried to allocate 29.09 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.60 GiB is free. Including non-PyTorch memory, this process has 7.13 GiB memory in use. Of the allocated memory 6.47 GiB is allocated by PyTorch, and 306.29 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Chunk failed after 3 attempts.
+    Marking 64 items from prompt 69eca961-ca4e-47cf-b442-dea3f46c1659 as failed for this iteration after retries.
+Building LLM prompt 0ba7c919-9a14-43b7-b0b3-401d09ca0f96 for 64 Clusters (Level 1)...
+  Built prompt 0ba7c919-9a14-43b7-b0b3-401d09ca0f96 with 64 items, estimated tokens: 15877.
+      LLM call failed on attempt 1: CUDA out of memory. Tried to allocate 27.20 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.61 GiB is free. Including non-PyTorch memory, this process has 7.12 GiB memory in use. Of the allocated memory 6.35 GiB is allocated by PyTorch, and 405.69 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 1.0s before next retry...
+      Attempt 2/3 for prompt 0ba7c919-9a14-43b7-b0b3-401d09ca0f96 (64 items)...
+      LLM call failed on attempt 2: CUDA out of memory. Tried to allocate 27.20 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.61 GiB is free. Including non-PyTorch memory, this process has 7.12 GiB memory in use. Of the allocated memory 6.35 GiB is allocated by PyTorch, and 405.69 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 2.0s before next retry...
+      Attempt 3/3 for prompt 0ba7c919-9a14-43b7-b0b3-401d09ca0f96 (64 items)...
+      LLM call failed on attempt 3: CUDA out of memory. Tried to allocate 27.20 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.61 GiB is free. Including non-PyTorch memory, this process has 7.12 GiB memory in use. Of the allocated memory 6.35 GiB is allocated by PyTorch, and 405.69 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Chunk failed after 3 attempts.
+    Marking 64 items from prompt 0ba7c919-9a14-43b7-b0b3-401d09ca0f96 as failed for this iteration after retries.
+Building LLM prompt f7336c1a-7d20-4ce7-9562-14586e799627 for 15 Clusters (Level 1)...
+  Built prompt f7336c1a-7d20-4ce7-9562-14586e799627 with 15 items, estimated tokens: 3775.
+{
+  "47113": {
+    "title": "Interprofessional Care in Health",
+    "description": "Focuses on team-based care, simulation, and patient-centered practices in medical education and infection control, supported by web of science literature."
+  },
+  "47114": {
+    "title": "Ankylosing Spondylitis Research",
+    "description": "Examines disease progression, treatment, and pathology of ankylosing spondylitis and axial spondyloarthritis in clinical and epidemiological studies."
+  },
+  "47115": {
+    "title": "Social Media and Digital Behavior",
+    "description": "Explores online interactions, addiction, and social media use among older adults and youth, with emphasis on psychological effects and digital divide."
+  },
+  "47116": {
+    "title": "Schizophrenia Psychopathology",
+    "description": "Investigates cognitive deficits, delusions, and decision-making in schizophrenia through psychopathological and neurocognitive research."
+  },
+  "47117": {
+    "title": "Stress and Mental Health",
+    "description": "Addresses stress, coping, and mental health promotion in workplaces and adolescents, with attention to psychological and physiological mechanisms."
+  },
+  "47118": {
+    "title": "Circadian Rhythms and Mood",
+    "description": "Studies the relationship between light exposure, melatonin, and mood disorders such as depression and seasonal affective disorder."
+  },
+  "47119": {
+    "title": "Bone Biology and Disease",
+    "description": "Focuses on osteoporosis, bone cell signaling, and tissue regeneration, with emphasis on animal models and therapeutic agents."
+  },
+  "47120": {
+    "title": "Borderline Personality Disorder",
+    "description": "Explores etiology, comorbidity, and treatment of BPD, including emotional dysregulation and psychosocial interventions."
+  },
+  "47121": {
+    "title": "Medicare Health Policy",
+    "description": "Analyzes quality of care, cost variation, and policy impacts on Medicare beneficiaries and healthcare access."
+  },
+  "47122": {
+    "title": "Media Violence and Aggression",
+    "description": "Examines links between media violence, video games, and aggressive behavior, drawing on behavioral and psychological research."
+  },
+  "47123": {
+    "title": "Psychobiography and Identity",
+    "description": "Explores intersections of art, culture, race, and subjectivity through psychobiographical and philosophical lenses."
+  },
+  "47124": {
+    "title": "Dementia Caregiving",
+    "description": "Focuses on caregiver coping, quality of life, and psychosocial interventions for elderly patients and informal caregivers."
+  },
+  "47125": {
+    "title": "MicroRNA in Cancer",
+    "description": "Investigates miRNA biomarkers and regulatory roles in colorectal and glioma cancers, with emphasis on molecular mechanisms."
+  },
+  "47126": {
+    "title": "Psoriatic Arthritis and Inflammation",
+    "description": "Studies the epidemiology, cardiovascular risks, and treatment of psoriatic arthritis and its comorbidities."
+  },
+  "47127": {
+    "title": "Cancer Patient Outcomes",
+    "description": "Analyzes prehabilitation, nutrition, exercise, and patient-reported outcomes in cancer treatment and survivorship."
+  }
+}
+      Successfully parsed 15/15 descriptions from response f7336c1a-7d20-4ce7-9562-14586e799627 on attempt 1.
+  Finished LLM batch iteration. Processed in iter: 15, Total Processed: 15, Iteration Failures: 128, Remaining: 128
+  Starting LLM batch iteration. Batch size <= 64, 128 items remaining.
+Building LLM prompt 8756f6c3-d74b-4949-b374-7c4cb928701e for 64 Clusters (Level 1)...
+  Built prompt 8756f6c3-d74b-4949-b374-7c4cb928701e with 64 items, estimated tokens: 15854.
+      LLM call failed on attempt 1: CUDA out of memory. Tried to allocate 29.09 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.61 GiB is free. Including non-PyTorch memory, this process has 7.12 GiB memory in use. Of the allocated memory 6.47 GiB is allocated by PyTorch, and 290.29 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 1.0s before next retry...
+      Attempt 2/3 for prompt 8756f6c3-d74b-4949-b374-7c4cb928701e (64 items)...
+      LLM call failed on attempt 2: CUDA out of memory. Tried to allocate 29.09 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.61 GiB is free. Including non-PyTorch memory, this process has 7.12 GiB memory in use. Of the allocated memory 6.47 GiB is allocated by PyTorch, and 290.29 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 2.0s before next retry...
+      Attempt 3/3 for prompt 8756f6c3-d74b-4949-b374-7c4cb928701e (64 items)...
+      LLM call failed on attempt 3: CUDA out of memory. Tried to allocate 29.09 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.61 GiB is free. Including non-PyTorch memory, this process has 7.12 GiB memory in use. Of the allocated memory 6.47 GiB is allocated by PyTorch, and 290.29 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Chunk failed after 3 attempts.
+    Marking 64 items from prompt 8756f6c3-d74b-4949-b374-7c4cb928701e as failed for this iteration after retries.
+Building LLM prompt 0a89ab89-1846-4db9-8697-abe74f135a2c for 64 Clusters (Level 1)...
+  Built prompt 0a89ab89-1846-4db9-8697-abe74f135a2c with 64 items, estimated tokens: 15877.
+      LLM call failed on attempt 1: CUDA out of memory. Tried to allocate 27.20 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.61 GiB is free. Including non-PyTorch memory, this process has 7.12 GiB memory in use. Of the allocated memory 6.35 GiB is allocated by PyTorch, and 405.69 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 1.0s before next retry...
+      Attempt 2/3 for prompt 0a89ab89-1846-4db9-8697-abe74f135a2c (64 items)...
+      LLM call failed on attempt 2: CUDA out of memory. Tried to allocate 27.20 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.61 GiB is free. Including non-PyTorch memory, this process has 7.12 GiB memory in use. Of the allocated memory 6.35 GiB is allocated by PyTorch, and 405.69 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 2.0s before next retry...
+      Attempt 3/3 for prompt 0a89ab89-1846-4db9-8697-abe74f135a2c (64 items)...
+      LLM call failed on attempt 3: CUDA out of memory. Tried to allocate 27.20 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.61 GiB is free. Including non-PyTorch memory, this process has 7.12 GiB memory in use. Of the allocated memory 6.35 GiB is allocated by PyTorch, and 405.69 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Chunk failed after 3 attempts.
+    Marking 64 items from prompt 0a89ab89-1846-4db9-8697-abe74f135a2c as failed for this iteration after retries.
+  Finished LLM batch iteration. Processed in iter: 0, Total Processed: 15, Iteration Failures: 128, Remaining: 128
+  No items successfully processed in this iteration (batch size 64). Reducing batch size.
+  Reducing batch size from 64 to 32.
+  Starting LLM batch iteration. Batch size <= 32, 128 items remaining.
+Building LLM prompt b1ef9b9c-64a9-4d6d-8e06-0a9b9411ffd9 for 32 Clusters (Level 1)...
+  Built prompt b1ef9b9c-64a9-4d6d-8e06-0a9b9411ffd9 with 32 items, estimated tokens: 8053.
+{
+  "46985": { "title": "Soliton Equations and Transformations", "description": "Focuses on nonlinear Schrödinger equations and soliton solutions using methods like Hirota and Backlund transformations." },
+  "46986": { "title": "Alzheimer's Disease Biomarkers", "description": "Examines neuroinflammation, amyloid, tau, and imaging biomarkers in Alzheimer's disease progression." },
+  "46987": { "title": "Photovoltaic and Thermal Systems", "description": "Studies solar energy systems, hybrid PV-thermal designs, and thermodynamic efficiency in energy conversion." },
+  "46988": { "title": "Permanent Magnet Motor Design", "description": "Involves finite element analysis and electromagnetic modeling of direct-drive electric motors." },
+  "46989": { "title": "Parkinson's Disease Neurology", "description": "Explores neuroimaging, cognitive functions, and movement disorders in Parkinson's disease." },
+  "46990": { "title": "Machine Learning and Prediction", "description": "Applies classification, regression, and data mining techniques for predictive modeling." },
+  "46991": { "title": "Neuroimaging and Connectivity", "description": "Analyzes brain structure, function, and connectivity using fMRI, EEG, and graph theory." },
+  "46992": { "title": "Wireless Sensor Network Optimization", "description": "Focuses on energy efficiency, routing, and network optimization in IoT-based sensor systems." },
+  "46993": { "title": "Fluid Mechanics and Multiphase Flow", "description": "Studies fluid dynamics, turbulence, and multiphase systems using CFD and modeling techniques." },
+  "46994": { "title": "Perinatal Programming and Development", "description": "Investigates prenatal stress, maternal care, and early-life programming effects on neurodevelopment." },
+  "46995": { "title": "Sports Injury Epidemiology", "description": "Examines injury types, prevention, and incidence in various athletic disciplines." },
+  "46996": { "title": "Anticoagulant Therapy and Bleeding", "description": "Analyzes risks, bleeding, and thrombosis in anticoagulant use for atrial fibrillation and CKD." },
+  "46997": { "title": "Systems Biology and Metabolism", "description": "Integrates genomics, proteomics, and metabolic modeling for cancer and drug discovery." },
+  "46998": { "title": "Multiple Sclerosis and Autoimmunity", "description": "Studies demyelination, immune tolerance, and genetic factors in MS and related disorders." },
+  "46999": { "title": "Remote Sensing and Hydrological Modeling", "description": "Uses GIS and remote sensing for soil salinity, change detection, and watershed modeling." },
+  "47000": { "title": "Human Metabolism and P450 Enzymes", "description": "Explores cytochrome P450 metabolism of pesticides and environmental chemicals." },
+  "47001": { "title": "Enzyme Structure and Function", "description": "Studies enzyme dynamics, active sites, and structural biology in biocatalysis and biotechnology." },
+  "47002": { "title": "Polyphenol Antioxidants and Metabolism", "description": "Analyzes bioavailability, metabolism, and neuroprotective effects of polyphenols and antioxidants." },
+  "47003": { "title": "Structural Materials and Strength", "description": "Focuses on mechanical properties, fatigue, and failure analysis of structural materials." },
+  "47004": { "title": "Joint and Orthopedic Rehabilitation", "description": "Addresses joint injuries, osteoarthritis, and physical rehabilitation strategies." },
+  "47005": { "title": "3D Image Processing and Reconstruction", "description": "Applies image processing and stereo techniques for 3D shape and depth measurement." },
+  "47006": { "title": "DC-DC Converter Control Systems", "description": "Studies digital control, PWM, and transient response in power conversion systems." },
+  "47007": { "title": "Wastewater Treatment and Microbial Fuel Cells", "description": "Explores bioremediation, energy recovery, and contaminant removal in wastewater systems." },
+  "47008": { "title": "Neurobiology of Addiction", "description": "Investigates dopamine, stress, and neural circuits in drug addiction and reward pathways." },
+  "47009": { "title": "Natural Product and Cancer Inhibitors", "description": "Studies bioactive compounds and their mechanisms in cancer inhibition and neuroprotection." },
+  "47010": { "title": "Gender Roles and Social Attitudes", "description": "Analyzes gender identity, roles, and societal double standards in interpersonal and cultural contexts." },
+  "47011": { "title": "Hereditary Angioedema Management", "description": "Focuses on C1 inhibitor deficiency, diagnosis, and treatment strategies for hereditary angioedema." },
+  "47012": { "title": "Conservation Genetics and Population Structure", "description": "Uses molecular markers to study genetic diversity, phylogeny, and conservation in wildlife populations." },
+  "47013": { "title": "Ecological Immunology and Disease", "description": "Examines host-parasite interactions, immunity, and disease ecology in wildlife and insects." },
+  "47014": { "title": "Neuronal Exocytosis and Signaling", "description": "Studies regulated secretion, cytoskeleton, and signaling in enteric and neuronal cells." },
+  "47015": { "title": "Plant Hydraulics and Drought Response", "description": "Analyzes plant water use, transpiration, and functional traits under drought stress." },
+  "47016": { "title": "Green Building Design and Sustainability", "description": "Focuses on sustainable design, environmental impact, and certification in green building practices." }
+}
+      Successfully parsed 32/32 descriptions from response b1ef9b9c-64a9-4d6d-8e06-0a9b9411ffd9 on attempt 1.
+Building LLM prompt 205061ac-790d-4219-9b12-b1228c171e6b for 32 Clusters (Level 1)...
+  Built prompt 205061ac-790d-4219-9b12-b1228c171e6b with 32 items, estimated tokens: 8095.
+{
+  "47017": { "title": "Water Pollution & Contaminants", "description": "Focuses on water quality, pollutants, and environmental contamination in rivers, groundwater, and marine systems." },
+  "47018": { "title": "Testosterone & Hormonal Health", "description": "Explores testosterone levels, androgen deficiency, and their impacts on aging, cardiovascular health, and sexual function." },
+  "47019": { "title": "Insulin & Metabolic Syndrome", "description": "Examines insulin regulation, hyperglycemia, and metabolic disorders linked to obesity and diabetes." },
+  "47020": { "title": "Hydraulics & River Engineering", "description": "Covers fluid dynamics, mathematical modeling, and engineering applications in river systems." },
+  "47021": { "title": "Parenting & Child Development", "description": "Analyzes parenting behaviors, child interaction, and early childhood development and psychopathology." },
+  "47022": { "title": "RNA & Molecular Biology", "description": "Involves RNA sequencing, gene expression, mutagenesis, and epigenetic analysis in molecular studies." },
+  "47023": { "title": "Thermodynamics & Reaction Kinetics", "description": "Studies thermodynamic and kinetic processes in chemistry, including computational and physical organic methods." },
+  "47024": { "title": "Black Hole & Cosmic Physics", "description": "Investigates black hole thermodynamics, gravitational waves, and relativistic astrophysical processes." },
+  "47025": { "title": "Advanced Manufacturing & CAD", "description": "Covers computer-aided design, flexible manufacturing, and engineering training in modern production systems." },
+  "47026": { "title": "Graphene & Nanomaterials", "description": "Focuses on graphene, nanotubes, and nanocomposites in electronic and material science applications." },
+  "47027": { "title": "Cancer Biology & Immunotherapy", "description": "Explores tumor mechanisms, metastasis, and immune-based cancer therapies and signaling pathways." },
+  "47028": { "title": "Finite Element Analysis in Engineering", "description": "Applies FEM and structural modeling to analyze material behavior and mechanical deformation in engineering systems." },
+  "47029": { "title": "Image Classification & Computer Vision", "description": "Addresses image processing, feature extraction, and object recognition in machine vision and pattern analysis." },
+  "47030": { "title": "3D Visualization & VR/AR", "description": "Involves computer graphics, augmented reality, and interactive 3D visualization systems." },
+  "47031": { "title": "Stem Cells & Tissue Engineering", "description": "Studies stem cell differentiation, tissue repair, and regenerative medicine applications." },
+  "47032": { "title": "Menopause & Hormonal Health", "description": "Examines menopausal symptoms, hormone replacement, and their impact on women's health and aging." },
+  "47033": { "title": "Wireless Sensor Network Security", "description": "Focuses on cryptographic protocols, authentication, and privacy in wireless sensor networks." },
+  "47034": { "title": "Emergency Contraception & Family Planning", "description": "Addresses emergency contraception methods, mechanisms, and public health aspects of reproductive choices." },
+  "47035": { "title": "Child Health & Socioeconomic Disparities", "description": "Analyzes health access, disparities, and social factors affecting children's well-being." },
+  "47036": { "title": "Symbolic Computation & Algebraic Geometry", "description": "Involves symbolic algorithms, real algebraic geometry, and computational methods in mathematics." },
+  "47037": { "title": "Metamaterials & Stealth Technology", "description": "Studies electromagnetic wave absorption and radar cross-section reduction using metamaterials." },
+  "47038": { "title": "Renewable Energy & Smart Grids", "description": "Examines wind power integration, power quality, and optimization in renewable energy systems." },
+  "47039": { "title": "Low-Power CMOS Analog Design", "description": "Focuses on operational amplifiers and low-voltage analog circuits in power-efficient electronics." },
+  "47040": { "title": "Analog Signal Processing", "description": "Covers all-pass filters, current-mode circuits, and signal processing in low-power analog systems." },
+  "47041": { "title": "Phototherapy for Dermatoses", "description": "Studies UV-based treatments for skin conditions like psoriasis, eczema, and atopic dermatitis." },
+  "47042": { "title": "Eating Disorders & Behavior", "description": "Explores anorexia, bulimia, and related psychological and behavioral factors in adolescents." },
+  "47043": { "title": "Myeloproliferative Neoplasms", "description": "Focuses on blood disorders like polycythemia and thrombocytosis with JAK2 and CALR mutations." },
+  "47044": { "title": "Lymphoma & Immune Classification", "description": "Examines lymphoma subtypes, cell origins, and immune-related diagnostics and treatments." },
+  "47045": { "title": "Autoimmunity & Immune Response", "description": "Investigates autoimmune diseases, T/B cell function, and immune regulation in conditions like SLE and melanoma." },
+  "47046": { "title": "Suspension Bridge Stability", "description": "Analyzes structural dynamics, flutter, and stability in long-span suspension bridges." },
+  "47047": { "title": "Migraine & Headache Pathophysiology", "description": "Studies migraine mechanisms, central sensitization, and associated anxiety and pain pathways." },
+  "47048": { "title": "Invasive Fungal Infections", "description": "Focuses on diagnosis, treatment, and management of fungal infections in immunocompromised patients." }
+}
+      Successfully parsed 32/32 descriptions from response 205061ac-790d-4219-9b12-b1228c171e6b on attempt 1.
+Building LLM prompt a1af63a9-c7d4-4942-a4d1-9cffa3408870 for 32 Clusters (Level 1)...
+  Built prompt a1af63a9-c7d4-4942-a4d1-9cffa3408870 with 32 items, estimated tokens: 8112.
+{
+  "47049": { "title": "Parallel Computing Systems", "description": "Focuses on parallel algorithms, architectures, and energy-efficient computing in high-performance systems." },
+  "47050": { "title": "Atrial Fibrillation Management", "description": "Covers diagnosis, ablation, and treatment of atrial fibrillation and related cardiac conditions." },
+  "47051": { "title": "Overactive Bladder Disorders", "description": "Addresses urinary incontinence, detrusor dysfunction, and psychosocial aspects of lower urinary tract issues." },
+  "47052": { "title": "Geosynthetic Soil Reinforcement", "description": "Examines geosynthetics, soil stabilization, and structural performance in civil engineering applications." },
+  "47053": { "title": "Chronic Kidney Disease Pathology", "description": "Explores kidney disease mechanisms, proteinuria, and links to diabetes and cardiovascular disease." },
+  "47054": { "title": "Thyroid Disorders in Pregnancy", "description": "Analyzes hyper- and hypothyroidism, autoimmune diseases, and treatment in reproductive contexts." },
+  "47055": { "title": "Mental Health Interventions", "description": "Focuses on psychotherapy, cognitive behavior therapy, and treatment of anxiety and depression." },
+  "47056": { "title": "Idiopathic Pulmonary Fibrosis", "description": "Studies pathogenesis, symptoms, imaging, and management of interstitial lung diseases." },
+  "47057": { "title": "Neurosurgical Techniques", "description": "Covers minimally invasive procedures, surgical guides, and facial pain interventions." },
+  "47058": { "title": "Thermoelectric Heat Recovery", "description": "Investigates heat exchangers, thermoelectric generators, and waste heat conversion technologies." },
+  "47059": { "title": "Asthma Development and Biomarkers", "description": "Examines environmental triggers, microbiome, and biologic therapies in childhood asthma." },
+  "47060": { "title": "Robotic Control Systems", "description": "Focuses on robotic actuators, sensors, and adaptive control in dexterous and medical robotics." },
+  "47061": { "title": "Plant Genetic Transformation", "description": "Studies transgenic plants, gene expression, and abiotic stress responses in agriculture." },
+  "47062": { "title": "Big Data and Database Systems", "description": "Explores data management, NoSQL, relational, and semantic web technologies in large-scale systems." },
+  "47063": { "title": "Electric Vehicle Energy Systems", "description": "Analyzes energy efficiency, drivetrains, and power management in EV and hybrid vehicles." },
+  "47064": { "title": "Smart Sensor Systems", "description": "Focuses on piezoelectric, biomedical, and wireless sensors for structural and health monitoring." },
+  "47065": { "title": "Nanoparticle-Based Drug Delivery", "description": "Examines nanocarriers, hydrogels, and nanomaterials for targeted biologic therapies." },
+  "47066": { "title": "Bipolar Disorder and Comorbidity", "description": "Addresses bipolar spectrum disorders, depression, and substance use in clinical settings." },
+  "47067": { "title": "Adolescent Mental Health", "description": "Studies aggression, self-esteem, and risk behaviors in youth development and prevention." },
+  "47068": { "title": "Rheumatoid Arthritis Pathogenesis", "description": "Explores inflammation, biologics, and joint disease mechanisms in autoimmune arthritis." },
+  "47069": { "title": "Inflammatory Bowel Disease Nutrition", "description": "Focuses on diet, microbiota, and enteral nutrition in Crohn's and ulcerative colitis." },
+  "47070": { "title": "Antisocial Personality Disorder", "description": "Examines psychopathy, violence, and neurobiological links in antisocial behavior." },
+  "47071": { "title": "Empathy and Prosocial Behavior", "description": "Studies positive emotions, empathy, and moral reasoning in social development." },
+  "47072": { "title": "Mathematical Modeling of Circuits", "description": "Applies differential equations and nonlinear analysis to electrical circuit dynamics." },
+  "47073": { "title": "Intelligent Tutoring and Programming", "description": "Focuses on coding education, formative assessment, and computer-based learning environments." },
+  "47074": { "title": "Smart Responsive Polymers", "description": "Explores thermoresponsive and electroactive polymers for actuation and sensing applications." },
+  "47075": { "title": "Sustainable Agriculture and Policy", "description": "Analyzes land use, deforestation, and environmental policies in sustainable farming." },
+  "47076": { "title": "Nonlinear Dynamical Systems", "description": "Studies oscillators, stability, and modeling of nonlinear mechanical and electrical systems." },
+  "47077": { "title": "Evolutionary Optimization Algorithms", "description": "Focuses on swarm intelligence, multi-objective optimization, and metaheuristics in engineering." },
+  "47078": { "title": "Internal Combustion Engine Control", "description": "Examines engine efficiency, waste heat recovery, and combustion optimization techniques." },
+  "47079": { "title": "Face Perception and Social Cognition", "description": "Studies first impressions, emotional expression, and person perception in social judgment." },
+  "47080": { "title": "Anxiety and Stress Disorders", "description": "Addresses trauma, pain, and psychosocial factors in anxiety and depression." }
+}
+      Successfully parsed 32/32 descriptions from response a1af63a9-c7d4-4942-a4d1-9cffa3408870 on attempt 1.
+Building LLM prompt 91f7d8c2-115e-40d9-ad7d-3319c67ad55b for 32 Clusters (Level 1)...
+  Built prompt 91f7d8c2-115e-40d9-ad7d-3319c67ad55b with 32 items, estimated tokens: 8059.
+{
+  "47081": { "title": "Ambient Intelligence Systems", "description": "Focuses on context-aware environments and intelligent sensing for adaptive decision support." },
+  "47082": { "title": "False Memory Phenomena", "description": "Explores memory distortion, illusions, and metacognitive factors in recollection." },
+  "47083": { "title": "System Identification Methods", "description": "Covers modeling and parameter estimation for linear and nonlinear dynamic systems." },
+  "47084": { "title": "Nonverbal Communication", "description": "Studies nonverbal cues, social cognition, and interpersonal dynamics in human interaction." },
+  "47085": { "title": "Renewable Energy Systems", "description": "Addresses sustainability, energy generation, and techno-economic analysis of renewable sources." },
+  "47086": { "title": "Structural Health Monitoring", "description": "Involves damage detection and continuous monitoring of infrastructure using sensors and models." },
+  "47087": { "title": "Construction Project Management", "description": "Covers planning, scheduling, and decision support in construction and project control." },
+  "47088": { "title": "Autism Spectrum Disorders", "description": "Examines social cognition, communication, and behavioral interventions in autism." },
+  "47089": { "title": "PID and Control Systems", "description": "Focuses on control design, tuning, and optimization in dynamic systems using PID and fuzzy methods." },
+  "47090": { "title": "Leadership and Trust", "description": "Investigates leadership, trust, and organizational climate in management and team dynamics." },
+  "47091": { "title": "Network Security Threats", "description": "Analyzes intrusion detection, attacks, and defense mechanisms in network systems." },
+  "47092": { "title": "Child Maltreatment", "description": "Examines abuse types, trauma, and risk factors in child welfare and family dynamics." },
+  "47093": { "title": "Photocatalysis for Energy", "description": "Studies nanocomposites and solar-driven water splitting and energy conversion." },
+  "47094": { "title": "Metabolic Health and Diet", "description": "Explores diet, obesity, diabetes, and metabolic syndrome in population health." },
+  "47095": { "title": "Prejudice and Intergroup Relations", "description": "Analyzes stereotypes, cultural foreignness, and intergroup contact in social psychology." },
+  "47096": { "title": "Software Engineering Research", "description": "Covers requirements, quality, and process improvement in software development." },
+  "47097": { "title": "Bone Health and Osteoporosis", "description": "Focuses on bone density, fractures, and risk factors in aging and postmenopausal women." },
+  "47098": { "title": "Distributed Computing Systems", "description": "Addresses cloud, grid, and parallel computing for large-scale data processing." },
+  "47099": { "title": "Signal Processing Algorithms", "description": "Involves adaptive filtering, sparse modeling, and time-series analysis in signal recovery." },
+  "47100": { "title": "HIV Stigma and Behavior", "description": "Studies social support, stigma, and health behaviors in HIV/AIDS populations." },
+  "47101": { "title": "Gut Microbiome and Immunity", "description": "Explores probiotics, dysbiosis, and microbiota in gut health and immune function." },
+  "47102": { "title": "Allergy and Immunology", "description": "Focuses on allergic conditions, asthma, and immunotherapy in atopic individuals." },
+  "47103": { "title": "Virus Diagnostics and Pathogenesis", "description": "Covers detection methods and molecular mechanisms of RNA viruses and pathogens." },
+  "47104": { "title": "Fuzzy Control Systems", "description": "Applies fuzzy logic and algorithms to control systems and intelligent decision-making." },
+  "47105": { "title": "Fractional Calculus in Control", "description": "Studies fractional-order systems and dynamics in signal and control applications." },
+  "47106": { "title": "Quantum Cryptography", "description": "Explores quantum-based secure communication and key distribution techniques." },
+  "47107": { "title": "Rainwater Harvesting", "description": "Addresses sustainable urban water management and rainwater reuse strategies." },
+  "47108": { "title": "Hepatitis C Treatment", "description": "Focuses on antiviral therapies, pharmacokinetics, and liver disease management." },
+  "47109": { "title": "Sleep Health and Disorders", "description": "Examines sleep quality, hygiene, and disturbances in aging and clinical populations." },
+  "47110": { "title": "Smoking Cessation Strategies", "description": "Analyzes behavioral, cognitive, and pharmacological approaches to quitting smoking." },
+  "47111": { "title": "Social Marginalization and Inequality", "description": "Studies racism, immigration, and social change in marginalized communities." },
+  "47112": { "title": "Social Cognition and Emotion", "description": "Investigates theory of mind, empathy, and emotion recognition in neurological and behavioral contexts." }
+}
+      Successfully parsed 32/32 descriptions from response 91f7d8c2-115e-40d9-ad7d-3319c67ad55b on attempt 1.
+  Finished LLM batch iteration. Processed in iter: 128, Total Processed: 143, Iteration Failures: 0, Remaining: 0
+LLM description generation complete. Success: 143/143, Persistently Failed (default assigned): 0/143
+Generating description embeddings for 143 clusters (L1)...
+  Calling text embedding client for 143 combined descriptions (L1)...
+  Assigned 143 description embeddings (L1).
+Applying reductions to 'representation_vector' vectors for 143 clusters (L1)...
+  Applied reductions to 143 'representation_vector' vectors (L1).
+Applying reductions to 'description_embedding' vectors for 143 clusters (L1)...
+  Applied reductions to 143 'description_embedding' vectors (L1).
+Level 1 processing complete. 143 clusters created.
+
+--- Clustering Level 2 ---
+Level 2: Clustering 143 prev level REPRESENTATION VECTORS (space: text_embedding).
+    Performing initial KMeans (k=7) on input I (shape: (143, 384), space: text_embedding) for Level 2...
+    Initial KMeans for L2 complete. Centroids shape: (7, 384), Labels count: 143
+  Resampling not applied for Level 2 (use_resampling=False, rt=10, m=10, k=7).
+Creating 7 new parent clusters for Level 2 based on final assignments...
+Processing 7 new Level 2 clusters...
+Generating LLM descriptions for 7 clusters (Level 2)...
+  LLM Retry Policy: 2 retries, 1.0s base delay.
+  Starting LLM batch iteration. Batch size <= 7, 7 items remaining.
+Building LLM prompt 724b635d-eea6-475e-a33c-c32e54230030 for 7 Clusters (Level 2)...
+  Built prompt 724b635d-eea6-475e-a33c-c32e54230030 with 7 items, estimated tokens: 3044.
+{
+  "47128": {
+    "title": "Electromechanical Control Systems",
+    "description": "Focuses on control theory, PID, and simulation in electro-mechanical systems, including robotics and power electronics. Relevant to web of science articles on system dynamics and stability."
+  },
+  "47129": {
+    "title": "Neuropsychiatric Disorders",
+    "description": "Explores mental health conditions like ADHD, autism, and depression through neurobiological and behavioral lenses. Supported by web of science research on emotion regulation and brain function."
+  },
+  "47130": {
+    "title": "Data & Embedded Systems",
+    "description": "Covers data mining, image processing, and embedded systems with applications in IoT and smart environments. Aligned with web of science articles on computing and network optimization."
+  },
+  "47131": {
+    "title": "Women's Health & Hormones",
+    "description": "Addresses reproductive health, menopause, contraception, and metabolic disorders in women. Draws on web of science literature in clinical and epidemiological studies."
+  },
+  "47132": {
+    "title": "Health Behavior & Social Factors",
+    "description": "Examines health-seeking behaviors, gender roles, and adolescent risks in social contexts. Supported by web of science research on well-being and trauma."
+  },
+  "47133": {
+    "title": "Immunology & Molecular Biology",
+    "description": "Studies immune responses, RNA biology, and cancer immunotherapy with emphasis on molecular mechanisms. Relevant to web of science articles in immunology and genomics."
+  },
+  "47134": {
+    "title": "Water Harvesting & Sustainability",
+    "description": "Focuses on rainwater harvesting, renewable energy, and hydrological modeling in environmental systems. Supported by web of science research on sustainable infrastructure."
+  }
+}
+      Successfully parsed 7/7 descriptions from response 724b635d-eea6-475e-a33c-c32e54230030 on attempt 1.
+  Finished LLM batch iteration. Processed in iter: 7, Total Processed: 7, Iteration Failures: 0, Remaining: 0
+LLM description generation complete. Success: 7/7, Persistently Failed (default assigned): 0/7
+Generating description embeddings for 7 clusters (L2)...
+  Calling text embedding client for 7 combined descriptions (L2)...
+  Assigned 7 description embeddings (L2).
+Applying reductions to 'representation_vector' vectors for 7 clusters (L2)...
+  Applied reductions to 7 'representation_vector' vectors (L2).
+Applying reductions to 'description_embedding' vectors for 7 clusters (L2)...
+  Applied reductions to 7 'description_embedding' vectors (L2).
+Level 2 processing complete. 7 clusters created.
+
+--- Clustering Level 3 ---
+Level 3: Clustering 7 prev level REPRESENTATION VECTORS (space: text_embedding).
+    Performing initial KMeans (k=2) on input I (shape: (7, 384), space: text_embedding) for Level 3...
+    Initial KMeans for L3 complete. Centroids shape: (2, 384), Labels count: 7
+  Resampling not applied for Level 3 (use_resampling=False, rt=10, m=10, k=2).
+Creating 2 new parent clusters for Level 3 based on final assignments...
+Processing 2 new Level 3 clusters...
+Generating LLM descriptions for 2 clusters (Level 3)...
+  LLM Retry Policy: 2 retries, 1.0s base delay.
+  Starting LLM batch iteration. Batch size <= 2, 2 items remaining.
+Building LLM prompt af1cc7d7-a848-4712-8467-3005df3d7e0b for 2 Clusters (Level 3)...
+  Built prompt af1cc7d7-a848-4712-8467-3005df3d7e0b with 2 items, estimated tokens: 1068.
+{
+  "47135": {
+    "title": "Smart Control & Sustainable Systems",
+    "description": "Focuses on intelligent control systems, renewable energy, and embedded technologies in sustainable infrastructure, supported by web of science articles on modeling and IoT applications."
+  },
+  "47136": {
+    "title": "Mental Health & Neurobiology",
+    "description": "Explores hormonal, behavioral, and molecular factors in mental disorders, including dementia, depression, and stress, with evidence from neuroscientific and clinical studies in the Web of Science."
+  }
+}
+      Successfully parsed 2/2 descriptions from response af1cc7d7-a848-4712-8467-3005df3d7e0b on attempt 1.
+  Finished LLM batch iteration. Processed in iter: 2, Total Processed: 2, Iteration Failures: 0, Remaining: 0
+LLM description generation complete. Success: 2/2, Persistently Failed (default assigned): 0/2
+Generating description embeddings for 2 clusters (L3)...
+  Calling text embedding client for 2 combined descriptions (L3)...
+  Assigned 2 description embeddings (L3).
+Applying reductions to 'representation_vector' vectors for 2 clusters (L3)...
+  Applied reductions to 2 'representation_vector' vectors (L3).
+Applying reductions to 'description_embedding' vectors for 2 clusters (L3)...
+  Applied reductions to 2 'description_embedding' vectors (L3).
+Level 3 processing complete. 2 clusters created.
+Saved prompt log to hercules_run/prompt_log_20260412_030144.json (and hercules_run/prompt_log_20260412_030144.txt)
+
+--- Hercules Clustering Run Finished ---
+Highest level achieved: 3
+Returning 2 top-level clusters.
+Saving Hercules model to ../../hercules_run/wos/direct.json...
+Model successfully saved to ../../hercules_run/wos/direct.json
+Generating L0 cluster membership DataFrame...
+Including L0 details: []
+Tracing ancestry for 46985 L0 items up to Level 3.
+Cluster membership DataFrame generated successfully.
+Generating assignments for level 1 (143 clusters)...
+Generated assignments for 46985/46985 L0 items at level 1.
+Level 143 — FM: 0.2396, Rand: 0.9880, ARI: 0.2333, AMI: 0.5010, DP: 0.2049, LCA_F1: 0.1968
+Generating assignments for level 2 (7 clusters)...
+Generated assignments for 46985/46985 L0 items at level 2.
+Level 7 — FM: 0.4068, Rand: 0.7851, ARI: 0.2756, AMI: 0.4018, DP: 0.4097, LCA_F1: 0.4717
+INFO: `image_embedding_client` not provided. HERCULES will use a DUMMY image embedding function if image data is processed in 'direct' mode.
+INFO: `image_captioning_client` not provided. HERCULES will use a DUMMY image captioning function if image data descriptions are generated.
+--- Starting Hercules Clustering Run: 20260412_031320 ---
+Hercules Version: 1.0.2
+Verbosity Level: 2
+Representation Mode: direct
+Automatic K Mode: Disabled (Using level_cluster_counts: [143, 7, 1])
+Reduction Methods: ['pca'] (2 components)
+Topic Seed: 'web of science articles'
+Prompting includes immediate children (Strategy: random, Size: 3).
+Starting input data preparation...
+Processing list input (46985 items, first item type: str)
+Detected input type: text (list)
+Input data preparation complete.
+Input data type detected: text
+  Input items count: 46985
+Initializing 46985 Level 0 Cluster objects...
+Generating Level 0 titles and descriptions...
+  Mode: LLM-free L0 Text/Numeric/Image descriptions (using snippets/defaults).
+  Assigning initial L0 titles based on content extraction/type...
+  Generating LLM-free L0 descriptions for TEXT items (using snippets).
+Generating description embeddings for 46985 clusters (L0)...
+  Calling text embedding client for 46985 combined descriptions (L0)...
+  Training 'text_embedding' space reducers using L0 description embeddings.
+Training reducers for 'text_embedding' space (data shape: (46985, 384))...
+    PCA trained for text_embedding (input dim: 384, output dim: 2).
+  Assigned 46985 description embeddings (L0).
+Generating Level 0 representations for clustering...
+  Mode: Direct Representation (using scaled numerics or item embeddings for L0).
+    Generating TEXT embeddings for 46985 items...
+    Assigning direct L0 representation vectors (space: text_embedding, dim: 384)...
+Applying reductions to 'representation_vector' vectors for 46985 clusters (L0)...
+  Applied reductions to 46985 'representation_vector' vectors (L0).
+Applying reductions to 'description_embedding' vectors for 46985 clusters (L0)...
+  Applied reductions to 46985 'description_embedding' vectors (L0).
+Level 0 processing complete. 46985 items represented.
+Starting hierarchical loop with 46985 valid L0 clusters.
+Using fixed level cluster counts: [143, 7, 1]
+
+--- Clustering Level 1 ---
+Level 1: Clustering 46985 prev level REPRESENTATION VECTORS (space: text_embedding).
+    Performing initial KMeans (k=143) on input I (shape: (46985, 384), space: text_embedding) for Level 1...
+    Initial KMeans for L1 complete. Centroids shape: (143, 384), Labels count: 46985
+  Resampling not applied for Level 1 (use_resampling=False, rt=10, m=10, k=143).
+Creating 143 new parent clusters for Level 1 based on final assignments...
+Processing 143 new Level 1 clusters...
+Generating LLM descriptions for 143 clusters (Level 1)...
+  LLM Retry Policy: 2 retries, 1.0s base delay.
+  Starting LLM batch iteration. Batch size <= 64, 143 items remaining.
+Building LLM prompt 748c8418-532a-478d-9303-762e5dd6a9bf for 64 Clusters (Level 1)...
+  Built prompt 748c8418-532a-478d-9303-762e5dd6a9bf with 64 items, estimated tokens: 15854.
+      LLM call failed on attempt 1: CUDA out of memory. Tried to allocate 29.09 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.88 GiB is free. Including non-PyTorch memory, this process has 6.84 GiB memory in use. Of the allocated memory 6.38 GiB is allocated by PyTorch, and 95.75 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 1.0s before next retry...
+      Attempt 2/3 for prompt 748c8418-532a-478d-9303-762e5dd6a9bf (64 items)...
+      LLM call failed on attempt 2: CUDA out of memory. Tried to allocate 29.09 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.69 GiB is free. Including non-PyTorch memory, this process has 7.04 GiB memory in use. Of the allocated memory 6.38 GiB is allocated by PyTorch, and 293.75 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 2.0s before next retry...
+      Attempt 3/3 for prompt 748c8418-532a-478d-9303-762e5dd6a9bf (64 items)...
+      LLM call failed on attempt 3: CUDA out of memory. Tried to allocate 29.09 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.69 GiB is free. Including non-PyTorch memory, this process has 7.04 GiB memory in use. Of the allocated memory 6.38 GiB is allocated by PyTorch, and 293.75 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Chunk failed after 3 attempts.
+    Marking 64 items from prompt 748c8418-532a-478d-9303-762e5dd6a9bf as failed for this iteration after retries.
+Building LLM prompt da4e3113-4a11-4ece-9a67-a55d44ba9a09 for 64 Clusters (Level 1)...
+  Built prompt da4e3113-4a11-4ece-9a67-a55d44ba9a09 with 64 items, estimated tokens: 15877.
+      LLM call failed on attempt 1: CUDA out of memory. Tried to allocate 27.20 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.69 GiB is free. Including non-PyTorch memory, this process has 7.04 GiB memory in use. Of the allocated memory 6.27 GiB is allocated by PyTorch, and 410.10 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 1.0s before next retry...
+      Attempt 2/3 for prompt da4e3113-4a11-4ece-9a67-a55d44ba9a09 (64 items)...
+      LLM call failed on attempt 2: CUDA out of memory. Tried to allocate 27.20 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.69 GiB is free. Including non-PyTorch memory, this process has 7.04 GiB memory in use. Of the allocated memory 6.27 GiB is allocated by PyTorch, and 410.10 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 2.0s before next retry...
+      Attempt 3/3 for prompt da4e3113-4a11-4ece-9a67-a55d44ba9a09 (64 items)...
+      LLM call failed on attempt 3: CUDA out of memory. Tried to allocate 27.20 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.69 GiB is free. Including non-PyTorch memory, this process has 7.04 GiB memory in use. Of the allocated memory 6.27 GiB is allocated by PyTorch, and 410.10 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Chunk failed after 3 attempts.
+    Marking 64 items from prompt da4e3113-4a11-4ece-9a67-a55d44ba9a09 as failed for this iteration after retries.
+Building LLM prompt 2e2a4517-3b9b-4d6b-a4a0-3382c9152c20 for 15 Clusters (Level 1)...
+  Built prompt 2e2a4517-3b9b-4d6b-a4a0-3382c9152c20 with 15 items, estimated tokens: 3775.
+{
+  "47113": {
+    "title": "Interprofessional Care in Health",
+    "description": "Focuses on collaborative care models, simulation training, and patient-centered practices among healthcare professionals."
+  },
+  "47114": {
+    "title": "Ankylosing Spondylitis Research",
+    "description": "Explores disease progression, treatment guidelines, and biological interventions in axial spondyloarthritis."
+  },
+  "47115": {
+    "title": "Social Media and Behavior",
+    "description": "Examines digital communication, addiction, and social networking effects on older adults and youth."
+  },
+  "47116": {
+    "title": "Schizophrenia Psychopathology",
+    "description": "Investigates cognitive deficits, delusions, and psychopathological mechanisms in schizophrenia."
+  },
+  "47117": {
+    "title": "Stress and Mental Health",
+    "description": "Analyzes stress, coping, and health-promoting behaviors in diverse populations, including adolescents."
+  },
+  "47118": {
+    "title": "Circadian Rhythms and Mood",
+    "description": "Studies light, melatonin, and sleep patterns' impact on depression and mood disorders."
+  },
+  "47119": {
+    "title": "Bone Biology and Disorders",
+    "description": "Focuses on osteoporosis, bone regeneration, and cell signaling in bone and periodontal tissues."
+  },
+  "47120": {
+    "title": "Borderline Personality Disorder",
+    "description": "Explores etiology, emotional dysregulation, and treatment mechanisms in BPD and comorbid conditions."
+  },
+  "47121": {
+    "title": "Medicare Health Policy",
+    "description": "Analyzes quality of care, disparities, and payment systems in Medicare beneficiaries."
+  },
+  "47122": {
+    "title": "Media Violence and Aggression",
+    "description": "Examines links between media exposure and aggressive behavior in youth and adults."
+  },
+  "47123": {
+    "title": "Psychobiography and Identity",
+    "description": "Explores intersections of art, culture, race, and subjectivity in psychological narratives."
+  },
+  "47124": {
+    "title": "Dementia Caregiving",
+    "description": "Addresses psychosocial support, quality of life, and interventions for elderly caregivers and patients."
+  },
+  "47125": {
+    "title": "MicroRNA in Cancer",
+    "description": "Studies miRNA biomarkers and regulatory roles in colorectal and brain cancers."
+  },
+  "47126": {
+    "title": "Psoriatic Arthritis and Inflammation",
+    "description": "Investigates epidemiology, cardiovascular risks, and treatment in psoriatic arthritis."
+  },
+  "47127": {
+    "title": "Cancer Patient Outcomes",
+    "description": "Focuses on prehabilitation, nutrition, and patient-reported outcomes in cancer care."
+  }
+}
+      Successfully parsed 15/15 descriptions from response 2e2a4517-3b9b-4d6b-a4a0-3382c9152c20 on attempt 1.
+  Finished LLM batch iteration. Processed in iter: 15, Total Processed: 15, Iteration Failures: 128, Remaining: 128
+  Starting LLM batch iteration. Batch size <= 64, 128 items remaining.
+Building LLM prompt 473a3ea1-c181-4128-b637-272dc1d08b16 for 64 Clusters (Level 1)...
+  Built prompt 473a3ea1-c181-4128-b637-272dc1d08b16 with 64 items, estimated tokens: 15854.
+      LLM call failed on attempt 1: CUDA out of memory. Tried to allocate 29.09 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.69 GiB is free. Including non-PyTorch memory, this process has 7.04 GiB memory in use. Of the allocated memory 6.38 GiB is allocated by PyTorch, and 293.75 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 1.0s before next retry...
+      Attempt 2/3 for prompt 473a3ea1-c181-4128-b637-272dc1d08b16 (64 items)...
+      LLM call failed on attempt 2: CUDA out of memory. Tried to allocate 29.09 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.69 GiB is free. Including non-PyTorch memory, this process has 7.04 GiB memory in use. Of the allocated memory 6.38 GiB is allocated by PyTorch, and 293.75 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 2.0s before next retry...
+      Attempt 3/3 for prompt 473a3ea1-c181-4128-b637-272dc1d08b16 (64 items)...
+      LLM call failed on attempt 3: CUDA out of memory. Tried to allocate 29.09 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.69 GiB is free. Including non-PyTorch memory, this process has 7.04 GiB memory in use. Of the allocated memory 6.38 GiB is allocated by PyTorch, and 293.75 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Chunk failed after 3 attempts.
+    Marking 64 items from prompt 473a3ea1-c181-4128-b637-272dc1d08b16 as failed for this iteration after retries.
+Building LLM prompt 0312b3de-35e6-4770-bdac-42a0646f16f9 for 64 Clusters (Level 1)...
+  Built prompt 0312b3de-35e6-4770-bdac-42a0646f16f9 with 64 items, estimated tokens: 15877.
+      LLM call failed on attempt 1: CUDA out of memory. Tried to allocate 27.20 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.69 GiB is free. Including non-PyTorch memory, this process has 7.04 GiB memory in use. Of the allocated memory 6.27 GiB is allocated by PyTorch, and 410.10 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 1.0s before next retry...
+      Attempt 2/3 for prompt 0312b3de-35e6-4770-bdac-42a0646f16f9 (64 items)...
+      LLM call failed on attempt 2: CUDA out of memory. Tried to allocate 27.20 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.69 GiB is free. Including non-PyTorch memory, this process has 7.04 GiB memory in use. Of the allocated memory 6.27 GiB is allocated by PyTorch, and 410.10 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Waiting 2.0s before next retry...
+      Attempt 3/3 for prompt 0312b3de-35e6-4770-bdac-42a0646f16f9 (64 items)...
+      LLM call failed on attempt 3: CUDA out of memory. Tried to allocate 27.20 GiB. GPU 0 has a total capacity of 31.73 GiB of which 24.69 GiB is free. Including non-PyTorch memory, this process has 7.04 GiB memory in use. Of the allocated memory 6.27 GiB is allocated by PyTorch, and 410.10 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+      Chunk failed after 3 attempts.
+    Marking 64 items from prompt 0312b3de-35e6-4770-bdac-42a0646f16f9 as failed for this iteration after retries.
+  Finished LLM batch iteration. Processed in iter: 0, Total Processed: 15, Iteration Failures: 128, Remaining: 128
+  No items successfully processed in this iteration (batch size 64). Reducing batch size.
+  Reducing batch size from 64 to 32.
+  Starting LLM batch iteration. Batch size <= 32, 128 items remaining.
+Building LLM prompt e4c7cec5-59ca-414f-b445-e9977a6992fb for 32 Clusters (Level 1)...
+  Built prompt e4c7cec5-59ca-414f-b445-e9977a6992fb with 32 items, estimated tokens: 8053.
+{
+  "46985": { "title": "Soliton Equations and Transformations", "description": "Focuses on nonlinear Schrödinger equations and soliton solutions using methods like Backlund and Hirota transformations." },
+  "46986": { "title": "Alzheimer's Disease Biomarkers", "description": "Explores neuroinflammation, amyloid, tau, and imaging biomarkers in Alzheimer's and mild cognitive impairment." },
+  "46987": { "title": "Photovoltaic and Thermal Systems", "description": "Studies solar energy systems, hybrid PV-thermal designs, and thermodynamic efficiency in energy conversion." },
+  "46988": { "title": "Permanent Magnet Motor Design", "description": "Addresses finite element analysis, torque optimization, and design of electric motors with PM materials." },
+  "46989": { "title": "Parkinson's Disease Neurology", "description": "Investigates neuroimaging, cognitive functions, and movement disorders in Parkinson's disease." },
+  "46990": { "title": "Machine Learning and Prediction", "description": "Covers classification, regression, and data mining techniques in predictive modeling and decision-making." },
+  "46991": { "title": "Neuroimaging and Connectivity", "description": "Analyzes brain structure, fMRI, EEG, and functional connectivity in epilepsy and cognitive disorders." },
+  "46992": { "title": "Wireless Sensor Network Optimization", "description": "Focuses on energy efficiency, routing, and network optimization in wireless sensor systems." },
+  "46993": { "title": "Fluid Mechanics and Multiphase Flows", "description": "Studies fluid dynamics, turbulence, and flow-structure interactions in multiphase systems." },
+  "46994": { "title": "Perinatal Programming and Development", "description": "Examines prenatal stress, maternal care, and early-life programming effects on neurodevelopment." },
+  "46995": { "title": "Sports Injury Epidemiology", "description": "Analyzes injury types, prevention strategies, and incidence in athletic populations." },
+  "46996": { "title": "Anticoagulant Therapy and Bleeding", "description": "Assesses risks and management of bleeding and thrombosis in atrial fibrillation and anticoagulation." },
+  "46997": { "title": "Bioinformatics and Systems Biology", "description": "Integrates genomics, proteomics, and metabolic modeling for drug discovery and personalized medicine." },
+  "46998": { "title": "Multiple Sclerosis and Autoimmunity", "description": "Explores demyelination, genetics, immune tolerance, and biomarkers in MS and related disorders." },
+  "46999": { "title": "Remote Sensing and Hydrological Modeling", "description": "Applies GIS and remote sensing for soil salinity, change detection, and watershed modeling." },
+  "47000": { "title": "Human Metabolism and P450 Enzymes", "description": "Studies cytochrome P450 metabolism, biomonitoring, and toxicokinetics of environmental chemicals." },
+  "47001": { "title": "Enzyme Structure and Function", "description": "Examines enzyme dynamics, active sites, and structural biology in biocatalysis and biotechnology." },
+  "47002": { "title": "Polyphenol Metabolism and Antioxidants", "description": "Investigates bioavailability, metabolism, and antioxidant activity of plant polyphenols." },
+  "47003": { "title": "Structural Materials and Fatigue", "description": "Analyzes mechanical strength, fracture, and fatigue in metallic and composite materials." },
+  "47004": { "title": "Joint Disorders and Rehabilitation", "description": "Focuses on osteoarthritis, joint injuries, and physical rehabilitation strategies." },
+  "47005": { "title": "3D Image Reconstruction and Processing", "description": "Applies image processing, calibration, and stereo vision for 3D shape and depth measurement." },
+  "47006": { "title": "DC-DC Converter Control Systems", "description": "Studies digital control, PWM, and transient response in power conversion systems." },
+  "47007": { "title": "Wastewater Treatment and Microbial Fuel Cells", "description": "Explores energy recovery, contaminant removal, and bioremediation in wastewater systems." },
+  "47008": { "title": "Neurobiology of Addiction", "description": "Investigates dopamine, stress, and neural circuits in drug addiction and reward pathways." },
+  "47009": { "title": "Natural Product and Cancer Inhibitors", "description": "Examines bioactive compounds, neuroprotection, and molecular inhibitors in cancer therapy." },
+  "47010": { "title": "Gender Roles and Social Attitudes", "description": "Analyzes gender identity, roles, and societal double standards in interpersonal and cultural contexts." },
+  "47011": { "title": "Hereditary Angioedema Management", "description": "Focuses on C1 inhibitor deficiency, diagnosis, and treatment of hereditary angioedema." },
+  "47012": { "title": "Conservation Genetics and Phylogeny", "description": "Studies population structure, genetic diversity, and phylogenetics in species conservation." },
+  "47013": { "title": "Immunology and Wildlife Diseases", "description": "Explores host-parasite interactions, pathogens, and immune responses in wildlife and ecosystems." },
+  "47014": { "title": "Neuronal Exocytosis and Signaling", "description": "Investigates regulated secretion, cytoskeleton, and signaling in enteric and neuronal cells." },
+  "47015": { "title": "Plant Water Use and Drought Response", "description": "Analyzes plant hydraulics, transpiration, and functional traits under drought conditions." },
+  "47016": { "title": "Green Building Design and Sustainability", "description": "Focuses on sustainable design, environmental impact, and certification in green building practices." }
+}
+      Successfully parsed 32/32 descriptions from response e4c7cec5-59ca-414f-b445-e9977a6992fb on attempt 1.
+Building LLM prompt 89fbe04e-97f7-4895-87a6-aa9e1632f82e for 32 Clusters (Level 1)...
+  Built prompt 89fbe04e-97f7-4895-87a6-aa9e1632f82e with 32 items, estimated tokens: 8095.
+{
+  "47017": { "title": "Water Pollution & Contaminants", "description": "Focuses on water quality issues, including nutrients, heavy metals, plastics, and microbial pollution in rivers, groundwater, and coastal environments." },
+  "47018": { "title": "Testosterone & Hormonal Health", "description": "Explores testosterone levels, hypogonadism, and hormonal impacts on aging, cardiovascular health, and sexual function." },
+  "47019": { "title": "Diabetes & Metabolic Health", "description": "Covers insulin, hyperglycemia, obesity, and metabolic syndrome with links to inflammation, atherosclerosis, and cancer." },
+  "47020": { "title": "River Hydraulics & Modeling", "description": "Involves hydraulics, hydrodynamics, and mathematical modeling in river engineering and water flow systems." },
+  "47021": { "title": "Parenting & Child Development", "description": "Examines parenting styles, child behavior, and early childhood development, including parent-child interaction and stress." },
+  "47022": { "title": "RNA & Molecular Biology", "description": "Centers on small RNA, sequencing, gene expression, and epigenetic studies in molecular biology and genomics." },
+  "47023": { "title": "Thermodynamics & Reaction Kinetics", "description": "Analyzes thermodynamic and kinetic processes in chemistry, including computational methods and reaction mechanisms." },
+  "47024": { "title": "Black Hole & Cosmic Thermodynamics", "description": "Studies black hole physics, gravitational waves, and emergent spacetime using thermodynamic and geometric approaches." },
+  "47025": { "title": "Advanced Manufacturing & Engineering", "description": "Focuses on CAD, numerical control, flexible manufacturing, and design in modern engineering and production systems." },
+  "47026": { "title": "Graphene & Nanomaterials", "description": "Explores graphene, nanotubes, and nanocomposites for electronic, conductive, and sensing applications." },
+  "47027": { "title": "Cancer Biology & Immunotherapy", "description": "Addresses tumor biology, cell migration, ubiquitin pathways, and immune-based cancer therapies." },
+  "47028": { "title": "Finite Element Analysis in Engineering", "description": "Applies FEA and structural modeling to analyze deformation, stress, and material behavior in mechanical systems." },
+  "47029": { "title": "Image Classification & Computer Vision", "description": "Focuses on image analysis, feature extraction, and object recognition in machine vision and pattern recognition." },
+  "47030": { "title": "3D Visualization & AR/VR", "description": "Involves computer graphics, 3D modeling, and immersive technologies like augmented and virtual reality." },
+  "47031": { "title": "Stem Cells & Tissue Engineering", "description": "Studies stem cell differentiation, tissue repair, and regenerative medicine using biophysical and molecular tools." },
+  "47032": { "title": "Menopause & Hormonal Health", "description": "Addresses menopause symptoms, hormone replacement, phytoestrogens, and links to cardiovascular and metabolic health." },
+  "47033": { "title": "Wireless Sensor Network Security", "description": "Focuses on cryptographic protocols, authentication, and privacy in wireless sensor networks and IoT systems." },
+  "47034": { "title": "Emergency Contraception & Family Planning", "description": "Covers emergency contraception methods, mechanisms, and public health aspects of reproductive health." },
+  "47035": { "title": "Child Health & Social Disparities", "description": "Examines health access, socioeconomic status, and psychosocial factors affecting children's well-being." },
+  "47036": { "title": "Symbolic Computation & Algebraic Geometry", "description": "Involves symbolic methods, semidefinite programming, and real algebraic geometry in computational mathematics." },
+  "47037": { "title": "Metamaterials & Stealth Technology", "description": "Studies electromagnetic absorption, radar cross-section reduction, and metamaterial design for stealth applications." },
+  "47038": { "title": "Renewable Energy & Smart Grids", "description": "Addresses wind energy integration, power quality, and optimization in distributed and smart power systems." },
+  "47039": { "title": "Low-Power CMOS Analog Design", "description": "Focuses on operational amplifiers, low-voltage circuits, and analog design for energy-efficient electronics." },
+  "47040": { "title": "Analog Signal Processing", "description": "Involves all-pass filters, current-mode circuits, and low-power analog processing in electronic systems." },
+  "47041": { "title": "Phototherapy & Dermatoses", "description": "Covers treatment of skin conditions like psoriasis and atopic dermatitis using UV light and phototherapy." },
+  "47042": { "title": "Eating Disorders & Behavior", "description": "Explores anorexia, bulimia, binge eating, and associated psychological and behavioral factors." },
+  "47043": { "title": "Myeloproliferative Neoplasms", "description": "Focuses on blood disorders like polycythemia vera and myelofibrosis with JAK2 and CALR mutations." },
+  "47044": { "title": "Lymphoma & Immune Classification", "description": "Examines lymphoma subtypes, cell of origin, and diagnostic markers including EBV and BCL2." },
+  "47045": { "title": "Autoimmunity & Immune Response", "description": "Studies autoimmune diseases like SLE, B cell function, and immune regulation in inflammation and therapy." },
+  "47046": { "title": "Suspension Bridge Stability", "description": "Analyzes flutter, stiffness, and structural dynamics in long-span suspension bridge design and simulation." },
+  "47047": { "title": "Migraine & Headache Pathophysiology", "description": "Investigates migraine mechanisms, central sensitization, and neurologic factors in headache disorders." },
+  "47048": { "title": "Invasive Fungal Infections", "description": "Focuses on diagnosis, treatment, and management of fungal infections in immunocompromised patients." }
+}
+      Successfully parsed 32/32 descriptions from response 89fbe04e-97f7-4895-87a6-aa9e1632f82e on attempt 1.
+Building LLM prompt 4296e76b-453f-4c30-b741-84f480732441 for 32 Clusters (Level 1)...
+  Built prompt 4296e76b-453f-4c30-b741-84f480732441 with 32 items, estimated tokens: 8112.
+{
+  "47049": { "title": "Parallel Computing Systems", "description": "Focuses on parallel algorithms, architectures, and energy-efficient computing in high-performance systems." },
+  "47050": { "title": "Atrial Fibrillation Management", "description": "Covers cardiac electrophysiology, ablation, heart failure, and antiarrhythmic therapies." },
+  "47051": { "title": "Overactive Bladder Disorders", "description": "Addresses urinary incontinence, detrusor dysfunction, and neuromodulation treatments." },
+  "47052": { "title": "Geosynthetics in Geotechnics", "description": "Examines geosynthetic materials, soil reinforcement, and finite-element analysis applications." },
+  "47053": { "title": "Chronic Kidney Disease", "description": "Studies proteinuria, glomerular function, and renal disease in diabetes and hypertension." },
+  "47054": { "title": "Thyroid Disorders in Pregnancy", "description": "Explores hyper- and hypothyroidism, autoimmune diseases, and medication management." },
+  "47055": { "title": "Mental Health Treatments", "description": "Covers psychotherapy, cognitive behavioral therapy, and evidence-based interventions." },
+  "47056": { "title": "Idiopathic Pulmonary Fibrosis", "description": "Analyzes pathogenesis, symptoms, imaging, and treatment of interstitial lung disease." },
+  "47057": { "title": "Neurosurgical Interventions", "description": "Focuses on minimally invasive procedures, surgical guides, and facial pain management." },
+  "47058": { "title": "Heat Transfer and Recovery", "description": "Involves thermoelectric generation, heat exchangers, and waste heat utilization." },
+  "47059": { "title": "Asthma Development and Biomarkers", "description": "Investigates microbiome, inflammation, and biologic therapies in childhood asthma." },
+  "47060": { "title": "Robotic Control Systems", "description": "Covers actuator design, adaptive control, and motion control in robotic manipulators." },
+  "47061": { "title": "Transgenic Plant Research", "description": "Explores gene transfer, expression, and abiotic stress responses in crops." },
+  "47062": { "title": "Big Data and Database Systems", "description": "Focuses on data management, NoSQL, and semantic web technologies in data interoperability." },
+  "47063": { "title": "Electric Vehicle Design", "description": "Addresses drivetrain, energy efficiency, and power management in EVs and hybrids." },
+  "47064": { "title": "Smart Sensor Technologies", "description": "Examines piezoelectric, biomedical, and wireless sensors for structural health monitoring." },
+  "47065": { "title": "Nanoparticle-Based Drug Delivery", "description": "Studies nanocarriers, hydrogels, and biocompatible materials for targeted therapy." },
+  "47066": { "title": "Bipolar Disorder Treatment", "description": "Analyzes mood regulation, comorbidity, and rapid-acting antidepressants in bipolar spectrum." },
+  "47067": { "title": "Adolescent Mental Health", "description": "Explores aggression, self-esteem, and family support in adolescent development." },
+  "47068": { "title": "Rheumatoid Arthritis and Biologics", "description": "Covers inflammation, bone damage, and biological therapies in arthritis spectrum." },
+  "47069": { "title": "Inflammatory Bowel Disease", "description": "Focuses on nutrition, microbiota, and dietary management in Crohn's and ulcerative colitis." },
+  "47070": { "title": "Antisocial Personality Disorder", "description": "Examines psychopathy, violence, and neuroimaging in antisocial and borderline traits." },
+  "47071": { "title": "Empathy and Prosocial Behavior", "description": "Studies positive emotions, empathy, and moral reasoning in social development." },
+  "47072": { "title": "Mathematical Modeling of Circuits", "description": "Applies differential equations and nonlinear analysis to electrical system dynamics." },
+  "47073": { "title": "Intelligent Tutoring in Programming", "description": "Focuses on coding education, formative assessment, and self-learning environments." },
+  "47074": { "title": "Smart Responsive Polymers", "description": "Explores thermoresponsive and electroactive polymers for actuator and sensor applications." },
+  "47075": { "title": "Sustainable Agriculture Policies", "description": "Analyzes land use, deforestation, and environmental impact of farming practices." },
+  "47076": { "title": "Nonlinear Dynamical Systems", "description": "Studies oscillators, stability, and modeling of nonlinear mechanical and electrical systems." },
+  "47077": { "title": "Evolutionary Optimization Algorithms", "description": "Covers particle swarm, genetic algorithms, and multi-objective optimization techniques." },
+  "47078": { "title": "Internal Combustion Engine Control", "description": "Focuses on engine efficiency, waste heat recovery, and combustion optimization." },
+  "47079": { "title": "Face Perception and Social Cognition", "description": "Explores first impressions, emotional expression, and person perception in social judgment." },
+  "47080": { "title": "Anxiety and Depression Disorders", "description": "Addresses trauma, stress, emotion regulation, and psychosocial interventions in mental health." }
+}
+      Successfully parsed 32/32 descriptions from response 4296e76b-453f-4c30-b741-84f480732441 on attempt 1.
+Building LLM prompt 035a6d56-23ae-4688-a540-93009b99381d for 32 Clusters (Level 1)...
+  Built prompt 035a6d56-23ae-4688-a540-93009b99381d with 32 items, estimated tokens: 8059.
+{
+  "47081": { "title": "Ambient Intelligence Systems", "description": "Focuses on context-aware environments, sensor networks, and smart technologies for decision support and assistive living." },
+  "47082": { "title": "False Memory Phenomena", "description": "Explores memory distortion, illusions, and metacognitive processes in recall and belief formation." },
+  "47083": { "title": "System Identification Methods", "description": "Involves modeling linear and nonlinear dynamic systems using parameter estimation and filtering techniques." },
+  "47084": { "title": "Nonverbal Communication", "description": "Examines body language, social cues, and interpersonal dynamics in human interaction and clinical settings." },
+  "47085": { "title": "Renewable Energy Systems", "description": "Addresses sustainable energy technologies, life cycle assessment, and techno-economic analysis of renewable sources." },
+  "47086": { "title": "Structural Health Monitoring", "description": "Uses vibration and sensor data to detect damage and monitor structural integrity in bridges and infrastructure." },
+  "47087": { "title": "Construction Project Management", "description": "Covers planning, scheduling, decision support, and productivity in construction and building projects." },
+  "47088": { "title": "Autism Spectrum Disorders", "description": "Studies social cognition, communication, and behavioral interventions for individuals with autism." },
+  "47089": { "title": "PID and Control Systems", "description": "Focuses on proportional-integral-derivative control, tuning, and robustness in dynamic systems." },
+  "47090": { "title": "Leadership and Management", "description": "Explores leadership, trust, and organizational development in professional and educational contexts." },
+  "47091": { "title": "Network Security Technologies", "description": "Covers intrusion detection, firewall systems, and threat analysis in network environments." },
+  "47092": { "title": "Child Maltreatment", "description": "Analyzes abuse types, trauma, and risk factors in child development and family dynamics." },
+  "47093": { "title": "Photocatalysis for Energy", "description": "Studies nanomaterials and solar-driven processes for water splitting and artificial photosynthesis." },
+  "47094": { "title": "Metabolic Health and Diet", "description": "Investigates diet, obesity, diabetes, and metabolic syndrome in relation to lifestyle and health outcomes." },
+  "47095": { "title": "Prejudice and Intergroup Relations", "description": "Examines stereotypes, cultural differences, and social identity in intergroup interactions." },
+  "47096": { "title": "Software Engineering Practices", "description": "Covers requirements, quality, and process improvement in software development and research." },
+  "47097": { "title": "Bone Health and Osteoporosis", "description": "Focuses on bone density, fractures, and risk factors in aging and postmenopausal women." },
+  "47098": { "title": "Distributed Computing Systems", "description": "Involves cloud, grid, and parallel computing for large-scale data processing and resource management." },
+  "47099": { "title": "Signal Processing Methods", "description": "Applies adaptive filtering, wavelet transforms, and sparse modeling to time-series data analysis." },
+  "47100": { "title": "HIV Stigma and Support", "description": "Addresses social attitudes, stigma, and behavioral factors in HIV/AIDS prevention and care." },
+  "47101": { "title": "Gut Microbiome and Immunity", "description": "Studies probiotics, microbiota, and gut-immune interactions in health and chronic disease." },
+  "47102": { "title": "Allergies and Immunology", "description": "Focuses on allergic conditions, IgE, and immunotherapy in pediatric and adult populations." },
+  "47103": { "title": "Virus Diagnostics and Detection", "description": "Involves molecular methods for detecting RNA viruses and understanding viral pathogenesis." },
+  "47104": { "title": "Fuzzy Control Systems", "description": "Applies fuzzy logic and genetic algorithms to control systems and intelligent automation." },
+  "47105": { "title": "Fractional Calculus in Control", "description": "Explores fractional-order systems and differential equations in modeling and control design." },
+  "47106": { "title": "Quantum Cryptography", "description": "Studies quantum key distribution, entanglement, and secure communication protocols." },
+  "47107": { "title": "Rainwater Harvesting Systems", "description": "Focuses on urban water management, sustainability, and climate resilience through rainwater reuse." },
+  "47108": { "title": "Hepatitis C Treatment", "description": "Addresses antiviral therapies, pharmacokinetics, and liver disease management in HCV patients." },
+  "47109": { "title": "Sleep Health and Disorders", "description": "Examines sleep quality, hygiene, and risk factors in aging and clinical populations." },
+  "47110": { "title": "Smoking Cessation Strategies", "description": "Studies behavioral, cognitive, and pharmacological approaches to quitting tobacco use." },
+  "47111": { "title": "Social Marginalization and Inequality", "description": "Analyzes racism, immigration, and social change in marginalized communities." },
+  "47112": { "title": "Social Cognition and Emotion", "description": "Investigates theory of mind, empathy, and emotion recognition in neurological and behavioral contexts." }
+}
+      Successfully parsed 32/32 descriptions from response 035a6d56-23ae-4688-a540-93009b99381d on attempt 1.
+  Finished LLM batch iteration. Processed in iter: 128, Total Processed: 143, Iteration Failures: 0, Remaining: 0
+LLM description generation complete. Success: 143/143, Persistently Failed (default assigned): 0/143
+Generating description embeddings for 143 clusters (L1)...
+  Calling text embedding client for 143 combined descriptions (L1)...
+  Assigned 143 description embeddings (L1).
+Applying reductions to 'representation_vector' vectors for 143 clusters (L1)...
+  Applied reductions to 143 'representation_vector' vectors (L1).
+Applying reductions to 'description_embedding' vectors for 143 clusters (L1)...
+  Applied reductions to 143 'description_embedding' vectors (L1).
+Level 1 processing complete. 143 clusters created.
+
+--- Clustering Level 2 ---
+Level 2: Clustering 143 prev level REPRESENTATION VECTORS (space: text_embedding).
+    Performing initial KMeans (k=7) on input I (shape: (143, 384), space: text_embedding) for Level 2...
+    Initial KMeans for L2 complete. Centroids shape: (7, 384), Labels count: 143
+  Resampling not applied for Level 2 (use_resampling=False, rt=10, m=10, k=7).
+Creating 7 new parent clusters for Level 2 based on final assignments...
+Processing 7 new Level 2 clusters...
+Generating LLM descriptions for 7 clusters (Level 2)...
+  LLM Retry Policy: 2 retries, 1.0s base delay.
+  Starting LLM batch iteration. Batch size <= 7, 7 items remaining.
+Building LLM prompt 9c99b028-efaf-4a34-b70f-f7cf48bff6d1 for 7 Clusters (Level 2)...
+  Built prompt 9c99b028-efaf-4a34-b70f-f7cf48bff6d1 with 7 items, estimated tokens: 3045.
+{
+  "47128": {
+    "title": "Electro-Mechanical Control Systems",
+    "description": "Focuses on control theory, PID tuning, and electro-mechanical interactions in robotics and power systems, with applications in gas turbines and filtering."
+  },
+  "47129": {
+    "title": "Neuropsychiatric Disorders",
+    "description": "Explores emotional regulation, depression, anxiety, and neurobiological mechanisms in disorders like PTSD, schizophrenia, and addiction."
+  },
+  "47130": {
+    "title": "Data & Embedded Systems",
+    "description": "Covers data mining, image processing, and embedded systems, including FPGA implementation, wireless sensor networks, and ambient intelligence."
+  },
+  "47131": {
+    "title": "Women's Health & Hormones",
+    "description": "Addresses hormonal health, contraception, menopause, diabetes, and cancer outcomes in women, including metabolic and reproductive health."
+  },
+  "47132": {
+    "title": "Health Behaviors & Social Factors",
+    "description": "Analyzes health-seeking behaviors, gender roles, adolescent violence, and smoking cessation within social and psychological contexts."
+  },
+  "47133": {
+    "title": "Immunology & Molecular Mechanisms",
+    "description": "Examines immune responses, RNA biology, fibrosis, and cancer immunotherapy through molecular and cellular mechanisms in disease."
+  },
+  "47134": {
+    "title": "Water Harvesting & Sustainability",
+    "description": "Studies rainwater harvesting, renewable energy integration, and remote sensing for water management in built and natural environments."
+  }
+}
+      Successfully parsed 7/7 descriptions from response 9c99b028-efaf-4a34-b70f-f7cf48bff6d1 on attempt 1.
+  Finished LLM batch iteration. Processed in iter: 7, Total Processed: 7, Iteration Failures: 0, Remaining: 0
+LLM description generation complete. Success: 7/7, Persistently Failed (default assigned): 0/7
+Generating description embeddings for 7 clusters (L2)...
+  Calling text embedding client for 7 combined descriptions (L2)...
+  Assigned 7 description embeddings (L2).
+Applying reductions to 'representation_vector' vectors for 7 clusters (L2)...
+  Applied reductions to 7 'representation_vector' vectors (L2).
+Applying reductions to 'description_embedding' vectors for 7 clusters (L2)...
+  Applied reductions to 7 'description_embedding' vectors (L2).
+Level 2 processing complete. 7 clusters created.
+
+--- Clustering Level 3 ---
+Level 3: Clustering 7 prev level REPRESENTATION VECTORS (space: text_embedding).
+    Performing initial KMeans (k=2) on input I (shape: (7, 384), space: text_embedding) for Level 3...
+    Initial KMeans for L3 complete. Centroids shape: (2, 384), Labels count: 7
+  Resampling not applied for Level 3 (use_resampling=False, rt=10, m=10, k=2).
+Creating 2 new parent clusters for Level 3 based on final assignments...
+Processing 2 new Level 3 clusters...
+Generating LLM descriptions for 2 clusters (Level 3)...
+  LLM Retry Policy: 2 retries, 1.0s base delay.
+  Starting LLM batch iteration. Batch size <= 2, 2 items remaining.
+Building LLM prompt 19719b6d-fba0-45a1-a47b-3c054a38afa6 for 2 Clusters (Level 3)...
+  Built prompt 19719b6d-fba0-45a1-a47b-3c054a38afa6 with 2 items, estimated tokens: 1069.
+{
+  "47135": {
+    "title": "Smart Control & Sustainable Systems",
+    "description": "Focuses on intelligent control systems, renewable energy integration, and embedded data technologies in sustainable engineering."
+  },
+  "47136": {
+    "title": "Mental Health & Neuroendocrine Factors",
+    "description": "Explores hormonal, nutritional, and behavioral influences on mental health, including dementia, depression, and stress responses."
+  }
+}
+      Successfully parsed 2/2 descriptions from response 19719b6d-fba0-45a1-a47b-3c054a38afa6 on attempt 1.
+  Finished LLM batch iteration. Processed in iter: 2, Total Processed: 2, Iteration Failures: 0, Remaining: 0
+LLM description generation complete. Success: 2/2, Persistently Failed (default assigned): 0/2
+Generating description embeddings for 2 clusters (L3)...
+  Calling text embedding client for 2 combined descriptions (L3)...
+  Assigned 2 description embeddings (L3).
+Applying reductions to 'representation_vector' vectors for 2 clusters (L3)...
+  Applied reductions to 2 'representation_vector' vectors (L3).
+Applying reductions to 'description_embedding' vectors for 2 clusters (L3)...
+  Applied reductions to 2 'description_embedding' vectors (L3).
+Level 3 processing complete. 2 clusters created.
+Saved prompt log to hercules_run/prompt_log_20260412_031320.json (and hercules_run/prompt_log_20260412_031320.txt)
+
+--- Hercules Clustering Run Finished ---
+Highest level achieved: 3
+Returning 2 top-level clusters.
+Saving Hercules model to ../../hercules_run/wos/direct.json...
+Model successfully saved to ../../hercules_run/wos/direct.json
+Generating L0 cluster membership DataFrame...
+Including L0 details: []
+Tracing ancestry for 46985 L0 items up to Level 3.
+Cluster membership DataFrame generated successfully.
+Generating assignments for level 1 (143 clusters)...
+Generated assignments for 46985/46985 L0 items at level 1.
+Level 143 — FM: 0.2396, Rand: 0.9880, ARI: 0.2333, AMI: 0.5010, DP: 0.2049, LCA_F1: 0.1968
+Generating assignments for level 2 (7 clusters)...
+Generated assignments for 46985/46985 L0 items at level 2.
+Level 7 — FM: 0.4068, Rand: 0.7851, ARI: 0.2756, AMI: 0.4018, DP: 0.4097, LCA_F1: 0.4717
+
+Results saved to: results/wos_herc_clustering_scores_direct.csv

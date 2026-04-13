@@ -6,8 +6,8 @@
 #SBATCH --ntasks=1                  # the number of task to run
 #SBATCH --cpus-per-task=6           # the number of CPUs (or cores) per task (same as -c)
 #SBATCH --mem-per-cpu=12G            # memory required per allocated CPU (or core) - amount of memory (in bytes)
-#SBATCH --gres=gpu:1                # request 1 GPU per node
-#SBATCH --job-name wos_execution      # you can give your job a name for easier identification (same as -J)
+#SBATCH --gres=gpu:2                # request 1 GPU per node
+#SBATCH --job-name herc_db      # you can give your job a name for easier identification (same as -J)
  
 ########## Command Lines to Run ##########
 
@@ -23,6 +23,5 @@ cd run_models
 
 cd benchmark_datasets
 
-python eval_pipeline.py --dataset wos
-
+python herc_pipeline.py --dataset dbpedia --rep_mode direct
 
