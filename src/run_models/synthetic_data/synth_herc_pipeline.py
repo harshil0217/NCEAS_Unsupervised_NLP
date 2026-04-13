@@ -303,12 +303,18 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
             ari = adjusted_rand_score(target_lst, label_lst)
             ami = adjusted_mutual_info_score(target_lst, label_lst)
 
-            dp = dendrogram_purity(pred_tree, topic_series) if pred_tree is not None else np.nan
-            lca_f1_score = lca_f1(pred_tree, gt_tree_root, topic_series) if (pred_tree is not None and gt_tree_root is not None) else np.nan
+            if pred_tree is not None:
+                dp, dp_lower, dp_upper = dendrogram_purity(pred_tree, topic_series)
+            else:
+                dp = dp_lower = dp_upper = np.nan
+            if pred_tree is not None and gt_tree_root is not None:
+                lca_f1_score, lca_f1_lower, lca_f1_upper = lca_f1(pred_tree, gt_tree_root, topic_series)
+            else:
+                lca_f1_score = lca_f1_lower = lca_f1_upper = np.nan
 
             lca_str = f"{lca_f1_score:.4f}" if not np.isnan(lca_f1_score) else "NaN"
             print(f"Level {cluster_level} — FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, "
-                  f"DP: {dp:.4f}, LCA_F1: {lca_str}")
+                  f"DP: {dp:.4f} [{dp_lower:.4f}, {dp_upper:.4f}], LCA_F1: {lca_str}")
 
             rows.append({
                 "embedding_model": embedding_model,
@@ -320,7 +326,11 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
                 "ARI": ari,
                 "AMI": ami,
                 "Dendrogram_Purity": dp,
+                "DP_Lower": dp_lower,
+                "DP_Upper": dp_upper,
                 "LCA_F1": lca_f1_score,
+                "LCA_F1_Lower": lca_f1_lower,
+                "LCA_F1_Upper": lca_f1_upper,
                 "TED": ted_score,
             })
 
