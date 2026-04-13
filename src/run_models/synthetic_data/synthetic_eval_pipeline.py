@@ -63,7 +63,6 @@ from cuml.manifold import UMAP as cuUMAP
 from custom_packages.diffusion_condensation import DiffusionCondensation as dc
 
 # cuML GPU-accelerated clustering
-from cuml.cluster import AgglomerativeClustering as cuAgglomerativeClustering
 from cuml.cluster import HDBSCAN as cuHDBSCAN
 
 # ========================
@@ -215,10 +214,8 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
                 print(f"Loading cached Agglomerative linkage from {linkage_path}")
                 Z = np.load(linkage_path)
             else:
-                print("Using cuML Agglomerative Clustering (GPU)...")
-                model = cuAgglomerativeClustering(n_clusters=1)
-                model.fit(embed_data)
-                Z = model.single_linkage_tree_.to_numpy()
+                print("Building ward linkage tree for Agglomerative Clustering...")
+                Z = linkage(embed_data, method='ward')
                 os.makedirs(os.path.dirname(linkage_path), exist_ok=True)
                 np.save(linkage_path, Z)
                 print(f"Saved linkage matrix to {linkage_path}")
