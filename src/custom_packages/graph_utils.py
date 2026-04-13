@@ -1,6 +1,25 @@
 import networkx as nx
 from scipy.cluster.hierarchy import ClusterNode
 from anytree import Node
+from apted import APTED, Config
+
+
+class AnyTreeAPTEDConfig(Config):
+    """APTED config for anytree.Node trees.
+
+    Rename cost is always 0 — predicted tree internal node names are arbitrary,
+    so only structural differences (insertions/deletions, cost 1 each) are counted.
+    """
+    def rename(self, node1, node2):
+        return 0
+
+    def children(self, node):
+        return list(node.children)
+
+
+def apted_distance(tree1, tree2):
+    """Compute APTED tree edit distance between two anytree.Node trees."""
+    return APTED(tree1, tree2, AnyTreeAPTEDConfig()).compute_edit_distance()
 
 
 def anytree_to_networkx(root):
