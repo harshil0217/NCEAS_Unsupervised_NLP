@@ -42,7 +42,7 @@ for theme in "${themes[@]}"; do
     
     # Run with wait=True
     echo "Running with wait=False..."
-    python eval_script.py --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise" --wait False
+    python synthetic_eval_pipeline.py --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise" --wait False
     
   done
 done
