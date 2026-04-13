@@ -1,4 +1,0 @@
-Traceback (most recent call last):
-  File "/mnt/ffs24/home/chidurah/NCEAS_Unsupervised_NLP/src/run_models/benchmark_datasets/eval_pipeline.py", line 18, in <module>
-    from dotenv import load_dotenv
-ModuleNotFoundError: No module named 'dotenv'

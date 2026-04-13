@@ -1,44 +1,0 @@
-
-================================================================================
-Running pipeline for dataset: WOS
-================================================================================
-
-Loading dataset...
-Dataset shape: (46985, 3)
-
-Loading pre-built ground truth tree...
-Depth: 2
-Building cluster levels by counting unique categories at each level...
-
-Level 1 (category_1): 143 unique categories
-Level 0 (category_0): 7 unique categories
-
-Final cluster_levels (from deepest to shallowest): [143, 7]
-
-
-============================================================
-Processing embedding model: Qwen/Qwen3-Embedding-0.6B
-============================================================
-
-Loading existing embeddings from intermediate_data/Qwen/Qwen3-Embedding-0.6B_embeddings/wos.npy
-Using raw embeddings (no dimensionality reduction)...
-Loading cached PHATE from intermediate_data/Qwen/Qwen3-Embedding-0.6B_reduced_embeddings/PHATE_wos.npy...
-Loading cached PCA from intermediate_data/Qwen/Qwen3-Embedding-0.6B_reduced_embeddings/PCA_wos.npy...
-Loading cached UMAP from intermediate_data/Qwen/Qwen3-Embedding-0.6B_reduced_embeddings/UMAP_wos.npy...
-Loading cached tSNE from intermediate_data/Qwen/Qwen3-Embedding-0.6B_reduced_embeddings/tSNE_wos.npy...
-Loading cached PaCMAP from intermediate_data/Qwen/Qwen3-Embedding-0.6B_reduced_embeddings/PaCMAP_wos.npy...
-Loading cached TriMAP from intermediate_data/Qwen/Qwen3-Embedding-0.6B_reduced_embeddings/TriMAP_wos.npy...
-
-============================================================
-Processing embedding model: sentence-transformers/all-MiniLM-L6-v2
-============================================================
-
-Loading existing embeddings from intermediate_data/sentence-transformers/all-MiniLM-L6-v2_embeddings/wos.npy
-Using raw embeddings (no dimensionality reduction)...
-Loading cached PHATE from intermediate_data/sentence-transformers/all-MiniLM-L6-v2_reduced_embeddings/PHATE_wos.npy...
-Loading cached PCA from intermediate_data/sentence-transformers/all-MiniLM-L6-v2_reduced_embeddings/PCA_wos.npy...
-Loading cached UMAP from intermediate_data/sentence-transformers/all-MiniLM-L6-v2_reduced_embeddings/UMAP_wos.npy...
-Loading cached tSNE from intermediate_data/sentence-transformers/all-MiniLM-L6-v2_reduced_embeddings/tSNE_wos.npy...
-Loading cached PaCMAP from intermediate_data/sentence-transformers/all-MiniLM-L6-v2_reduced_embeddings/PaCMAP_wos.npy...
-Loading cached TriMAP from intermediate_data/sentence-transformers/all-MiniLM-L6-v2_reduced_embeddings/TriMAP_wos.npy...
-Processing embedding-clustering combos:   0%|          | 0/42 [00:00<?, ?it/s]Processing embedding-clustering combos:   5%|▍         | 2/42 [03:27<1:09:12, 103.82s/it]Processing embedding-clustering combos:   7%|▋         | 3/42 [13:55<3:29:27, 322.24s/it]Processing embedding-clustering combos:  10%|▉         | 4/42 [13:58<2:08:40, 203.17s/it]Processing embedding-clustering combos:  12%|█▏        | 5/42 [14:47<1:32:15, 149.61s/it]Processing embedding-clustering combos:  14%|█▍        | 6/42 [16:48<1:24:04, 140.13s/it]Processing embedding-clustering combos:  17%|█▋        | 7/42 [16:51<55:58, 95.96s/it]   Processing embedding-clustering combos:  19%|█▉        | 8/42 [20:33<1:16:46, 135.49s/it]Processing embedding-clustering combos:  21%|██▏       | 9/42 [30:40<2:34:58, 281.78s/it]Processing embedding-clustering combos:  24%|██▍       | 10/42 [30:43<1:44:41, 196.29s/it]Processing embedding-clustering combos:  26%|██▌       | 11/42 [30:58<1:12:53, 141.07s/it]Processing embedding-clustering combos:  29%|██▊       | 12/42 [38:51<2:00:46, 241.54s/it]Processing embedding-clustering combos:  31%|███       | 13/42 [38:53<1:21:50, 169.33s/it]Processing embedding-clustering combos:  33%|███▎      | 14/42 [38:59<56:02, 120.09s/it]  Processing embedding-clustering combos:  36%|███▌      | 15/42 [47:29<1:46:45, 237.24s/it]Processing embedding-clustering combos:  38%|███▊      | 16/42 [47:31<1:12:14, 166.70s/it]Processing embedding-clustering combos:  40%|████      | 17/42 [48:03<52:30, 126.03s/it]  Processing embedding-clustering combos:  43%|████▎     | 18/42 [57:58<1:46:48, 267.03s/it]Processing embedding-clustering combos:  45%|████▌     | 19/42 [1:00:25<1:28:35, 231.10s/it]Processing embedding-clustering combos:  48%|████▊     | 20/42 [1:03:02<1:16:32, 208.74s/it]Processing embedding-clustering combos:  50%|█████     | 21/42 [1:16:09<2:13:50, 382.40s/it]Processing embedding-clustering combos:  52%|█████▏    | 22/42 [1:21:06<1:58:52, 356.61s/it]Processing embedding-clustering combos:  55%|█████▍    | 23/42 [1:26:44<1:51:10, 351.08s/it]Processing embedding-clustering combos:  57%|█████▋    | 24/42 [1:38:07<2:15:10, 450.61s/it]Processing embedding-clustering combos:  60%|█████▉    | 25/42 [1:38:10<1:29:37, 316.30s/it]Processing embedding-clustering combos:  62%|██████▏   | 26/42 [1:39:01<1:03:08, 236.78s/it]Processing embedding-clustering combos:  64%|██████▍   | 27/42 [1:40:58<50:12, 200.86s/it]  Processing embedding-clustering combos:  67%|██████▋   | 28/42 [1:41:01<33:01, 141.55s/it]Processing embedding-clustering combos:  69%|██████▉   | 29/42 [1:44:15<34:02, 157.11s/it]Processing embedding-clustering combos:  71%|███████▏  | 30/42 [1:54:24<58:33, 292.82s/it]Processing embedding-clustering combos:  74%|███████▍  | 31/42 [1:54:27<37:45, 205.92s/it]Processing embedding-clustering combos:  76%|███████▌  | 32/42 [1:54:47<25:00, 150.09s/it][2026-04-09T15:53:18.617] error: *** JOB 5383785 ON nfh-000 CANCELLED AT 2026-04-09T15:53:18 DUE TO TIME LIMIT ***
