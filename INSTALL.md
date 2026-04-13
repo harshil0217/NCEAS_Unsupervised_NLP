@@ -69,7 +69,7 @@ The arXiv dataset used in this project is a **30,000 paper subset** of the full 
 
 3. Run `clean_arxiv.py` to generate `arxiv_clean.csv`:
    ```
-   src/data/arxiv/clean_arxiv.ipynb
+   src/data/arxiv/clean_arxiv.py
    ```
 
 ---
@@ -94,7 +94,7 @@ https://www.kaggle.com/datasets/kashnitsky/hierarchical-text-classification
 
 1. Download from `DBPEDIA_test.csv` from kaggle (existing preprocessed dataset incorporated for ease of use)
 
-[https://github.com/le-scientifique/torchDatasets/tree/master/dbpedia_csv](https://www.kaggle.com/code/danofer/dbpedia-preprocessing/input)
+https://www.kaggle.com/code/danofer/dbpedia-preprocessing/input
 
 2. Place at :
  ```bash
@@ -112,23 +112,12 @@ https://www.kaggle.com/datasets/kashnitsky/hierarchical-text-classification
 ### Web of Science Dataset
 
 1. Download from [https://data.mendeley.com/datasets/9rw3vkcfy4/6](https://data.mendeley.com/datasets/9rw3vkcfy4/6_)
-2. Place the `Meta-Data` folder, which contains a file named `Data.csv`, in `src/data/WebOfScience`
+2. Place the `Data.csv`, in `src/data/WebOfScience`
 
 ---
 
 
 
-## 4. Run Clustering Evalution Pipelines
-
-Once datasets are in place, run the clustering evaluation pipeline for any supported dataset:
-
-```bash
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset arxiv
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset amazon
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset dbpedia
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset rcv1
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset wos
-```
 
 Results are saved to:
 
@@ -150,6 +139,6 @@ Like for benchmark datasets, results will be saved to
 results/{dataset}_clustering_scores.csv
 ```
 
-with benchmark datasets saved to `src/data_generation/generated_data`
+with the synthetic datasets saved to `src/data_generation/generated_data`
 
 
