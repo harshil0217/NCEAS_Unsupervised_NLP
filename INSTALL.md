@@ -60,14 +60,14 @@ src/data/
 
 The arXiv dataset used in this project is a **30,000 paper subset** of the full arXiv metadata.
 
-1. Download the full arxiv dataset from [https://www.kaggle.com/datasets/Cornell-University/arxiv](https://www.kaggle.com/datasets/Cornell-University/arxiv)
+1. Download `arxiv-metadata-oai-snapshot.json` from [https://www.kaggle.com/datasets/Cornell-University/arxiv](https://www.kaggle.com/datasets/Cornell-University/arxiv)
 
 2. Place it at:
    ```bash
-   src/data/arxiv/arxiv.csv
+   src/data/arxiv/arxiv-metadata-oai-snapshot.json
    ```
 
-3. Run the cleaning notebook to generate `arxiv_clean.csv`:
+3. Run `clean_arxiv.py` to generate `arxiv_clean.csv`:
    ```
    src/data/arxiv/clean_arxiv.ipynb
    ```
