@@ -33,7 +33,7 @@ This creates a fully reproducible environment using the provided `environment.ym
 
 ---
 
-## 3. Benchmark Data Setup
+## 3. Data Setup
 
 This repository does **not include benchmark datasets**. Datasets must be downloaded separately and placed in the correct folders.
 
@@ -116,9 +116,11 @@ https://www.kaggle.com/datasets/kashnitsky/hierarchical-text-classification
 
 ---
 
-## 6. Run Benchmark Experiments
 
-Once datasets are in place, run the evaluation pipeline for any supported dataset:
+
+## 4. Run Clustering Evalution Pipelines
+
+Once datasets are in place, run the clustering evaluation pipeline for any supported dataset:
 
 ```bash
 python src/run_models/benchmark_datasets/eval_pipeline.py --dataset arxiv
@@ -136,4 +138,18 @@ results/{dataset}_clustering_scores.csv
 
 ---
 
-All experiments in this project follow the Safe, Portable, Reproducible, and Robust software guidelines described in the CMSE capstone course.
+## 5. Synthetic Data
+
+To generate synthetic data and perform the clustering evaluation pipeline run
+
+`bash src/run_models/synthetic_data/run_all.sh`
+
+Like for benchmark datasets, results will be saved to 
+
+```bash
+results/{dataset}_clustering_scores.csv
+```
+
+with benchmark datasets saved to `src/data_generation/generated_data`
+
+
