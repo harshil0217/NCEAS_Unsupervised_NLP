@@ -78,7 +78,7 @@ The arXiv dataset used in this project is a **30,000 paper subset** of the full 
 
 1. Download the files `train_40k.csv` and `val_10k.csv` from the following link
 
-[https://nijianmo.github.io/amazon/index.html](https://www.kaggle.com/datasets/kashnitsky/hierarchical-text-classification)
+https://www.kaggle.com/datasets/kashnitsky/hierarchical-text-classification
 
 2. Place them both at:
  ```bash
