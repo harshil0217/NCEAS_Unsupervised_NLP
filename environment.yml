@@ -35,6 +35,6 @@ dependencies:
   - openpyxl
   - pip:
     - trimap
-    - zss
+    - apted
     - pyhercules
   
