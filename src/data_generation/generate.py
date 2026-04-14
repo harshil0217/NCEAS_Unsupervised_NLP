@@ -3,6 +3,8 @@
 # ========================
 import os
 import sys
+from dotenv import load_dotenv
+load_dotenv()
 
 # Set the target folder name you want to reach
 target_folder = "src"

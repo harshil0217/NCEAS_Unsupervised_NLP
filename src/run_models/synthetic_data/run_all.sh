@@ -15,8 +15,12 @@ themes=("Energy_Ecosystems_and_Humans" "Offshore_energy_impacts_on_fisheries")
 parameter_sets=(
   '{"t": 1.0, "max_sub": 5, "depth": 3, "synonyms": 0, "branching": "random","add_noise":0}'
   '{"t": 1.0, "max_sub": 3, "depth": 5, "synonyms": 0, "branching": "random","add_noise":0}'
+  '{"t": 1.0, "max_sub": 5, "depth": 3, "synonyms": 0, "branching": "random","add_noise":0.25}'
+  '{"t": 1.0, "max_sub": 3, "depth": 5, "synonyms": 0, "branching": "random","add_noise":0.25}'
+  '{"t": 1.0, "max_sub": 5, "depth": 3, "synonyms": 0, "branching": "random","add_noise":0.50}'
+  '{"t": 1.0, "max_sub": 3, "depth": 5, "synonyms": 0, "branching": "random","add_noise":0.50}'
 )
-# re run noise??? make sure no extra set is generated. delete old maybe?
+
 
 # Loop through each theme
 for theme in "${themes[@]}"; do
@@ -43,7 +47,7 @@ for theme in "${themes[@]}"; do
     # Run with wait=True
     echo "Running with wait=False..."
     python synthetic_eval_pipeline.py --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise" --wait False
-    python synth_herc_pipeline.py --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise" --wait False --rep_mode "direct"
+    python synth_herc_pipeline.py --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise" --rep_mode "direct"
     
   done
 done
