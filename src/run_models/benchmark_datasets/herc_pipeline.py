@@ -371,8 +371,6 @@ def run_pipeline(dataset_name, rep_mode):
         top_cluster = top_clusters[0]
         pred_tree = cluster_to_anytree(top_cluster)
 
-        ted_score = np.nan
-
         # Per-level scoring
         for i, cluster_level in enumerate(cluster_levels):
             labels = hercules.get_level_assignments(level=i+1)[0]
@@ -392,8 +390,8 @@ def run_pipeline(dataset_name, rep_mode):
             ari = adjusted_rand_score(target_lst, label_lst)
             ami = adjusted_mutual_info_score(target_lst, label_lst)
 
-            dp = dendrogram_purity(pred_tree, topic_series) if pred_tree is not None else np.nan
-            lca_f1_score = lca_f1(pred_tree, gt_tree_root, topic_series) if (pred_tree is not None and gt_tree_root is not None) else np.nan
+            dp, _, _ = dendrogram_purity(pred_tree, topic_series) if pred_tree is not None else (np.nan, np.nan, np.nan)
+            lca_f1_score, _, _ = lca_f1(pred_tree, gt_tree_root, topic_series) if (pred_tree is not None and gt_tree_root is not None) else (np.nan, np.nan, np.nan)
 
             lca_str = f"{lca_f1_score:.4f}" if not np.isnan(lca_f1_score) else "NaN"
             print(f"Level {cluster_level} — FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, "
@@ -410,7 +408,6 @@ def run_pipeline(dataset_name, rep_mode):
                 "AMI": ami,
                 "Dendrogram_Purity": dp,
                 "LCA_F1": lca_f1_score,
-                "TED": ted_score,
             })
 
     scores_df = pd.DataFrame(rows)
