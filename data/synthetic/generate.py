@@ -3,6 +3,8 @@
 # ========================
 import os
 import sys
+from dotenv import load_dotenv
+load_dotenv()
 
 # Walk up from this file to find repo root (directory containing 'src' folder)
 current_dir = os.path.dirname(os.path.abspath(__file__))
