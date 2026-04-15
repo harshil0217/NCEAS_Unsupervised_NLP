@@ -526,11 +526,11 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
         ami = adjusted_mutual_info_score(target_lst, label_lst)
 
         if pred_tree is not None:
-            dp, _, _ = dendrogram_purity(pred_tree, topic_series)
+            dp = dendrogram_purity(pred_tree, topic_series)
         else:
             dp = np.nan
         if pred_tree is not None and gt_tree_root is not None:
-            lca_f1_score, _, _ = lca_f1(pred_tree, gt_tree_root, topic_series)
+            lca_f1_score = lca_f1(pred_tree, gt_tree_root, topic_series)
         else:
             lca_f1_score = np.nan
 
