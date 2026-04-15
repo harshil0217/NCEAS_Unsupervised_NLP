@@ -40,7 +40,7 @@ This repository does **not include benchmark datasets**. Datasets must be downlo
 ### Required Folder Structure
 
 ```bash
-src/data/
+data/
 ├── arxiv/
 │   └── arxiv_clean.csv
 ├── amazon/
@@ -64,12 +64,12 @@ The arXiv dataset used in this project is a **30,000 paper subset** of the full 
 
 2. Place it at:
    ```bash
-   src/data/arxiv/arxiv-metadata-oai-snapshot.json
+   data/arxiv/arxiv-metadata-oai-snapshot.json
    ```
 
 3. Run `clean_arxiv.py` to generate `arxiv_clean.csv`:
    ```
-   src/data/arxiv/clean_arxiv.py
+   data/arxiv/clean_arxiv.py
    ```
 
 ---
@@ -82,8 +82,8 @@ https://www.kaggle.com/datasets/kashnitsky/hierarchical-text-classification
 
 2. Place them both at:
  ```bash
-    src/data/amazon/train_40k.csv
-    src/data/amazon/val_10k.csv
+    data/amazon/train_40k.csv
+    data/amazon/val_10k.csv
  ```
 
 
@@ -98,21 +98,21 @@ https://www.kaggle.com/code/danofer/dbpedia-preprocessing/input
 
 2. Place at :
  ```bash
-    src/data/dbpedia/DBPEDIA_test.csv
+    data/dbpedia/DBPEDIA_test.csv
  ```
 
 ---
 
 ### RCV1 Dataset
 
-1. Execute the python file located at `src/data/rcv1/import_rcv1.py`. This file will load in the RCV1 dataset using the [fetch_rcv1](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_rcv1.html) function, preprocess the data for use, and save the data to `rcv1.csv` 
+1. Execute the python file located at `data/rcv1/import_rcv1.py`. This file will load in the RCV1 dataset using the [fetch_rcv1](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_rcv1.html) function, preprocess the data for use, and save the data to `rcv1.csv` 
 
 ---
 
 ### Web of Science Dataset
 
 1. Download from [https://data.mendeley.com/datasets/9rw3vkcfy4/6](https://data.mendeley.com/datasets/9rw3vkcfy4/6_)
-2. Place the `Data.csv`, in `src/data/WebOfScience`
+2. Place the `Data.csv`, in `data/WebOfScience`
 
 ---
 

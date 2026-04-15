@@ -57,7 +57,7 @@ jupyter notebook
 Then open:
 
 ```
-notebooks/demo.ipynb
+notebooks/milestones/demo.ipynb
 ```
 
 This notebook demonstrates the full pipeline including loading data, generating embeddings, dimensionality reduction, clustering, and visualization.
@@ -66,13 +66,17 @@ This notebook demonstrates the full pipeline including loading data, generating 
 
 ## Reproducibility
 
-Instructions to reproduce the Shepard Diagram figures from our final report are in:
+Full reproducibility instructions including pipeline steps, all figures, and metrics tables are in:
 
 ```
-notebooks/NCEAS_Reproducibility.ipynb
+REPRODUCIBILITY.md
 ```
 
-This notebook loads precomputed embeddings from the NCEAS Teams Data folder and generates Shepard Diagrams for PCA, UMAP, PHATE, and PaCMAP on the RCV1 dataset.
+A supplementary Shepard Diagram notebook is also available at:
+
+```
+notebooks/milestones/NCEAS_Reproducibility.ipynb
+```
 
 ---
 
@@ -104,17 +108,32 @@ Running the benchmark pipeline will generate:
 ```
 NCEAS_Unsupervised_NLP/
 │
-├── notebooks/                              # Milestone notebooks
-│   ├── demo.ipynb                          
-│   ├── MVP_demo.ipynb                      
-│   └── NCEAS_Reproducibility.ipynb         
+├── data/                                   # Benchmark dataset download scripts and instructions
+│   ├── arxiv/
+│   ├── amazon/
+│   ├── dbpedia/
+│   ├── rcv1/
+│   └── WebOfScience/
 │
-├── docs/                                   # Project documentation and report
-│   ├── project_plan.md
-│   └── NCEAS_PHATE_Project_for_ACL/        # ACL-style paper draft
+├── notebooks/
+│   ├── milestones/                         # Milestone and demo notebooks
+│   │   ├── demo.ipynb
+│   │   ├── MVP_demo.ipynb
+│   │   └── NCEAS_Reproducibility.ipynb
+│   └── analysis/                           # Analysis and evaluation notebooks
+│       ├── combine_results.ipynb
+│       ├── compare_eval_methods.ipynb
+│       ├── embedding_visuals.ipynb
+│       ├── final_table.ipynb
+│       ├── metric_tables.ipynb
+│       ├── ordinal_rankings.ipynb
+│       └── parameter_selection.ipynb
+│
+├── paper/                                  # ACL-style paper draft
+│   └── NCEAS_PHATE_Project_for_ACL/
 │       └── latex/
 │
-├── results/                                # Top-level output (plots, CSVs)
+├── results/                                # Clustering evaluation result tables
 │
 ├── src/
 │   ├── custom_packages/                    # Custom algorithm implementations
@@ -122,50 +141,37 @@ NCEAS_Unsupervised_NLP/
 │   │   ├── diffusion_condensation.py
 │   │   ├── fowlkes_mallows.py
 │   │   ├── hercules.py
-│   │   └── hierarchical_kmeans_gpu.py
-│   │
-│   ├── data/                               # Benchmark datasets (not included in repo)
-│   │   ├── arxiv/
-│   │   ├── amazon/
-│   │   ├── dbpedia/
-│   │   ├── rcv1/
-│   │   └── WebOfScience/
+│   │   ├── hierarchical_kmeans_gpu.py
+│   │   ├── dendrogram_purity.py
+│   │   ├── graph_utils.py
+│   │   └── lca_f1.py
 │   │
 │   ├── data_generation/                    # Synthetic data generation using LLMs
 │   │   ├── generate.py
-│   │   ├── theme_keys.json
 │   │   └── generated_data/
 │   │
-│   ├── evaluations/                        # Analysis and evaluation notebooks
-│   │   ├── combine_results.ipynb
-│   │   ├── compare_eval_methods.ipynb
-│   │   ├── embedding_visuals.ipynb
-│   │   ├── final_table.ipynb
-│   │   ├── metric_tables.ipynb
-│   │   └── parameter_selection.ipynb
+│   ├── intermediate_data/                  # Computed embeddings, reductions, and results
+│   │   └── summary_figures/               # Scatter grid figures (Figure 2)
 │   │
-│   ├── results/                            # Clustering evaluation CSVs
-│   │
-│   └── run_models/                         # Experiment pipelines
-│       ├── benchmark_datasets/
-│       │   ├── eval_pipeline.py            # Main benchmark evaluation pipeline
-│       │   ├── herc_pipeline.py            # HERCULES hierarchical clustering pipeline
-│       │   └── run_eval_pipeline.sh        # Shell script to run all benchmarks
-│       ├── synthetic_data/
-│       │   ├── eval_script.py
-│       │   ├── synth_herc_pipeline.py
-│       │   └── run_all.sh
-│       ├── epa.ipynb                       # EPA dataset analysis
-│       ├── slide_figures.py                # Figure generation for slides
-│       ├── viz_summary_figures.py          # Summary visualization figures
-│       ├── visualization_metrics.ipynb     # Visualization quality metrics (benchmark)
-│       └── visualization_metrics_synthetic.ipynb  # Visualization quality metrics (synthetic)
+│   └── run_models/
+│       ├── benchmark_datasets/             # Benchmark evaluation pipeline
+│       │   ├── eval_pipeline.py
+│       │   ├── herc_pipeline.py
+│       │   ├── viz_metrics_script.py
+│       │   ├── visualization_metrics.ipynb
+│       │   └── run_eval_pipeline.sh
+│       └── synthetic_data/                 # Synthetic data evaluation pipeline
+│           ├── scatter_grid_synthetic.py
+│           ├── synth_herc_pipeline.py
+│           ├── visualization_metrics_synthetic.ipynb
+│           ├── viz_metrics_script.py
+│           └── run_all.sh
 │
 ├── environment.yml                         # Conda environment (Linux/CUDA)
-├── requirements.txt                        # Python package requirements
-├── INSTALL.md                              # Installation instructions
-├── LICENSE                                 # Apache 2.0 License
-└── README.md                              # Project overview
+├── INSTALL.md                              # Installation and data setup instructions
+├── REPRODUCIBILITY.md                      # Step-by-step reproduction of all figures and results
+├── LICENSE
+└── README.md
 ```
 
 ---
@@ -174,7 +180,7 @@ NCEAS_Unsupervised_NLP/
 
 The project report (ACL-style paper draft) is available in:
 
-[docs/NCEAS_PHATE_Project_for_ACL/latex/](docs/NCEAS_PHATE_Project_for_ACL/latex/)
+[paper/NCEAS_PHATE_Project_for_ACL/latex/](paper/NCEAS_PHATE_Project_for_ACL/latex/)
 
 ---
 
