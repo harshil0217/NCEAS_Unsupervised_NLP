@@ -4,25 +4,16 @@
 import os
 import sys
 
-# Set the target folder name you want to reach
-target_folder = "src"
-
-# Get the current working directory
-current_dir = os.getcwd()
-
-# Loop to move up the directory tree until we reach the target folder
-while os.path.basename(current_dir) != target_folder:
-    parent_dir = os.path.abspath(os.path.join(current_dir, ".."))
+# Walk up from this file to find repo root (directory containing 'src' folder)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+while not os.path.isdir(os.path.join(current_dir, 'src')):
+    parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
     if parent_dir == current_dir:
-        # If we reach the root directory and haven't found the target, exit
-        raise FileNotFoundError(f"{target_folder} not found in the directory tree.")
+        raise FileNotFoundError("Could not find repo root containing 'src'")
     current_dir = parent_dir
-
-# Change the working directory to the folder where "phate-for-text" is found
-os.chdir(current_dir)
-
-# Add the "phate-for-text" directory to sys.path
-sys.path.insert(0, current_dir)
+repo_root = current_dir
+os.chdir(repo_root)
+sys.path.insert(0, os.path.join(repo_root, 'src'))
 
 from groq import Groq
 import pandas as pd
@@ -342,13 +333,13 @@ depth = args.depth
 with_synonyms = args.synonyms
 branching = args.branching
 add_noise = float(args.add_noise)
-os.makedirs('data_generation/generated_data', exist_ok=True)
+os.makedirs('data/synthetic/generated_data', exist_ok=True)
 
-with open('data_generation/theme_keys.json', 'r') as file:
+with open('data/synthetic/theme_keys.json', 'r') as file:
     data = json.load(file)
 
 top_level_topics = data[theme]
-file_name = f'data_generation/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise0.0_{branching}.csv'
+file_name = f'data/synthetic/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise0.0_{branching}.csv'
 
 print(f"\n=== Hierarchy Generation Script ===")
 print(f"Theme: {theme}")
@@ -371,7 +362,7 @@ if not os.path.exists(file_name):
                                 branching=branching)
     
     hierarchy = clean_strings(hierarchy)
-    file_name = f'data_generation/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise0.0_{branching}.csv'
+    file_name = f'data/synthetic/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise0.0_{branching}.csv'
 
     # Save JSON version
     json_file = file_name.replace('.csv', '.json')
@@ -393,7 +384,7 @@ else:
 
 
 if add_noise > 0.0:
-    noise_file = f'data_generation/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise{add_noise}_{branching}.csv'
+    noise_file = f'data/synthetic/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise{add_noise}_{branching}.csv'
     if not os.path.exists(noise_file):
         num_noise = int(add_noise * len(df))
         print(f"=== Adding Noise ===")

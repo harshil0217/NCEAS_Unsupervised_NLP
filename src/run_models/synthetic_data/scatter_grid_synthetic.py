@@ -32,7 +32,7 @@ EMBEDDING_MODELS = [
     ("Qwen",   "intermediate_data/Qwen/Qwen3-Embedding-0.6B_reduced_2d"),
 ]
 
-LABEL_DIR = "data_generation/generated_data"
+LABEL_DIR = "../data/synthetic/generated_data"
 OUT_DIR   = "intermediate_data/summary_figures"
 os.makedirs(OUT_DIR, exist_ok=True)
 

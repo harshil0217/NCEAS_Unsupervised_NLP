@@ -365,7 +365,7 @@ add_noise = args.add_noise
 wait = args.wait == "True"
 
 # Load generated data
-filename = f'data_generation/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}.csv'
+filename = f'../data/synthetic/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}.csv'
 
 print(f"Waiting for {filename} to be created...")
 while not os.path.exists(filename):

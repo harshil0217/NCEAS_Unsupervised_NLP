@@ -33,7 +33,7 @@ for theme in "${themes[@]}"; do
         
 
     echo "Generating with params -> t: $t, max_sub: $max_sub, depth: $depth, synonyms: $synonyms, branching: $branching, add_noise: $add_noise"
-    python "../../data_generation/generate.py" --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise"
+    python "../../../data/synthetic/generate.py" --theme "$theme" --t "$t" --max_sub "$max_sub" --depth "$depth" --synonyms "$synonyms" --branching "$branching" --add_noise  "$add_noise"
 
 
 

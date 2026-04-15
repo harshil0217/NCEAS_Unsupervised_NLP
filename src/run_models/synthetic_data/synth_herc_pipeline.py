@@ -176,7 +176,7 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
     print(f"{'='*80}\n")
 
     # Load generated synthetic data
-    filename = f'data_generation/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}.csv'
+    filename = f'../data/synthetic/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}.csv'
 
     if not os.path.exists(filename):
         raise FileNotFoundError(f"Synthetic data file not found: {filename}\nPlease generate it first using generate.py")
