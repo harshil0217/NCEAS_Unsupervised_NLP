@@ -1,15 +1,9 @@
 import os
 import sys
 import pandas as pd
-import re
 import warnings
-from collections import defaultdict
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
-from sklearn.cluster import AgglomerativeClustering
-from sklearn.metrics import adjusted_rand_score, rand_score
 
 # Move to repo root
 target_folder = "NCEAS_Unsupervised_NLP"

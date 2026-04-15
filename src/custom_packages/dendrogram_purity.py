@@ -47,4 +47,9 @@ def dendrogram_purity(tree, true_labels, n_samples=1000):
         purity = np.sum(true_labels[lca_leaves] == c) / len(lca_leaves)
         scores.append(purity)
 
-    return float(np.mean(scores)) if scores else float('nan')
+    if not scores:
+        return float('nan'), float('nan'), float('nan')
+    arr = np.array(scores)
+    mean = float(np.mean(arr))
+    std = float(np.std(arr))
+    return mean, max(0.0, mean - 2.0 * std), min(1.0, mean + 2.0 * std)

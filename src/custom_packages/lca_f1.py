@@ -77,4 +77,9 @@ def lca_f1(pred_tree, gt_tree, true_labels, n_samples=1000):
         else:
             f1_scores.append(2 * precision * recall / (precision + recall))
 
-    return float(np.mean(f1_scores)) if f1_scores else float('nan')
+    if not f1_scores:
+        return float('nan'), float('nan'), float('nan')
+    arr = np.array(f1_scores)
+    mean = float(np.mean(arr))
+    std = float(np.std(arr))
+    return mean, max(0.0, mean - 2.0 * std), min(1.0, mean + 2.0 * std)

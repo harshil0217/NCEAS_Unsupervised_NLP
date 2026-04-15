@@ -63,8 +63,7 @@ from pyhercules import Hercules
 from custom_packages.fowlkes_mallows import FowlkesMallows
 from custom_packages.dendrogram_purity import dendrogram_purity
 from custom_packages.lca_f1 import lca_f1
-from custom_packages.graph_utils import anytree_to_zss
-import zss
+from custom_packages.graph_utils import apted_distance
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
 from run_models.benchmark_datasets.build_ground_truth_trees import build_ground_truth_tree
 
@@ -231,7 +230,7 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
         print(f"Processing embedding model: {embedding_model}")
         print(f"{'='*60}\n")
 
-        save_path = f"../../hercules_run/synthetic/{safe_theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}/{rep_mode}/{embedding_model.replace('/', '_')}"
+        save_path = f"results/hercules_run/synthetic/{safe_theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}/{rep_mode}/{embedding_model.replace('/', '_')}"
 
         hercules = None
 
@@ -260,7 +259,7 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
             top_clusters = hercules.cluster(topic_data['topic'].tolist(), topic_seed=topic_seed)
 
             print(f"Saving Hercules model to {save_path}...")
-            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            os.makedirs(save_path, exist_ok=True)
             hercules.save_model(filepath=save_path, top_clusters=top_clusters)
 
         # Save cluster assignments
@@ -275,41 +274,89 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
         top_cluster = top_clusters[0]
         pred_tree = cluster_to_anytree(top_cluster)
 
-        # Tree Edit Distance (once per embedding model)
-        ted_score = np.nan
-        if gt_tree_root is not None:
+        # Set up scores cache directory
+        theme_params = f"{safe_theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}"
+        safe_embedding = embedding_model.replace('/', '_')
+        scores_cache_dir = f"intermediate_data/{safe_embedding}_scores/{theme_params}/Hercules"
+        os.makedirs(scores_cache_dir, exist_ok=True)
+
+        # Tree Edit Distance (once per embedding model) — cached
+        ted_cache_path = f"{scores_cache_dir}/{rep_mode}_ted.npy"
+        if os.path.exists(ted_cache_path):
+            ted_score = float(np.load(ted_cache_path))
+            print(f"Loaded cached TED: {ted_score:.1f}")
+        elif gt_tree_root is not None:
             print("Computing Tree Edit Distance...")
-            ted_score = zss.simple_distance(anytree_to_zss(pred_tree), anytree_to_zss(gt_tree_root))
+            ted_score = apted_distance(pred_tree, gt_tree_root)
+            np.save(ted_cache_path, np.array(ted_score))
             print(f"TED: {ted_score:.1f}")
+        else:
+            ted_score = np.nan
 
         # Per-level scoring
         for i, cluster_level in enumerate(cluster_levels):
             level_idx = i + 1
-            print(f"\nEvaluating level {level_idx} (target clusters: {cluster_level})...")
+            level_prefix = f"{rep_mode}_{cluster_level}"
+            score_keys = ['fm', 'rand', 'ari', 'ami', 'dp', 'dp_lower', 'dp_upper', 'lca_f1', 'lca_f1_lower', 'lca_f1_upper']
+            cache_paths = {k: f"{scores_cache_dir}/{level_prefix}_{k}.npy" for k in score_keys}
+            all_cached = all(os.path.exists(p) for p in cache_paths.values())
 
-            labels = hercules.get_level_assignments(level=level_idx)[0]
+            if all_cached:
+                print(f"\nLoading cached scores for level {level_idx} (target clusters: {cluster_level})...")
+                fm_score   = float(np.load(cache_paths['fm']))
+                rand       = float(np.load(cache_paths['rand']))
+                ari        = float(np.load(cache_paths['ari']))
+                ami        = float(np.load(cache_paths['ami']))
+                dp         = float(np.load(cache_paths['dp']))
+                dp_lower   = float(np.load(cache_paths['dp_lower']))
+                dp_upper   = float(np.load(cache_paths['dp_upper']))
+                lca_f1_score  = float(np.load(cache_paths['lca_f1']))
+                lca_f1_lower  = float(np.load(cache_paths['lca_f1_lower']))
+                lca_f1_upper  = float(np.load(cache_paths['lca_f1_upper']))
+            else:
+                print(f"\nEvaluating level {level_idx} (target clusters: {cluster_level})...")
 
-            topic_series = topic_dict[cluster_level]
-            valid_idx = ~pd.isna(topic_series)
-            target_lst = topic_series[valid_idx]
-            label_lst = labels[valid_idx]
+                labels = hercules.get_level_assignments(level=level_idx)[0]
 
-            try:
-                fm_score = FowlkesMallows.Bk({cluster_level: target_lst}, {cluster_level: label_lst})[cluster_level]['FM']
-            except Exception:
-                fm_score = np.nan
-                print("WARNING: FM score computation failed!")
+                topic_series = topic_dict[cluster_level]
+                valid_idx = ~pd.isna(topic_series)
+                target_lst = topic_series[valid_idx]
+                label_lst = labels[valid_idx]
 
-            rand = rand_score(target_lst, label_lst)
-            ari = adjusted_rand_score(target_lst, label_lst)
-            ami = adjusted_mutual_info_score(target_lst, label_lst)
+                try:
+                    fm_score = FowlkesMallows.Bk({cluster_level: target_lst}, {cluster_level: label_lst})[cluster_level]['FM']
+                except Exception:
+                    fm_score = np.nan
+                    print("WARNING: FM score computation failed!")
 
-            dp = dendrogram_purity(pred_tree, topic_series) if pred_tree is not None else np.nan
-            lca_f1_score = lca_f1(pred_tree, gt_tree_root, topic_series) if (pred_tree is not None and gt_tree_root is not None) else np.nan
+                rand = rand_score(target_lst, label_lst)
+                ari = adjusted_rand_score(target_lst, label_lst)
+                ami = adjusted_mutual_info_score(target_lst, label_lst)
+
+                if pred_tree is not None:
+                    dp, dp_lower, dp_upper = dendrogram_purity(pred_tree, topic_series)
+                else:
+                    dp = dp_lower = dp_upper = np.nan
+                if pred_tree is not None and gt_tree_root is not None:
+                    lca_f1_score, lca_f1_lower, lca_f1_upper = lca_f1(pred_tree, gt_tree_root, topic_series)
+                else:
+                    lca_f1_score = lca_f1_lower = lca_f1_upper = np.nan
+
+                # Save per-level scores to cache
+                np.save(cache_paths['fm'],          np.array(fm_score))
+                np.save(cache_paths['rand'],        np.array(rand))
+                np.save(cache_paths['ari'],         np.array(ari))
+                np.save(cache_paths['ami'],         np.array(ami))
+                np.save(cache_paths['dp'],          np.array(dp))
+                np.save(cache_paths['dp_lower'],    np.array(dp_lower))
+                np.save(cache_paths['dp_upper'],    np.array(dp_upper))
+                np.save(cache_paths['lca_f1'],      np.array(lca_f1_score))
+                np.save(cache_paths['lca_f1_lower'],np.array(lca_f1_lower))
+                np.save(cache_paths['lca_f1_upper'],np.array(lca_f1_upper))
 
             lca_str = f"{lca_f1_score:.4f}" if not np.isnan(lca_f1_score) else "NaN"
             print(f"Level {cluster_level} — FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, "
-                  f"DP: {dp:.4f}, LCA_F1: {lca_str}")
+                  f"DP: {dp:.4f} [{dp_lower:.4f}, {dp_upper:.4f}], LCA_F1: {lca_str}")
 
             rows.append({
                 "embedding_model": embedding_model,
@@ -321,7 +368,11 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
                 "ARI": ari,
                 "AMI": ami,
                 "Dendrogram_Purity": dp,
+                "DP_Lower": dp_lower,
+                "DP_Upper": dp_upper,
                 "LCA_F1": lca_f1_score,
+                "LCA_F1_Lower": lca_f1_lower,
+                "LCA_F1_Upper": lca_f1_upper,
                 "TED": ted_score,
             })
 

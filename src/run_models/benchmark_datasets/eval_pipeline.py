@@ -385,7 +385,7 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
                    cluster_levels, topic_dict, short,
                    gt_tree_root=None, gt_node_map=None):
     embed_data = reduced_embeddings[embedding_model][dim_reduction_method]
-    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": [], "Dendrogram Purity": [], "LCA_F1": [], "TED": None}
+    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": [], "Dendrogram Purity": [], "LCA_F1": []}
 
     print(f"\n{'='*60}")
     print(f"Processing Embedding Method: {dim_reduction_method}")
@@ -396,8 +396,6 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
     method_prefix = {"Agglomerative": "Agg", "HDBSCAN": "HDB", "DC": "DC"}[cluster_method]
     scores_dir = os.path.join(f"../data/intermediate_data/{embedding_model}_scores", short, dim_reduction_method)
     os.makedirs(scores_dir, exist_ok=True)
-
-    ted_cache_path = os.path.join(scores_dir, f"{method_prefix}_ted.npy")
 
     def score_paths(level):
         return {
@@ -410,11 +408,9 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
         }
 
 
-    # Short-circuit: if all scores for every level load and return immediately.
-    if (all(all(os.path.exists(p) for p in score_paths(level).values()) for level in cluster_levels)
-            and os.path.exists(ted_cache_path)):
+    # Short-circuit: if all scores for every level are cached, load and return immediately.
+    if all(all(os.path.exists(p) for p in score_paths(level).values()) for level in cluster_levels):
         print(f"All scores cached for {dim_reduction_method} / {cluster_method}, loading from cache...")
-        combo_scores["TED"] = float(np.load(ted_cache_path))
         for level in cluster_levels:
             paths = score_paths(level)
             combo_scores["FM"].append(float(np.load(paths["fm"])))
@@ -483,8 +479,6 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
     if tree is not None:
         pred_tree = clusternode_to_anytree(tree)
 
-    combo_scores["TED"] = np.nan
-
     # Iterate through cluster levels
     for level in cluster_levels:
         print(f"Testing cluster level: {level}")
@@ -531,8 +525,14 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
         ari = adjusted_rand_score(target_lst, label_lst)
         ami = adjusted_mutual_info_score(target_lst, label_lst)
 
-        dp = dendrogram_purity(pred_tree, topic_series) if pred_tree is not None else np.nan
-        lca_f1_score = lca_f1(pred_tree, gt_tree_root, topic_series) if (pred_tree is not None and gt_tree_root is not None) else np.nan
+        if pred_tree is not None:
+            dp, _, _ = dendrogram_purity(pred_tree, topic_series)
+        else:
+            dp = np.nan
+        if pred_tree is not None and gt_tree_root is not None:
+            lca_f1_score, _, _ = lca_f1(pred_tree, gt_tree_root, topic_series)
+        else:
+            lca_f1_score = np.nan
 
         # Cache all scores
         np.save(paths["fm"],   np.array(fm_score))
@@ -543,7 +543,7 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
         np.save(paths["lca"],  np.array(lca_f1_score))
         lca_str = f"{lca_f1_score:.4f}" if not np.isnan(lca_f1_score) else "NaN"
         print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, "
-              f"Dendrogram_Purity: {dp:.4f}, LCA_F1: {lca_str}")
+              f"DP: {dp:.4f}, LCA_F1: {lca_str}")
 
         combo_scores["FM"].append(fm_score)
         combo_scores["Rand"].append(rand)
@@ -689,7 +689,6 @@ def run_pipeline(dataset_name):
         scores_all[(embedding_model, dim_reduction_method, cluster_method)]["AMI"] = combo_scores["AMI"]
         scores_all[(embedding_model, dim_reduction_method, cluster_method)]["Dendrogram Purity"] = combo_scores["Dendrogram Purity"]
         scores_all[(embedding_model, dim_reduction_method, cluster_method)]["LCA_F1"] = combo_scores["LCA_F1"]
-        scores_all[(embedding_model, dim_reduction_method, cluster_method)]["TED"] = combo_scores["TED"]
 
     print(f"\n{'='*60}")
     print("All clustering and evaluation complete!")
@@ -712,7 +711,6 @@ def run_pipeline(dataset_name):
                 "AMI": score_dict["AMI"][i],
                 "Dendrogram_Purity": score_dict["Dendrogram Purity"][i],
                 "LCA_F1": score_dict["LCA_F1"][i],
-                "TED": score_dict["TED"],
             })
 
     # Create DataFrame

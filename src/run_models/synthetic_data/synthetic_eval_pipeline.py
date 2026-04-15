@@ -82,8 +82,7 @@ from tqdm import tqdm
 from custom_packages.fowlkes_mallows import FowlkesMallows
 from custom_packages.dendrogram_purity import dendrogram_purity
 from custom_packages.lca_f1 import lca_f1
-from custom_packages.graph_utils import clusternode_to_anytree, anytree_to_zss
-import zss
+from custom_packages.graph_utils import clusternode_to_anytree, apted_distance
 from run_models.benchmark_datasets.build_ground_truth_trees import build_ground_truth_tree
 
 
@@ -158,7 +157,7 @@ def get_embeddings(texts, model):
 # ===================
 def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, cluster_levels, topic_dict, theme, t, max_sub, depth, synonyms, branching, add_noise, gt_tree_root=None):
     """Run clustering on reduced embeddings and evaluate against ground truth."""
-    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": [], "Dendrogram Purity": [], "LCA_F1": [], "TED": None}
+    combo_scores = {"FM": [], "Rand": [], "ARI": [], "AMI": [], "Dendrogram Purity": [], "DP_Lower": [], "DP_Upper": [], "LCA_F1": [], "LCA_F1_Lower": [], "LCA_F1_Upper": [], "TED": None}
     try:
         print(f"\n{'='*60}")
         print(f"Processing Embedding Method: {embed_name}")
@@ -178,12 +177,16 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
 
         def score_paths(level):
             return {
-                "fm":   os.path.join(scores_dir, f"{method_prefix}_{level}_fm.npy"),
-                "rand": os.path.join(scores_dir, f"{method_prefix}_{level}_rand.npy"),
-                "ari":  os.path.join(scores_dir, f"{method_prefix}_{level}_ari.npy"),
-                "ami":  os.path.join(scores_dir, f"{method_prefix}_{level}_ami.npy"),
-                "dp":   os.path.join(scores_dir, f"{method_prefix}_{level}_dp.npy"),
-                "lca":  os.path.join(scores_dir, f"{method_prefix}_{level}_lca_f1.npy"),
+                "fm":        os.path.join(scores_dir, f"{method_prefix}_{level}_fm.npy"),
+                "rand":      os.path.join(scores_dir, f"{method_prefix}_{level}_rand.npy"),
+                "ari":       os.path.join(scores_dir, f"{method_prefix}_{level}_ari.npy"),
+                "ami":       os.path.join(scores_dir, f"{method_prefix}_{level}_ami.npy"),
+                "dp":        os.path.join(scores_dir, f"{method_prefix}_{level}_dp.npy"),
+                "dp_lower":  os.path.join(scores_dir, f"{method_prefix}_{level}_dp_lower.npy"),
+                "dp_upper":  os.path.join(scores_dir, f"{method_prefix}_{level}_dp_upper.npy"),
+                "lca":       os.path.join(scores_dir, f"{method_prefix}_{level}_lca_f1.npy"),
+                "lca_lower": os.path.join(scores_dir, f"{method_prefix}_{level}_lca_f1_lower.npy"),
+                "lca_upper": os.path.join(scores_dir, f"{method_prefix}_{level}_lca_f1_upper.npy"),
             }
 
         # Short-circuit: if all scores for every level are cached, load and return immediately.
@@ -198,7 +201,11 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
                 combo_scores["ARI"].append(float(np.load(paths["ari"])))
                 combo_scores["AMI"].append(float(np.load(paths["ami"])))
                 combo_scores["Dendrogram Purity"].append(float(np.load(paths["dp"])))
+                combo_scores["DP_Lower"].append(float(np.load(paths["dp_lower"])))
+                combo_scores["DP_Upper"].append(float(np.load(paths["dp_upper"])))
                 combo_scores["LCA_F1"].append(float(np.load(paths["lca"])))
+                combo_scores["LCA_F1_Lower"].append(float(np.load(paths["lca_lower"])))
+                combo_scores["LCA_F1_Upper"].append(float(np.load(paths["lca_upper"])))
             return embedding_model, embed_name, cluster_method, combo_scores
 
         tree = None
@@ -255,7 +262,7 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
                 combo_scores["TED"] = float(np.load(ted_cache_path))
             else:
                 print("Computing Tree Edit Distance...")
-                ted_score = zss.simple_distance(anytree_to_zss(pred_tree), anytree_to_zss(gt_tree_root))
+                ted_score = apted_distance(pred_tree, gt_tree_root)
                 np.save(ted_cache_path, np.array(ted_score))
                 combo_scores["TED"] = ted_score
                 print(f"TED: {ted_score:.1f}")
@@ -274,7 +281,11 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
                 combo_scores["ARI"].append(float(np.load(paths["ari"])))
                 combo_scores["AMI"].append(float(np.load(paths["ami"])))
                 combo_scores["Dendrogram Purity"].append(float(np.load(paths["dp"])))
+                combo_scores["DP_Lower"].append(float(np.load(paths["dp_lower"])))
+                combo_scores["DP_Upper"].append(float(np.load(paths["dp_upper"])))
                 combo_scores["LCA_F1"].append(float(np.load(paths["lca"])))
+                combo_scores["LCA_F1_Lower"].append(float(np.load(paths["lca_lower"])))
+                combo_scores["LCA_F1_Upper"].append(float(np.load(paths["lca_upper"])))
                 continue
 
             if cluster_method in ("Agglomerative", "HDBSCAN"):
@@ -303,28 +314,40 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
             rand = rand_score(target_lst, label_lst)
             ari = adjusted_rand_score(target_lst, label_lst)
             ami = adjusted_mutual_info_score(target_lst, label_lst)
-            dp = dendrogram_purity(pred_tree, topic_series) if pred_tree is not None else np.nan
-            lca_f1_score = lca_f1(pred_tree, gt_tree_root, topic_series) if (pred_tree is not None and gt_tree_root is not None) else np.nan
+            if pred_tree is not None:
+                dp, dp_lower, dp_upper = dendrogram_purity(pred_tree, topic_series)
+            else:
+                dp = dp_lower = dp_upper = np.nan
+            if pred_tree is not None and gt_tree_root is not None:
+                lca_f1_score, lca_f1_lower, lca_f1_upper = lca_f1(pred_tree, gt_tree_root, topic_series)
+            else:
+                lca_f1_score = lca_f1_lower = lca_f1_upper = np.nan
 
-            np.save(paths["fm"],   np.array(fm_score))
-            np.save(paths["rand"], np.array(rand))
-            np.save(paths["ari"],  np.array(ari))
-            np.save(paths["ami"],  np.array(ami))
-            np.save(paths["dp"],   np.array(dp))
-            np.save(paths["lca"],  np.array(lca_f1_score))
+            np.save(paths["fm"],        np.array(fm_score))
+            np.save(paths["rand"],      np.array(rand))
+            np.save(paths["ari"],       np.array(ari))
+            np.save(paths["ami"],       np.array(ami))
+            np.save(paths["dp"],        np.array(dp))
+            np.save(paths["dp_lower"],  np.array(dp_lower))
+            np.save(paths["dp_upper"],  np.array(dp_upper))
+            np.save(paths["lca"],       np.array(lca_f1_score))
+            np.save(paths["lca_lower"], np.array(lca_f1_lower))
+            np.save(paths["lca_upper"], np.array(lca_f1_upper))
 
             lca_str = f"{lca_f1_score:.4f}" if not np.isnan(lca_f1_score) else "NaN"
             print(f"Scores - FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, "
-                  f"Dendrogram_Purity: {dp:.4f}, LCA_F1: {lca_str}")
-
-            ci = bootstrap_ci(np.asarray(target_lst), np.asarray(label_lst))
+                  f"DP: {dp:.4f} [{dp_lower:.4f}, {dp_upper:.4f}], LCA_F1: {lca_str}")
 
             combo_scores["FM"].append(fm_score)
             combo_scores["Rand"].append(rand)
             combo_scores["ARI"].append(ari)
             combo_scores["AMI"].append(ami)
             combo_scores["Dendrogram Purity"].append(dp)
+            combo_scores["DP_Lower"].append(dp_lower)
+            combo_scores["DP_Upper"].append(dp_upper)
             combo_scores["LCA_F1"].append(lca_f1_score)
+            combo_scores["LCA_F1_Lower"].append(lca_f1_lower)
+            combo_scores["LCA_F1_Upper"].append(lca_f1_upper)
 
         return embedding_model, embed_name, cluster_method, combo_scores
     except Exception as e:
@@ -474,7 +497,7 @@ for embedding_model in embedding_model_names:
         },
     }
 
-    embedding_methods_for_model = {}
+    embedding_methods_for_model = {"Raw": embeddings}
     for method_name, task in reduction_tasks.items():
         if os.path.exists(task["path"]):
             print(f"Loading cached {method_name} from {task['path']}...")
@@ -521,7 +544,11 @@ for embedding_model, embed_name, cluster_method, combo_scores in combo_results:
     scores_all[(embedding_model, embed_name, cluster_method)]["ARI"] = combo_scores["ARI"]
     scores_all[(embedding_model, embed_name, cluster_method)]["AMI"] = combo_scores["AMI"]
     scores_all[(embedding_model, embed_name, cluster_method)]["Dendrogram Purity"] = combo_scores["Dendrogram Purity"]
+    scores_all[(embedding_model, embed_name, cluster_method)]["DP_Lower"] = combo_scores["DP_Lower"]
+    scores_all[(embedding_model, embed_name, cluster_method)]["DP_Upper"] = combo_scores["DP_Upper"]
     scores_all[(embedding_model, embed_name, cluster_method)]["LCA_F1"] = combo_scores["LCA_F1"]
+    scores_all[(embedding_model, embed_name, cluster_method)]["LCA_F1_Lower"] = combo_scores["LCA_F1_Lower"]
+    scores_all[(embedding_model, embed_name, cluster_method)]["LCA_F1_Upper"] = combo_scores["LCA_F1_Upper"]
     scores_all[(embedding_model, embed_name, cluster_method)]["TED"] = combo_scores["TED"]
 
 print(f"\n{'='*60}")
@@ -543,7 +570,11 @@ for (embedding_model, embed_name, cluster_method), score_dict in scores_all.item
             "ARI": score_dict["ARI"][i],
             "AMI": score_dict["AMI"][i],
             "Dendrogram_Purity": score_dict["Dendrogram Purity"][i],
+            "DP_Lower": score_dict["DP_Lower"][i],
+            "DP_Upper": score_dict["DP_Upper"][i],
             "LCA_F1": score_dict["LCA_F1"][i],
+            "LCA_F1_Lower": score_dict["LCA_F1_Lower"][i],
+            "LCA_F1_Upper": score_dict["LCA_F1_Upper"][i],
             "TED": score_dict["TED"],
         })
 
