@@ -92,8 +92,9 @@ python src/run_models/benchmark_datasets/eval_pipeline.py --dataset wos
 
 Running the benchmark pipeline will generate:
 - CSV files with clustering evaluation metrics saved in `results/`
-- Visualizations produced through the demo notebook
-- Additional logs and intermediate outputs depending on the experiment
+- Scatter grid figures saved in `results/summary_figures/`
+- Shepard diagrams saved in `results/shepard_diagrams/`
+- Cached embeddings and reductions in `data/intermediate_data/` (not tracked)
 
 ---
 
@@ -111,8 +112,7 @@ NCEAS_Unsupervised_NLP/
 │   ├── synthetic/                          # LLM-generated synthetic datasets
 │   │   ├── generate.py
 │   │   └── generated_data/
-│   └── intermediate_data/                  # Computed embeddings, reductions, and figures
-│       └── summary_figures/               # Scatter grid and Shepard diagram figures
+│   └── intermediate_data/                  # Cache: embeddings and reductions (not tracked)
 │
 ├── notebooks/
 │   ├── milestones/                         # Milestone and demo notebooks
@@ -132,7 +132,9 @@ NCEAS_Unsupervised_NLP/
 │   └── NCEAS_PHATE_Project_for_ACL/
 │       └── latex/
 │
-├── results/                                # Clustering evaluation result tables
+├── results/                                # Clustering scores, figures, and Shepard diagrams
+│   ├── summary_figures/                    # Scatter grid PNGs
+│   └── shepard_diagrams/                   # Shepard diagram PNGs per model
 │
 ├── src/
 │   ├── custom_packages/                    # Custom algorithm implementations

@@ -125,7 +125,7 @@ def plot_shepard(x_high, x_low, name, stem, sample_size=500):
     plt.xlabel("High-Dimensional Distance (Normalized)")
     plt.ylabel("Low-Dimensional Distance (Normalized)")
     plt.tight_layout()
-    filename = os.path.join(results_dir, f"shepard_{stem}_{name.lower()}.png")
+    filename = os.path.join(shepard_dir, f"shepard_{stem}_{name.lower()}.png")
     plt.savefig(filename, dpi=300)
     plt.close()
     return filename
@@ -138,9 +138,11 @@ for embedding_model in embedding_models:
     embedding_dir    = f"../data/intermediate_data/{embedding_model}_embeddings"
     reduction_2d_dir = f"../data/intermediate_data/{embedding_model}_reduced_2d"
     results_dir      = f"../data/intermediate_data/{embedding_model}_results"
+    shepard_dir      = f"../results/shepard_diagrams/{embedding_model}"
 
     os.makedirs(reduction_2d_dir, exist_ok=True)
     os.makedirs(results_dir, exist_ok=True)
+    os.makedirs(shepard_dir, exist_ok=True)
 
     print(f"\n{'='*60}")
     print(f"Embedding model: {embedding_model}")

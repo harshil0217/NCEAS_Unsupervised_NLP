@@ -33,7 +33,7 @@ EMBEDDING_MODELS = [
 ]
 
 LABEL_DIR = "../data/synthetic/generated_data"
-OUT_DIR   = "../data/intermediate_data/summary_figures"
+OUT_DIR   = "../results/summary_figures"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 METHODS = ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"]

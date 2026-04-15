@@ -49,7 +49,7 @@ Generating embeddings is time-intensive. To skip this step, use the precomputed 
 
 Each figure is a 4×6 grid: rows = 4 synthetic dataset configurations (2 topics × 2 hierarchy shapes), columns = 6 DR methods (PHATE, PCA, UMAP, t-SNE, PaCMAP, TriMAP). Points are colored by category. Two versions are produced per embedding model: top-level category (cat0) and subcategory (cat1).
 
-**Output files** (saved to `data/intermediate_data/summary_figures/`):
+**Output files** (saved to `results/summary_figures/`):
 - `fig2_scatter_grid_minilm.png`
 - `fig2_scatter_grid_qwen.png`
 - `fig2_scatter_grid_minilm_cat1.png`
@@ -94,7 +94,7 @@ Available themes: `Energy_Ecosystems_and_Humans`, `Offshore_energy_impacts_on_fi
 python src/run_models/synthetic_data/scatter_grid_synthetic.py
 ```
 
-This reads the 2D reductions from `data/intermediate_data/` and the labels from `data/synthetic/generated_data/`, then saves all four PNGs to `data/intermediate_data/summary_figures/`.
+This reads the 2D reductions from `data/intermediate_data/` and the labels from `data/synthetic/generated_data/`, then saves all four PNGs to `results/summary_figures/`.
 
 ---
 
@@ -102,19 +102,19 @@ This reads the 2D reductions from `data/intermediate_data/` and the labels from 
 
 **MiniLM: colored by top-level category:**
 
-![Scatter Grid MiniLM Cat0](data/intermediate_data/summary_figures/fig2_scatter_grid_minilm.png)
+![Scatter Grid MiniLM Cat0](results/summary_figures/fig2_scatter_grid_minilm.png)
 
 **Qwen: colored by top-level category:**
 
-![Scatter Grid Qwen Cat0](data/intermediate_data/summary_figures/fig2_scatter_grid_qwen.png)
+![Scatter Grid Qwen Cat0](results/summary_figures/fig2_scatter_grid_qwen.png)
 
 **MiniLM: colored by subcategory:**
 
-![Scatter Grid MiniLM Cat1](data/intermediate_data/summary_figures/fig2_scatter_grid_minilm_cat1.png)
+![Scatter Grid MiniLM Cat1](results/summary_figures/fig2_scatter_grid_minilm_cat1.png)
 
 **Qwen: colored by subcategory:**
 
-![Scatter Grid Qwen Cat1](data/intermediate_data/summary_figures/fig2_scatter_grid_qwen_cat1.png)
+![Scatter Grid Qwen Cat1](results/summary_figures/fig2_scatter_grid_qwen_cat1.png)
 
 ---
 
@@ -124,7 +124,7 @@ This reads the 2D reductions from `data/intermediate_data/` and the labels from 
 
 Shepard diagrams compare pairwise distances in the original high-dimensional embedding space against distances in the 2D reduced space. Points near the diagonal indicate better global distance preservation. One diagram is produced per DR method per synthetic config.
 
-**Output files** (saved to `data/intermediate_data/{embedding_model}_results/`):
+**Output files** (saved to `results/shepard_diagrams/{embedding_model}/`):
 - `shepard_{config}_{method}.png`: one per synthetic config × DR method
 
 ---
@@ -161,7 +161,7 @@ The notebook computes Trustworthiness, Continuity, Spearman, and DEMaP for each 
 
 Same as above but for the five real-world benchmark datasets. For large datasets (>10,000 points), metrics are computed over 30 subsamples of 10,000 points each.
 
-**Output files** (saved to `data/intermediate_data/{embedding_model}_results/`):
+**Output files** (saved to `results/shepard_diagrams/{embedding_model}/`):
 - `shepard_{dataset}_{method}.png`: one per dataset × DR method
 
 ---
