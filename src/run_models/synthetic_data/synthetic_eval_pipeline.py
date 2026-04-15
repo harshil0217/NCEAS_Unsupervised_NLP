@@ -550,11 +550,11 @@ for (embedding_model, embed_name, cluster_method), score_dict in scores_all.item
 scores_df = pd.DataFrame(rows)
 scores_df = scores_df.sort_values(by=["embedding_model", "reduction_method", "cluster_method", "level"]).reset_index(drop=True)
 
-os.makedirs("results", exist_ok=True)
+os.makedirs("../results", exist_ok=True)
 if float(add_noise) > 0:
-    output_file = f"results/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_clustering_scores.csv"
+    output_file = f"../results/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_clustering_scores.csv"
 else:
-    output_file = f"results/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_clustering_scores.csv"
+    output_file = f"../results/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_clustering_scores.csv"
 
 scores_df.to_csv(output_file, index=False)
 print(f"\nResults saved to: {output_file}")

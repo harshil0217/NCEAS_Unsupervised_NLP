@@ -726,8 +726,8 @@ def run_pipeline(dataset_name):
     ).reset_index(drop=True)
 
     # Save results
-    os.makedirs("results", exist_ok=True)
-    results_path = f"results/{config['results_filename']}"
+    os.makedirs("../results", exist_ok=True)
+    results_path = f"../results/{config['results_filename']}"
     scores_df.to_csv(results_path, index=False)
 
     print(f"\nResults saved to: {results_path}")

@@ -335,8 +335,8 @@ def main():
         "FM", "Rand", "ARI", "AMI", "Dendrogram_Purity", "LCA_F1",
     ])
 
-    os.makedirs("results", exist_ok=True)
-    out_path = "results/rcv1_param_sweep_scores.csv"
+    os.makedirs("../results", exist_ok=True)
+    out_path = "../results/rcv1_param_sweep_scores.csv"
     results_df.to_csv(out_path, index=False)
     print(f"\nSweep complete. Results saved to {out_path}")
     print(f"Total rows: {len(results_df)}")
