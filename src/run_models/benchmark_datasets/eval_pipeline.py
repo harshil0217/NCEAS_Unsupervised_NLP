@@ -123,7 +123,7 @@ def load_gt_tree(dataset_name):
         root: anytree.Node root of the ground truth tree
         node_map: dict mapping node ID → anytree.Node (leaf IDs are row indices)
     """
-    path = f"../data/intermediate_data/ground_truth_trees/{dataset_name}_tree.pkl"
+    path = f"cache/ground_truth_trees/{dataset_name}_tree.pkl"
     with open(path, "rb") as f:
         saved = pickle.load(f)
     return saved["root"], saved["node_map"]
@@ -394,7 +394,7 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
     print(f"{'='*60}")
 
     method_prefix = {"Agglomerative": "Agg", "HDBSCAN": "HDB", "DC": "DC"}[cluster_method]
-    scores_dir = os.path.join(f"../data/intermediate_data/{embedding_model}_scores", short, dim_reduction_method)
+    scores_dir = os.path.join(f"cache/{embedding_model}_scores", short, dim_reduction_method)
     os.makedirs(scores_dir, exist_ok=True)
 
     def score_paths(level):
@@ -429,7 +429,7 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
 
     if cluster_method == "Agglomerative":
         linkage_path = os.path.join(
-            f"../data/intermediate_data/{embedding_model}_linkage", short, dim_reduction_method,
+            f"cache/{embedding_model}_linkage", short, dim_reduction_method,
             "Agg_linkage.npy"
         )
 
@@ -447,7 +447,7 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
 
     elif cluster_method == "HDBSCAN":
         linkage_path = os.path.join(
-            f"../data/intermediate_data/{embedding_model}_linkage", short, dim_reduction_method,
+            f"cache/{embedding_model}_linkage", short, dim_reduction_method,
             "HDBSCAN_linkage.npy"
         )
 
@@ -619,12 +619,12 @@ def run_pipeline(dataset_name):
         print(f"Processing embedding model: {embedding_model}")
         print(f"{'='*60}\n")
 
-        os.makedirs(f'../data/intermediate_data/{embedding_model}_results', exist_ok=True)
+        os.makedirs(f'cache/{embedding_model}_results', exist_ok=True)
 
-        reduction_dir = f"../data/intermediate_data/{embedding_model}_reduced_embeddings"
+        reduction_dir = f"cache/{embedding_model}_reduced_embeddings"
         os.makedirs(reduction_dir, exist_ok=True)
 
-        embedding_dir = f"../data/intermediate_data/{embedding_model}_embeddings"
+        embedding_dir = f"cache/{embedding_model}_embeddings"
         os.makedirs(embedding_dir, exist_ok=True)
 
         embedding_path = f"{embedding_dir}/{config['short']}.npy"

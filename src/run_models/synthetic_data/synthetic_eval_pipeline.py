@@ -171,7 +171,7 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
             path_prefix = f"{theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}"
 
         method_prefix = {"Agglomerative": "Agg", "HDBSCAN": "HDB", "DC": "DC"}[cluster_method]
-        scores_dir = os.path.join(f"../data/intermediate_data/{embedding_model}_scores", path_prefix, embed_name)
+        scores_dir = os.path.join(f"cache/{embedding_model}_scores", path_prefix, embed_name)
         os.makedirs(scores_dir, exist_ok=True)
         ted_cache_path = os.path.join(scores_dir, f"{method_prefix}_ted.npy")
 
@@ -206,7 +206,7 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
 
         if cluster_method == "Agglomerative":
             linkage_path = os.path.join(
-                f"../data/intermediate_data/{embedding_model}_linkage", path_prefix, embed_name,
+                f"cache/{embedding_model}_linkage", path_prefix, embed_name,
                 "Agg_linkage.npy"
             )
             if os.path.exists(linkage_path):
@@ -222,7 +222,7 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
 
         elif cluster_method == "HDBSCAN":
             linkage_path = os.path.join(
-                f"../data/intermediate_data/{embedding_model}_linkage", path_prefix, embed_name,
+                f"cache/{embedding_model}_linkage", path_prefix, embed_name,
                 "HDBSCAN_linkage.npy"
             )
             if os.path.exists(linkage_path):
@@ -424,14 +424,14 @@ for embedding_model in embedding_model_names:
     print(f"Processing embedding model: {embedding_model}")
     print(f"{'='*60}\n")
 
-    os.makedirs(f'../data/intermediate_data/{embedding_model}_results', exist_ok=True)
-    os.makedirs(f"../data/intermediate_data/{embedding_model}_embeddings", exist_ok=True)
+    os.makedirs(f'cache/{embedding_model}_results', exist_ok=True)
+    os.makedirs(f"cache/{embedding_model}_embeddings", exist_ok=True)
 
     # Generate or load embeddings
     if float(add_noise) > 0:
-        embed_file = f'../data/intermediate_data/{embedding_model}_embeddings/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy'
+        embed_file = f'cache/{embedding_model}_embeddings/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy'
     else:
-        embed_file = f'../data/intermediate_data/{embedding_model}_embeddings/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy'
+        embed_file = f'cache/{embedding_model}_embeddings/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy'
 
     if not os.path.exists(embed_file):
         embedding_list = get_embeddings(topic_data_original['topic'], model=embedding_model)
@@ -439,7 +439,7 @@ for embedding_model in embedding_model_names:
     else:
         embedding_list = np.load(embed_file)
 
-    reduction_dir = f"../data/intermediate_data/{embedding_model}_reduced_embeddings"
+    reduction_dir = f"cache/{embedding_model}_reduced_embeddings"
     os.makedirs(reduction_dir, exist_ok=True)
 
     data = np.array(embedding_list)[shuffle_idx]

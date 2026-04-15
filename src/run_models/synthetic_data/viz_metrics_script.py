@@ -3,7 +3,7 @@ Visualization Quality Metrics: Synthetic Data (Batch Script)
 
 Runs Trustworthiness, Continuity, Spearman Correlation, and DEMaP
 for all synthetic dataset configs. Results and Shepard diagrams are
-saved to intermediate_data/{embedding_model}_results/.
+saved to results/viz_metrics/{embedding_model}/.
 
 Usage:
     python src/run_models/synthetic_data/viz_metrics_script.py
@@ -135,9 +135,9 @@ def plot_shepard(x_high, x_low, name, stem, sample_size=500):
 # ========================
 
 for embedding_model in embedding_models:
-    embedding_dir    = f"../data/intermediate_data/{embedding_model}_embeddings"
-    reduction_2d_dir = f"../data/intermediate_data/{embedding_model}_reduced_2d"
-    results_dir      = f"../data/intermediate_data/{embedding_model}_results"
+    embedding_dir    = f"cache/{embedding_model}_embeddings"
+    reduction_2d_dir = f"cache/{embedding_model}_reduced_2d"
+    results_dir      = f"../results/viz_metrics/{embedding_model}"
     shepard_dir      = f"../results/shepard_diagrams/{embedding_model}"
 
     os.makedirs(reduction_2d_dir, exist_ok=True)

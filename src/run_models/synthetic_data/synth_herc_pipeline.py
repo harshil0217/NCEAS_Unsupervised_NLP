@@ -230,7 +230,7 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
         print(f"Processing embedding model: {embedding_model}")
         print(f"{'='*60}\n")
 
-        save_path = f"../data/intermediate_data/hercules_run/synthetic/{safe_theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}/{rep_mode}/{embedding_model.replace('/', '_')}"
+        save_path = f"cache/hercules_run/synthetic/{safe_theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}/{rep_mode}/{embedding_model.replace('/', '_')}"
 
         hercules = None
 
@@ -277,7 +277,7 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
         # Set up scores cache directory
         theme_params = f"{safe_theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}"
         safe_embedding = embedding_model.replace('/', '_')
-        scores_cache_dir = f"intermediate_data/{safe_embedding}_scores/{theme_params}/Hercules"
+        scores_cache_dir = f"cache/{safe_embedding}_scores/{theme_params}/Hercules"
         os.makedirs(scores_cache_dir, exist_ok=True)
 
         # Tree Edit Distance (once per embedding model) — cached

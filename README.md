@@ -94,7 +94,8 @@ Running the benchmark pipeline will generate:
 - CSV files with clustering evaluation metrics saved in `results/`
 - Scatter grid figures saved in `results/summary_figures/`
 - Shepard diagrams saved in `results/shepard_diagrams/`
-- Cached embeddings and reductions in `data/intermediate_data/` (not tracked)
+- Visualization quality metric CSVs saved in `results/viz_metrics/`
+- Cached embeddings and reductions in `src/cache/` (not tracked)
 
 ---
 
@@ -112,7 +113,6 @@ NCEAS_Unsupervised_NLP/
 │   ├── synthetic/                          # LLM-generated synthetic datasets
 │   │   ├── generate.py
 │   │   └── generated_data/
-│   └── intermediate_data/                  # Cache: embeddings and reductions (not tracked)
 │
 ├── notebooks/
 │   ├── milestones/                         # Milestone and demo notebooks
@@ -131,9 +131,11 @@ NCEAS_Unsupervised_NLP/
 │
 ├── results/                                # Clustering scores, figures, and Shepard diagrams
 │   ├── summary_figures/                    # Scatter grid PNGs
-│   └── shepard_diagrams/                   # Shepard diagram PNGs per model
+│   ├── shepard_diagrams/                   # Shepard diagram PNGs per model
+│   └── viz_metrics/                        # Visualization quality metric CSVs per model
 │
 ├── src/
+│   ├── cache/                              # Pipeline cache: embeddings, reductions (not tracked)
 │   ├── custom_packages/                    # Custom algorithm implementations
 │   │   ├── clusters.py
 │   │   ├── diffusion_condensation.py

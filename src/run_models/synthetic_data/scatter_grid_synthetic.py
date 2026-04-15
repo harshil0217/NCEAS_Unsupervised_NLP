@@ -28,8 +28,8 @@ os.chdir(src_dir)
 sys.path.insert(0, src_dir)
 
 EMBEDDING_MODELS = [
-    ("MiniLM", "../data/intermediate_data/sentence-transformers/all-MiniLM-L6-v2_reduced_2d"),
-    ("Qwen",   "../data/intermediate_data/Qwen/Qwen3-Embedding-0.6B_reduced_2d"),
+    ("MiniLM", "cache/sentence-transformers/all-MiniLM-L6-v2_reduced_2d"),
+    ("Qwen",   "cache/Qwen/Qwen3-Embedding-0.6B_reduced_2d"),
 ]
 
 LABEL_DIR = "../data/synthetic/generated_data"

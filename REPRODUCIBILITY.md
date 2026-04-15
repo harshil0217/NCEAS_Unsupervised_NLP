@@ -69,8 +69,8 @@ bash run_all.sh
 This generates synthetic CSVs under `data/synthetic/generated_data/`, then embeds each config with both `all-MiniLM-L6-v2` and `Qwen3-Embedding-0.6B` and reduces to 2D using all six DR methods. Results are cached in:
 
 ```
-data/intermediate_data/sentence-transformers/all-MiniLM-L6-v2_reduced_2d/
-data/intermediate_data/Qwen/Qwen3-Embedding-0.6B_reduced_2d/
+src/cache/sentence-transformers/all-MiniLM-L6-v2_reduced_2d/
+src/cache/Qwen/Qwen3-Embedding-0.6B_reduced_2d/
 ```
 
 To generate a single config manually:
@@ -94,7 +94,7 @@ Available themes: `Energy_Ecosystems_and_Humans`, `Offshore_energy_impacts_on_fi
 python src/run_models/synthetic_data/scatter_grid_synthetic.py
 ```
 
-This reads the 2D reductions from `data/intermediate_data/` and the labels from `data/synthetic/generated_data/`, then saves all four PNGs to `results/summary_figures/`.
+This reads the 2D reductions from `src/cache/` and the labels from `data/synthetic/generated_data/`, then saves all four PNGs to `results/summary_figures/`.
 
 ---
 
@@ -187,7 +187,7 @@ Once all CSVs are synced from HPCC, open and run all cells in:
 src/run_models/benchmark_datasets/visualization_metrics.ipynb
 ```
 
-Set the `embedding_model` and `dataset` variables at the top to select which results to visualize. The notebook produces Shepard diagrams saved to `data/intermediate_data/{embedding_model}_results/`.
+Set the `embedding_model` and `dataset` variables at the top to select which results to visualize. The notebook produces Shepard diagrams saved to `src/cache/{embedding_model}_results/`.
 
 ---
 

@@ -322,7 +322,7 @@ def run_pipeline(dataset_name, rep_mode):
     print(f"\nFinal cluster_levels (from deepest to shallowest): {cluster_levels}\n")
 
     # Load pre-built ground truth tree (leaf IDs = row indices 0..n-1)
-    gt_tree_path = f"../data/intermediate_data/ground_truth_trees/{dataset_name}_tree.pkl"
+    gt_tree_path = f"cache/ground_truth_trees/{dataset_name}_tree.pkl"
     gt_tree_root = None
     if os.path.exists(gt_tree_path):
         with open(gt_tree_path, 'rb') as f:
@@ -336,7 +336,7 @@ def run_pipeline(dataset_name, rep_mode):
     rows = []
 
     for embedding_model in embedding_model_names:
-        save_path = f"../data/intermediate_data/hercules_run/{config['short']}/{rep_mode}"
+        save_path = f"cache/hercules_run/{config['short']}/{rep_mode}"
         hercules = None
 
         if os.path.exists(save_path):

@@ -289,12 +289,12 @@ def build_maps(root):
     return node_map, parent_map
 
 
-GROUND_TRUTH_TREE_DIR = "../data/intermediate_data/ground_truth_trees"
+GROUND_TRUTH_TREE_DIR = "cache/ground_truth_trees"
 
 
 def save_ground_truth_tree(root, node_map, dataset_name):
     """
-    Save a ground truth tree to intermediate_data/ground_truth_trees/.
+    Save a ground truth tree to cache/ground_truth_trees/.
 
     Parameters
     ----------
@@ -314,7 +314,7 @@ def save_ground_truth_tree(root, node_map, dataset_name):
 
 def load_cached_ground_truth_tree(dataset_name):
     """
-    Load a cached ground truth tree from intermediate_data/ground_truth_trees/.
+    Load a cached ground truth tree from cache/ground_truth_trees/.
 
     Parameters
     ----------
@@ -343,7 +343,7 @@ def load_dataset_and_build_tree(dataset_name, use_cache=True):
     dataset_name : str
         One of: 'amazon', 'dbpedia', 'arxiv', 'rcv1', 'wos'
     use_cache : bool
-        If True, load from intermediate_data cache if available (default: True)
+        If True, load from cache if available (default: True)
 
     Returns
     -------
