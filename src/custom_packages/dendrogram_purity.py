@@ -1,3 +1,11 @@
+"""
+dendrogram_purity.py
+
+Monte Carlo estimation of Dendrogram Purity for hierarchical clustering
+evaluation. Measures how well a predicted dendrogram groups same-class
+points relative to ground truth labels.
+"""
+
 import numpy as np
 from scipy.cluster.hierarchy import ClusterNode
 

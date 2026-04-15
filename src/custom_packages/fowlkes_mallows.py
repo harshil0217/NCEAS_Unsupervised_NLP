@@ -1,3 +1,11 @@
+"""
+fowlkes_mallows.py
+
+Custom implementation of the Fowlkes-Mallows (FM) index for comparing two
+flat clusterings. Computes FM score, expected FM under random assignment,
+and variance, supporting both standard and weighted variants.
+"""
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt

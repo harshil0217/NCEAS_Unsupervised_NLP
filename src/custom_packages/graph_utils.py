@@ -1,3 +1,11 @@
+"""
+graph_utils.py
+
+Tree utility functions shared across evaluation metrics. Handles conversion
+between scipy ClusterNode dendrograms and anytree Node trees, leaf extraction,
+LCA (lowest common ancestor) lookup, and APTED tree edit distance computation.
+"""
+
 import networkx as nx
 from scipy.cluster.hierarchy import ClusterNode
 from anytree import Node

@@ -1,3 +1,11 @@
+"""
+lca_f1.py
+
+Monte Carlo estimation of LCA-F1 for hierarchical clustering evaluation.
+Compares the lowest common ancestor (LCA) subtrees of sampled point pairs
+in the predicted vs. ground truth hierarchies.
+"""
+
 import numpy as np
 from scipy.cluster.hierarchy import ClusterNode
 

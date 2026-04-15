@@ -1,3 +1,12 @@
+"""
+diffusion_condensation.py
+
+GPU-accelerated Diffusion Condensation clustering algorithm.
+Iteratively applies a diffusion operator to compress the data geometry until
+clusters condense into stable regions. Uses cuML for nearest-neighbor and
+pairwise distance computations.
+"""
+
 from sklearn.preprocessing import normalize
 import sklearn
 import numpy as np
