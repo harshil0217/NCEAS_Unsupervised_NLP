@@ -230,7 +230,7 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
         print(f"Processing embedding model: {embedding_model}")
         print(f"{'='*60}\n")
 
-        save_path = f"../../hercules_run/synthetic/{safe_theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}/{rep_mode}/{embedding_model.replace('/', '_')}"
+        save_path = f"results/hercules_run/synthetic/{safe_theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}/{rep_mode}/{embedding_model.replace('/', '_')}"
 
         hercules = None
 
@@ -259,7 +259,7 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
             top_clusters = hercules.cluster(topic_data['topic'].tolist(), topic_seed=topic_seed)
 
             print(f"Saving Hercules model to {save_path}...")
-            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            os.makedirs(save_path, exist_ok=True)
             hercules.save_model(filepath=save_path, top_clusters=top_clusters)
 
         # Save cluster assignments
