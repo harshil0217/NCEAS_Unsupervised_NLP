@@ -297,7 +297,7 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
         for i, cluster_level in enumerate(cluster_levels):
             level_idx = i + 1
             level_prefix = f"{rep_mode}_{cluster_level}"
-            score_keys = ['fm', 'rand', 'ari', 'ami', 'dp', 'dp_lower', 'dp_upper', 'lca_f1', 'lca_f1_lower', 'lca_f1_upper']
+            score_keys = ['fm', 'rand', 'ari', 'ami', 'dp', 'lca_f1']
             cache_paths = {k: f"{scores_cache_dir}/{level_prefix}_{k}.npy" for k in score_keys}
             all_cached = all(os.path.exists(p) for p in cache_paths.values())
 
@@ -307,12 +307,8 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
                 rand       = float(np.load(cache_paths['rand']))
                 ari        = float(np.load(cache_paths['ari']))
                 ami        = float(np.load(cache_paths['ami']))
-                dp         = float(np.load(cache_paths['dp']))
-                dp_lower   = float(np.load(cache_paths['dp_lower']))
-                dp_upper   = float(np.load(cache_paths['dp_upper']))
+                dp            = float(np.load(cache_paths['dp']))
                 lca_f1_score  = float(np.load(cache_paths['lca_f1']))
-                lca_f1_lower  = float(np.load(cache_paths['lca_f1_lower']))
-                lca_f1_upper  = float(np.load(cache_paths['lca_f1_upper']))
             else:
                 print(f"\nEvaluating level {level_idx} (target clusters: {cluster_level})...")
 
@@ -334,29 +330,25 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
                 ami = adjusted_mutual_info_score(target_lst, label_lst)
 
                 if pred_tree is not None:
-                    dp, dp_lower, dp_upper = dendrogram_purity(pred_tree, topic_series)
+                    dp = dendrogram_purity(pred_tree, topic_series)
                 else:
-                    dp = dp_lower = dp_upper = np.nan
+                    dp = np.nan
                 if pred_tree is not None and gt_tree_root is not None:
-                    lca_f1_score, lca_f1_lower, lca_f1_upper = lca_f1(pred_tree, gt_tree_root, topic_series)
+                    lca_f1_score = lca_f1(pred_tree, gt_tree_root, topic_series)
                 else:
-                    lca_f1_score = lca_f1_lower = lca_f1_upper = np.nan
+                    lca_f1_score = np.nan
 
                 # Save per-level scores to cache
-                np.save(cache_paths['fm'],          np.array(fm_score))
-                np.save(cache_paths['rand'],        np.array(rand))
-                np.save(cache_paths['ari'],         np.array(ari))
-                np.save(cache_paths['ami'],         np.array(ami))
-                np.save(cache_paths['dp'],          np.array(dp))
-                np.save(cache_paths['dp_lower'],    np.array(dp_lower))
-                np.save(cache_paths['dp_upper'],    np.array(dp_upper))
-                np.save(cache_paths['lca_f1'],      np.array(lca_f1_score))
-                np.save(cache_paths['lca_f1_lower'],np.array(lca_f1_lower))
-                np.save(cache_paths['lca_f1_upper'],np.array(lca_f1_upper))
+                np.save(cache_paths['fm'],     np.array(fm_score))
+                np.save(cache_paths['rand'],   np.array(rand))
+                np.save(cache_paths['ari'],    np.array(ari))
+                np.save(cache_paths['ami'],    np.array(ami))
+                np.save(cache_paths['dp'],     np.array(dp))
+                np.save(cache_paths['lca_f1'], np.array(lca_f1_score))
 
             lca_str = f"{lca_f1_score:.4f}" if not np.isnan(lca_f1_score) else "NaN"
             print(f"Level {cluster_level} — FM: {fm_score:.4f}, Rand: {rand:.4f}, ARI: {ari:.4f}, AMI: {ami:.4f}, "
-                  f"DP: {dp:.4f} [{dp_lower:.4f}, {dp_upper:.4f}], LCA_F1: {lca_str}")
+                  f"DP: {dp:.4f}, LCA_F1: {lca_str}")
 
             rows.append({
                 "embedding_model": embedding_model,
@@ -368,11 +360,7 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
                 "ARI": ari,
                 "AMI": ami,
                 "Dendrogram_Purity": dp,
-                "DP_Lower": dp_lower,
-                "DP_Upper": dp_upper,
                 "LCA_F1": lca_f1_score,
-                "LCA_F1_Lower": lca_f1_lower,
-                "LCA_F1_Upper": lca_f1_upper,
                 "TED": ted_score,
             })
 
