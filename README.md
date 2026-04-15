@@ -119,14 +119,11 @@ NCEAS_Unsupervised_NLP/
 │   │   ├── demo.ipynb
 │   │   ├── MVP_demo.ipynb
 │   │   └── NCEAS_Reproducibility.ipynb
-│   └── analysis/                           # Analysis and evaluation notebooks
-│       ├── combine_results.ipynb
-│       ├── compare_eval_methods.ipynb
-│       ├── embedding_visuals.ipynb
-│       ├── final_table.ipynb
+│   └── evaluations/                        # Analysis and evaluation notebooks
 │       ├── metric_tables.ipynb
-│       ├── ordinal_rankings.ipynb
-│       └── parameter_selection.ipynb
+│       ├── clustering_summary_tables.ipynb
+│       ├── visualization_metrics_benchmark.ipynb
+│       └── visualization_metrics_synthetic.ipynb
 │
 ├── paper/                                  # ACL-style paper draft
 │   └── NCEAS_PHATE_Project_for_ACL/

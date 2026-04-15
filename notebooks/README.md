@@ -17,5 +17,6 @@ Notebooks for analyzing and visualizing benchmark results.
 | Notebook | Description |
 |----------|-------------|
 | `metric_tables.ipynb` | Primary evaluation notebook, generates summary tables of FM, ARI, AMI, and Rand Index scores across all DR + clustering combinations |
+| `clustering_summary_tables.ipynb` | Summary statistics (median, mean +/- std) across all clustering score CSVs |
 | `visualization_metrics_benchmark.ipynb` | Computes Trustworthiness, Continuity, Spearman, and DEMaP for benchmark datasets; produces Shepard diagrams |
 | `visualization_metrics_synthetic.ipynb` | Same visualization metrics for synthetic dataset configurations |
