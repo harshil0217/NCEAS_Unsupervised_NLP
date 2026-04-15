@@ -120,7 +120,7 @@ def params_to_key(params: dict) -> str:
 
 
 def load_rcv1():
-    rcv1 = pd.read_csv("data/rcv1/rcv1.csv")
+    rcv1 = pd.read_csv("../data/rcv1/rcv1.csv")
     rcv1 = rcv1.drop_duplicates(subset="topic", keep=False).reset_index(drop=True)
     rcv1 = rcv1.drop_duplicates(subset="item_id", keep=False).reset_index(drop=True)
     rcv1 = rcv1.dropna().reset_index(drop=True)
