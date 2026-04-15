@@ -11,3 +11,5 @@ Research article dataset with hierarchical subject category labels across 7 doma
    ```
    data/WebOfScience/Data.xlsx
    ```
+
+> **Note:** The file must be named `Data.xlsx` directly in `data/WebOfScience/`, not inside a `Meta-data/` subfolder.

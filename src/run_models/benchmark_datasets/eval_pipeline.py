@@ -135,8 +135,8 @@ def load_gt_tree(dataset_name):
 
 def load_amazon():
     """Load and preprocess Amazon dataset."""
-    amz_40 = pd.read_csv("data/amazon/train_40k.csv")
-    amz_10 = pd.read_csv("data/amazon/val_10k.csv")
+    amz_40 = pd.read_csv("../data/amazon/train_40k.csv")
+    amz_10 = pd.read_csv("../data/amazon/val_10k.csv")
 
     amz = pd.concat([amz_40, amz_10])
     amz = amz.drop_duplicates(subset='Title', keep=False).reset_index(drop=True)
@@ -150,7 +150,7 @@ def load_amazon():
     amz = amz.dropna().reset_index(drop=True)
     amz = amz[amz['topic'].apply(lambda x: isinstance(x, str) and x.strip() != '')].reset_index(drop=True)
 
-    amz.to_csv("data/amazon/amz_data.csv")
+    amz.to_csv("../data/amazon/amz_data.csv")
 
     return amz
 
@@ -162,7 +162,7 @@ def load_dbpedia():
         text = re.sub(r'\s+', ' ', text).strip()
         return text
 
-    db = pd.read_csv('data/dbpedia/DBPEDIA_test.csv')
+    db = pd.read_csv('../data/dbpedia/DBPEDIA_test.csv')
 
     db = db.rename(columns={"text": "topic"})
     db = db.rename(columns={"l1": "category_0"})
@@ -178,14 +178,14 @@ def load_dbpedia():
 
 def load_arxiv():
     """Load and preprocess arXiv dataset."""
-    arx = pd.read_csv("data/arxiv/arxiv_clean.csv")
+    arx = pd.read_csv("../data/arxiv/arxiv_clean.csv")
     arx = arx.dropna().reset_index(drop=True)
     return arx
 
 
 def load_rcv1():
     """Load and preprocess RCV1 dataset."""
-    rcv1 = pd.read_csv('data/rcv1/rcv1.csv')
+    rcv1 = pd.read_csv('../data/rcv1/rcv1.csv')
 
     rcv1 = rcv1.drop_duplicates(subset='topic', keep=False).reset_index(drop=True)
     rcv1 = rcv1.drop_duplicates(subset='item_id', keep=False).reset_index(drop=True)
@@ -193,14 +193,14 @@ def load_rcv1():
     rcv1 = rcv1.dropna().reset_index(drop=True)
     rcv1 = rcv1[rcv1['topic'].apply(lambda x: isinstance(x, str) and x.strip() != '')].reset_index(drop=True)
 
-    rcv1.to_csv("data/rcv1/rcv1_data.csv")
+    rcv1.to_csv("../data/rcv1/rcv1_data.csv")
 
     return rcv1
 
 
 def load_wos():
     """Load and preprocess Web of Science dataset."""
-    wos = pd.read_excel('data/WebOfScience/Meta-data/Data.xlsx')
+    wos = pd.read_excel('../data/WebOfScience/Data.xlsx')
 
     new = []
     for i, row in wos.iterrows():
