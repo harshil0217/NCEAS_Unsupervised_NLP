@@ -11,5 +11,6 @@ See [INSTALL.md](../INSTALL.md) for full setup instructions.
 | DBpedia | `dbpedia/` | ~342k articles | Kaggle |
 | RCV1 | `rcv1/` | ~804k news articles | scikit-learn |
 | Web of Science | `WebOfScience/` | ~46k papers | Mendeley |
+| Synthetic | `synthetic/` | 24 configs | LLM-generated (Groq API) |
 
-Each subfolder contains a README with dataset-specific download instructions.
+Each subfolder contains a README with dataset-specific download or generation instructions.
