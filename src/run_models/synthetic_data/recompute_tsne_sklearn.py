@@ -47,13 +47,13 @@ from scipy.stats import spearmanr
 
 embedding_models = [
     ("sentence-transformers/all-MiniLM-L6-v2",
-     "intermediate_data/sentence-transformers/all-MiniLM-L6-v2_embeddings",
-     "intermediate_data/sentence-transformers/all-MiniLM-L6-v2_reduced_2d",
-     "intermediate_data/sentence-transformers/all-MiniLM-L6-v2_results"),
+     "../data/intermediate_data/sentence-transformers/all-MiniLM-L6-v2_embeddings",
+     "../data/intermediate_data/sentence-transformers/all-MiniLM-L6-v2_reduced_2d",
+     "../data/intermediate_data/sentence-transformers/all-MiniLM-L6-v2_results"),
     ("Qwen/Qwen3-Embedding-0.6B",
-     "intermediate_data/Qwen/Qwen3-Embedding-0.6B_embeddings",
-     "intermediate_data/Qwen/Qwen3-Embedding-0.6B_reduced_2d",
-     "intermediate_data/Qwen/Qwen3-Embedding-0.6B_results"),
+     "../data/intermediate_data/Qwen/Qwen3-Embedding-0.6B_embeddings",
+     "../data/intermediate_data/Qwen/Qwen3-Embedding-0.6B_reduced_2d",
+     "../data/intermediate_data/Qwen/Qwen3-Embedding-0.6B_results"),
 ]
 
 configs = [

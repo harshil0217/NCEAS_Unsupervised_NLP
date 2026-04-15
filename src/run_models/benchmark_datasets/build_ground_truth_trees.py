@@ -289,7 +289,7 @@ def build_maps(root):
     return node_map, parent_map
 
 
-GROUND_TRUTH_TREE_DIR = "intermediate_data/ground_truth_trees"
+GROUND_TRUTH_TREE_DIR = "../data/intermediate_data/ground_truth_trees"
 
 
 def save_ground_truth_tree(root, node_map, dataset_name):

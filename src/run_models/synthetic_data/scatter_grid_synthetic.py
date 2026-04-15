@@ -28,12 +28,12 @@ os.chdir(src_dir)
 sys.path.insert(0, src_dir)
 
 EMBEDDING_MODELS = [
-    ("MiniLM", "intermediate_data/sentence-transformers/all-MiniLM-L6-v2_reduced_2d"),
-    ("Qwen",   "intermediate_data/Qwen/Qwen3-Embedding-0.6B_reduced_2d"),
+    ("MiniLM", "../data/intermediate_data/sentence-transformers/all-MiniLM-L6-v2_reduced_2d"),
+    ("Qwen",   "../data/intermediate_data/Qwen/Qwen3-Embedding-0.6B_reduced_2d"),
 ]
 
 LABEL_DIR = "../data/synthetic/generated_data"
-OUT_DIR   = "intermediate_data/summary_figures"
+OUT_DIR   = "../data/intermediate_data/summary_figures"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 METHODS = ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"]

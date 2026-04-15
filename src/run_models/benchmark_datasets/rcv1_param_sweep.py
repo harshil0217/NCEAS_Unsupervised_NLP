@@ -245,7 +245,7 @@ def main():
     print(f"RCV1 shape: {data.shape}")
 
     # Ground truth tree (built once, row indices = leaf IDs)
-    gt_tree_path = "intermediate_data/ground_truth_trees/rcv1_tree.pkl"
+    gt_tree_path = "../data/intermediate_data/ground_truth_trees/rcv1_tree.pkl"
     if os.path.exists(gt_tree_path):
         with open(gt_tree_path, "rb") as f:
             saved = pickle.load(f)
@@ -273,7 +273,7 @@ def main():
     for embedding_model in EMBEDDING_MODELS:
         print(f"\n{'='*60}\nEmbedding model: {embedding_model}\n{'='*60}")
 
-        embed_dir = f"intermediate_data/{embedding_model}_embeddings"
+        embed_dir = f"../data/intermediate_data/{embedding_model}_embeddings"
         os.makedirs(embed_dir, exist_ok=True)
         embed_path = f"{embed_dir}/rcv1.npy"
 
@@ -285,8 +285,8 @@ def main():
             embeddings = get_embeddings(data["topic"], embedding_model)
             np.save(embed_path, embeddings)
 
-        reduction_cache_dir = f"intermediate_data/{embedding_model}_sweep_reduced/rcv1"
-        linkage_cache_dir   = f"intermediate_data/{embedding_model}_sweep_linkage/rcv1"
+        reduction_cache_dir = f"../data/intermediate_data/{embedding_model}_sweep_reduced/rcv1"
+        linkage_cache_dir   = f"../data/intermediate_data/{embedding_model}_sweep_linkage/rcv1"
         os.makedirs(reduction_cache_dir, exist_ok=True)
         os.makedirs(linkage_cache_dir,   exist_ok=True)
 

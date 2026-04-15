@@ -153,8 +153,8 @@ def plot_shepard(x_high, x_low, name, dataset, sample_size=500):
 
 for embedding_model in embedding_models:
     embedding_dir    = f"{embedding_model}_embeddings"
-    reduction_2d_dir = f"intermediate_data/{embedding_model}_reduced_2d"
-    results_dir      = f"intermediate_data/{embedding_model}_results"
+    reduction_2d_dir = f"../data/intermediate_data/{embedding_model}_reduced_2d"
+    results_dir      = f"../data/intermediate_data/{embedding_model}_results"
 
     os.makedirs(reduction_2d_dir, exist_ok=True)
     os.makedirs(results_dir, exist_ok=True)

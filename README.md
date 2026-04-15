@@ -66,13 +66,7 @@ This notebook demonstrates the full pipeline including loading data, generating 
 
 ## Reproducibility
 
-Full reproducibility instructions including pipeline steps, all figures, and metrics tables are in:
-
-```
-REPRODUCIBILITY.md
-```
-
-A supplementary Shepard Diagram notebook is also available at:
+A Shepard Diagram reproducibility notebook is available at:
 
 ```
 notebooks/milestones/NCEAS_Reproducibility.ipynb
@@ -108,12 +102,17 @@ Running the benchmark pipeline will generate:
 ```
 NCEAS_Unsupervised_NLP/
 │
-├── data/                                   # Benchmark dataset download scripts and instructions
-│   ├── arxiv/
-│   ├── amazon/
-│   ├── dbpedia/
-│   ├── rcv1/
-│   └── WebOfScience/
+├── data/                                   # All datasets and computed outputs
+│   ├── arxiv/                              # arXiv abstracts
+│   ├── amazon/                             # Amazon reviews
+│   ├── dbpedia/                            # DBpedia articles
+│   ├── rcv1/                               # RCV1 news articles
+│   ├── WebOfScience/                       # Web of Science papers
+│   ├── synthetic/                          # LLM-generated synthetic datasets
+│   │   ├── generate.py
+│   │   └── generated_data/
+│   └── intermediate_data/                  # Computed embeddings, reductions, and figures
+│       └── summary_figures/               # Scatter grid and Shepard diagram figures
 │
 ├── notebooks/
 │   ├── milestones/                         # Milestone and demo notebooks
@@ -146,13 +145,6 @@ NCEAS_Unsupervised_NLP/
 │   │   ├── graph_utils.py
 │   │   └── lca_f1.py
 │   │
-│   ├── data_generation/                    # Synthetic data generation using LLMs
-│   │   ├── generate.py
-│   │   └── generated_data/
-│   │
-│   ├── intermediate_data/                  # Computed embeddings, reductions, and results
-│   │   └── summary_figures/               # Scatter grid figures (Figure 2)
-│   │
 │   └── run_models/
 │       ├── benchmark_datasets/             # Benchmark evaluation pipeline
 │       │   ├── eval_pipeline.py
@@ -169,7 +161,6 @@ NCEAS_Unsupervised_NLP/
 │
 ├── environment.yml                         # Conda environment (Linux/CUDA)
 ├── INSTALL.md                              # Installation and data setup instructions
-├── REPRODUCIBILITY.md                      # Step-by-step reproduction of all figures and results
 ├── LICENSE
 └── README.md
 ```
