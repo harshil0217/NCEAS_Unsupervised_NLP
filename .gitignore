@@ -239,3 +239,12 @@ Miniconda3-latest-Linux-x86_64.sh
 slurm-*.out
 *.sb
 
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+
