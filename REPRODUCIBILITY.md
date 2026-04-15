@@ -125,7 +125,7 @@ This reads the 2D reductions from `data/intermediate_data/` and the labels from 
 Shepard diagrams compare pairwise distances in the original high-dimensional embedding space against distances in the 2D reduced space. Points near the diagonal indicate better global distance preservation. One diagram is produced per DR method per synthetic config.
 
 **Output files** (saved to `data/intermediate_data/{embedding_model}_results/`):
-- `shepard_{config}_{method}.png` — one per synthetic config × DR method
+- `shepard_{config}_{method}.png`: one per synthetic config × DR method
 
 ---
 
@@ -162,7 +162,7 @@ The notebook computes Trustworthiness, Continuity, Spearman, and DEMaP for each 
 Same as above but for the five real-world benchmark datasets. For large datasets (>10,000 points), metrics are computed over 30 subsamples of 10,000 points each.
 
 **Output files** (saved to `data/intermediate_data/{embedding_model}_results/`):
-- `shepard_{dataset}_{method}.png` — one per dataset × DR method
+- `shepard_{dataset}_{method}.png`: one per dataset × DR method
 
 ---
 
@@ -175,7 +175,7 @@ sbatch slurm_viz_{dataset}_{model}.sb
 # e.g.: sbatch slurm_viz_rcv1_minilm.sb
 ```
 
-The script `src/run_models/benchmark_datasets/viz_metrics_script.py` handles embedding, dimensionality reduction, subsampling, and incremental CSV output. It is safe to rerun — results are cached and the script resumes from where it left off.
+The script `src/run_models/benchmark_datasets/viz_metrics_script.py` handles embedding, dimensionality reduction, subsampling, and incremental CSV output. It is safe to rerun, results are cached and the script resumes from where it left off.
 
 ---
 
