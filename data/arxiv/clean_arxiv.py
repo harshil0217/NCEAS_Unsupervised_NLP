@@ -33,7 +33,7 @@ warnings.filterwarnings("ignore")
 np.random.seed(42)
 
 # Load arXiv Dataset
-df = pd.read_csv("src/data/arxiv/arxiv_30k_clean.csv")
+df = pd.read_csv("data/arxiv/arxiv_30k_clean.csv")
 df_new = df.rename(columns={"text": "topic"})
 df_new["category_0"] = df_new["label"].apply(lambda x: x.split(".")[0])
 df_new["category_1"] = df_new["label"].apply(lambda x: x.split(".")[1])
@@ -45,6 +45,6 @@ df_new = df_new[
     df_new["topic"].apply(lambda x: isinstance(x, str) and x.strip() != "")
 ].reset_index(drop=True)
 
-df_new.to_csv("src/data/arxiv/arxiv_clean.csv", index=False)
+df_new.to_csv("data/arxiv/arxiv_clean.csv", index=False)
 
 print(df_new.shape)
