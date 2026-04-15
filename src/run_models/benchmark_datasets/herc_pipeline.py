@@ -336,7 +336,7 @@ def run_pipeline(dataset_name, rep_mode):
     rows = []
 
     for embedding_model in embedding_model_names:
-        save_path = f"../../hercules_run/{config['short']}/{rep_mode}"
+        save_path = f"../data/intermediate_data/hercules_run/{config['short']}/{rep_mode}"
         hercules = None
 
         if os.path.exists(save_path):
@@ -360,6 +360,7 @@ def run_pipeline(dataset_name, rep_mode):
 
             top_clusters = hercules.cluster(data['topic'].tolist(), topic_seed=config['topic_seed'])
 
+            os.makedirs(save_path, exist_ok=True)
             hercules.save_model(filepath=save_path, top_clusters=top_clusters)
 
         # Save cluster membership CSV
