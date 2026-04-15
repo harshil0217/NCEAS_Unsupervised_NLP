@@ -193,7 +193,7 @@ def load_rcv1():
     rcv1 = rcv1.dropna().reset_index(drop=True)
     rcv1 = rcv1[rcv1['topic'].apply(lambda x: isinstance(x, str) and x.strip() != '')].reset_index(drop=True)
 
-    rcv1.to_csv("../data/rcv1/rcv1_data.csv")
+    rcv1.to_csv("../data/rcv1/rcv1.csv")
 
     return rcv1
 
