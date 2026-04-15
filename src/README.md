@@ -1,0 +1,16 @@
+# src
+
+## custom_packages/
+
+Custom implementations of clustering algorithms and hierarchical evaluation metrics used throughout the benchmark pipeline. See [custom_packages/README.md](custom_packages/README.md) for details.
+
+## run_models/
+
+Pipeline scripts for running experiments.
+
+| Subdirectory | Description |
+|--------------|-------------|
+| `benchmark_datasets/` | Embedding, dimensionality reduction, clustering, and evaluation pipeline for the five real-world benchmark datasets |
+| `synthetic_data/` | Same pipeline for LLM-generated synthetic datasets with configurable hierarchy structure |
+
+All scripts use `../` paths for data I/O — see [REPRODUCIBILITY.md](../REPRODUCIBILITY.md) for how to run each pipeline step.
