@@ -49,7 +49,6 @@ torch.cuda.empty_cache()
 import torch.nn.functional as F
 from torch.nn import DataParallel
 from torch import Tensor
-from transformers import AutoTokenizer, AutoModel
 
 # ===================
 # Data Manipulation
