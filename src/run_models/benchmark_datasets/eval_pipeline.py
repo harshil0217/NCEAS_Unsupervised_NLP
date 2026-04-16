@@ -14,6 +14,7 @@ Example:
 """
 
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0" 
 import sys
 from dotenv import load_dotenv
 import json
@@ -49,6 +50,7 @@ torch.cuda.empty_cache()
 import torch.nn.functional as F
 from torch.nn import DataParallel
 from torch import Tensor
+from transformers import AutoTokenizer, AutoModel
 
 # ===================
 # Data Manipulation
@@ -59,7 +61,7 @@ import pandas as pd
 # ====================
 # Embeddings
 # ====================
-from vllm import LLM
+from sentence_transformers import SentenceTransformer
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # ==========================
@@ -272,29 +274,43 @@ DATASET_CONFIGS = {
 
 def get_embeddings(texts, model_id, batch_size=32):
     """
-    Generate embeddings using vLLM.
+    Generate embeddings using SentenceTransformer.
 
     Args:
         texts: List or Series of text inputs
-        model_id: Model identifier
-        batch_size: Unused (vLLM handles batching internally)
+        model_id: Model identifier for SentenceTransformer
+        batch_size: Batch size for encoding
 
     Returns:
-        numpy array of normalized embeddings
+        numpy array of embeddings
     """
     print("Using device:", device)
     print(f"Number of texts: {len(texts)}")
 
-    llm = LLM(model=model_id, task="embed", trust_remote_code=True)
+    model = SentenceTransformer(
+        model_id,
+        model_kwargs={"attn_implementation": "sdpa", "device_map": "auto"} if "Qwen" in model_id else {},
+        tokenizer_kwargs={"padding_side": "left"} if "Qwen" in model_id else {},
+        device="cuda:0"
+    )
+
+    # Print token statistics
+    tok = model.tokenizer(texts.tolist(), truncation=False, padding=False)
+    lens = [len(x) for x in tok['input_ids']]
+    print(f"Total tokens: {sum(lens):,}")
+    print(f"Avg tokens: {sum(lens)/len(lens):.1f}")
+    print(f"Max tokens: {max(lens)}")
 
     print("Generating embeddings...")
-    outputs = llm.embed(texts.tolist())
-    embeddings = np.array([output.outputs.embedding for output in outputs])
+    embeddings = model.encode(
+        texts,
+        batch_size=batch_size,
+        show_progress_bar=True,
+        convert_to_numpy=True,
+        normalize_embeddings=True,
+        device="cuda:0"
+    )
 
-    norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
-    embeddings = embeddings / np.maximum(norms, 1e-12)
-
-    print(f"Embedding shape: {embeddings.shape}")
     return embeddings
 
 
