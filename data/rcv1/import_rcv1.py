@@ -32,8 +32,6 @@ def main():
         text = reuters.raw(f).replace('\n', ' ').strip()
         cats = reuters.categories(f)
         if len(cats) < 2: continue
-        
-        print(cats)
 
         data_list.append({
             "item_id": f,

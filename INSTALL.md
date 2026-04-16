@@ -35,9 +35,44 @@ This creates a fully reproducible environment using the provided `environment.ym
 
 ## 3. Data Setup
 
-This repository does **not include benchmark datasets**. Datasets must be downloaded separately and placed in the correct folders.
+This repository does **not include benchmark datasets**. Use the provided download script to fetch all datasets automatically.
 
-### Required Folder Structure
+### Kaggle Credentials (required for arXiv, Amazon, DBpedia)
+
+1. Go to [kaggle.com](https://www.kaggle.com) → Settings → API → **Create New Token**
+2. Move the downloaded `kaggle.json` to:
+   ```bash
+   mkdir -p ~/.kaggle
+   mv ~/Downloads/kaggle.json ~/.kaggle/
+   chmod 600 ~/.kaggle/kaggle.json
+   ```
+3. Install the Kaggle CLI:
+   ```bash
+   pip install kaggle
+   ```
+
+### Download All Datasets
+
+```bash
+python data/download_data.py
+```
+
+This downloads and preprocesses all five benchmark datasets automatically:
+
+| Dataset | Source | Notes |
+|---------|--------|-------|
+| arXiv | Kaggle | ~4 GB download, sampled to 30k papers |
+| Amazon | Kaggle | `train_40k.csv` + `val_10k.csv` |
+| DBpedia | Kaggle | `DBPEDIA_test.csv` |
+| RCV1 | sklearn | No Kaggle needed |
+| Web of Science | Mendeley | Downloaded automatically |
+
+To download a specific dataset only:
+```bash
+python data/download_data.py --datasets rcv1
+```
+
+### Required Output Structure
 
 ```bash
 data/
@@ -53,66 +88,6 @@ data/
 └── WebOfScience/
     └── Data.xlsx
 ```
-
----
-
-### arXiv Dataset
-
-The arXiv dataset used in this project is a **30,000 paper subset** of the full arXiv metadata.
-
-1. Download `arxiv-metadata-oai-snapshot.json` from [https://www.kaggle.com/datasets/Cornell-University/arxiv](https://www.kaggle.com/datasets/Cornell-University/arxiv)
-
-2. Place it at:
-   ```bash
-   data/arxiv/arxiv-metadata-oai-snapshot.json
-   ```
-
-3. Run `clean_arxiv.py` to generate `arxiv_clean.csv`:
-   ```
-   data/arxiv/clean_arxiv.py
-   ```
-
----
-
-### Amazon Dataset
-
-1. Download the files `train_40k.csv` and `val_10k.csv` from the following link
-
-https://www.kaggle.com/datasets/kashnitsky/hierarchical-text-classification
-
-2. Place them both at:
- ```bash
-    data/amazon/train_40k.csv
-    data/amazon/val_10k.csv
- ```
-
-
----
-
-### DBpedia Dataset
-
-
-1. Download from `DBPEDIA_test.csv` from kaggle (existing preprocessed dataset incorporated for ease of use)
-
-https://www.kaggle.com/code/danofer/dbpedia-preprocessing/input
-
-2. Place at :
- ```bash
-    data/dbpedia/DBPEDIA_test.csv
- ```
-
----
-
-### RCV1 Dataset
-
-1. Execute the python file located at `data/rcv1/import_rcv1.py`. This file will load in the RCV1 dataset using the [fetch_rcv1](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_rcv1.html) function, preprocess the data for use, and save the data to `rcv1.csv` 
-
----
-
-### Web of Science Dataset
-
-1. Download from [https://data.mendeley.com/datasets/9rw3vkcfy4/6](https://data.mendeley.com/datasets/9rw3vkcfy4/6_)
-2. Place the `Data.csv`, in `data/WebOfScience`
 
 ---
 
@@ -139,6 +114,6 @@ Like for benchmark datasets, results will be saved to
 results/{dataset}_clustering_scores.csv
 ```
 
-with the synthetic datasets saved to `src/data_generation/generated_data`
+with the synthetic datasets saved to `data/synthetic/generated_data/`
 
 

@@ -1,16 +1,26 @@
 # Data
 
-This folder contains download scripts and instructions for the five benchmark datasets used in this project. Datasets are **not included in the repository** and must be downloaded separately.
+This folder contains the five benchmark datasets and LLM-generated synthetic data. Datasets are **not included in the repository** and must be downloaded separately.
 
-See [INSTALL.md](../INSTALL.md) for full setup instructions.
+## Automated Download
+
+Run from the repo root:
+
+```bash
+python data/download_data.py
+```
+
+Requires Kaggle credentials for arXiv, Amazon, and DBpedia. See [INSTALL.md](../INSTALL.md) for setup instructions.
+
+## Datasets
 
 | Dataset | Folder | Size | Source |
 |---------|--------|------|--------|
 | arXiv | `arxiv/` | ~30k abstracts | Kaggle / Cornell |
 | Amazon | `amazon/` | 50k reviews | Kaggle |
 | DBpedia | `dbpedia/` | ~342k articles | Kaggle |
-| RCV1 | `rcv1/` | ~804k news articles | scikit-learn |
+| RCV1 | `rcv1/` | ~10k news articles | scikit-learn |
 | Web of Science | `WebOfScience/` | ~46k papers | Mendeley |
 | Synthetic | `synthetic/` | 24 configs | LLM-generated (Groq API) |
 
-Each subfolder contains a README with dataset-specific download or generation instructions.
+Synthetic data is generated separately — see [INSTALL.md](../INSTALL.md) Section 5.

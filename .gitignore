@@ -216,6 +216,7 @@ __marimo__/
 *.xlsx
 *.lock
 *.json
+*.zip
 data/synthetic/theme_keys.json
 *.pkl
 
