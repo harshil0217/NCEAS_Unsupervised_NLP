@@ -98,6 +98,10 @@ from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_inf
 import pickle
 
 from tqdm import tqdm
+from run_models.benchmark_datasets.build_ground_truth_trees import (
+    build_ground_truth_tree,
+    save_ground_truth_tree,
+)
 
 # ==============
 # Global Config
@@ -285,8 +289,7 @@ def get_embeddings(texts, model_id, batch_size=32):
     model = SentenceTransformer(
         model_id,
         model_kwargs={"attn_implementation": "sdpa", "device_map": "auto"} if "Qwen" in model_id else {},
-        tokenizer_kwargs={"padding_side": "left"} if "Qwen" in model_id else {},
-        device="cuda:0"
+        tokenizer_kwargs={"padding_side": "left"} if "Qwen" in model_id else {}
     )
     
   
@@ -305,7 +308,6 @@ def get_embeddings(texts, model_id, batch_size=32):
         show_progress_bar=True,
         convert_to_numpy=True,
         normalize_embeddings=True,
-        device="cuda:0"
     )
 
     return embeddings
@@ -592,9 +594,15 @@ def run_pipeline(dataset_name):
     # Prepare data once (same for all embedding models)
     topic_data = data.reset_index(drop=True)
 
-    # Load pre-built ground truth tree (leaf IDs match row indices directly)
-    print("Loading pre-built ground truth tree...")
-    gt_tree_root, gt_node_map = load_gt_tree(dataset_name)
+    # Build ground truth tree if not cached, then load it
+    gt_tree_cache_path = f"cache/ground_truth_trees/{dataset_name}_tree.pkl"
+    if not os.path.exists(gt_tree_cache_path):
+        print("Ground truth tree not found — building from dataset...")
+        gt_tree_root, gt_node_map = build_ground_truth_tree(data, config["depth"])
+        save_ground_truth_tree(gt_tree_root, gt_node_map, dataset_name)
+    else:
+        print("Loading pre-built ground truth tree...")
+        gt_tree_root, gt_node_map = load_gt_tree(dataset_name)
 
     # Build topic_dict from ground truth categories
     topic_dict = {}
