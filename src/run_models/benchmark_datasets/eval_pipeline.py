@@ -60,7 +60,7 @@ import pandas as pd
 # ====================
 # Embeddings
 # ====================
-from sentence_transformers import SentenceTransformer
+from vllm import LLM
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # ==========================
@@ -273,43 +273,29 @@ DATASET_CONFIGS = {
 
 def get_embeddings(texts, model_id, batch_size=32):
     """
-    Generate embeddings using SentenceTransformer.
+    Generate embeddings using vLLM.
 
     Args:
         texts: List or Series of text inputs
-        model_id: Model identifier for SentenceTransformer
-        batch_size: Batch size for encoding
+        model_id: Model identifier
+        batch_size: Unused (vLLM handles batching internally)
 
     Returns:
-        numpy array of embeddings
+        numpy array of normalized embeddings
     """
     print("Using device:", device)
     print(f"Number of texts: {len(texts)}")
 
-    model = SentenceTransformer(
-        model_id,
-        model_kwargs={"attn_implementation": "sdpa", "device_map": "auto"} if "Qwen" in model_id else {},
-        tokenizer_kwargs={"padding_side": "left"} if "Qwen" in model_id else {}
-    )
-    
-  
-
-    # Print token statistics
-    tok = model.tokenizer(texts.tolist(), truncation=False, padding=False)
-    lens = [len(x) for x in tok['input_ids']]
-    print(f"Total tokens: {sum(lens):,}")
-    print(f"Avg tokens: {sum(lens)/len(lens):.1f}")
-    print(f"Max tokens: {max(lens)}")
+    llm = LLM(model=model_id, task="embed", trust_remote_code=True)
 
     print("Generating embeddings...")
-    embeddings = model.encode(
-        texts,
-        batch_size=batch_size,
-        show_progress_bar=True,
-        convert_to_numpy=True,
-        normalize_embeddings=True,
-    )
+    outputs = llm.embed(texts.tolist())
+    embeddings = np.array([output.outputs.embedding for output in outputs])
 
+    norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+    embeddings = embeddings / np.maximum(norms, 1e-12)
+
+    print(f"Embedding shape: {embeddings.shape}")
     return embeddings
 
 
