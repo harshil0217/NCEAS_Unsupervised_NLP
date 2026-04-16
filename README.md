@@ -75,9 +75,13 @@ python src/run_models/benchmark_datasets/eval_pipeline.py --dataset wos
 The following are expected runtimes for each dataset pipeline, assuming a hardware configuration similar to ours
 
 -**Arxiv**: 2 Hours
+
 -**Amazon**: 2 Hours
+
 -**Dbpedia**: 5 Hours
+
 -**RCV1**: 30 min
+
 -**WOS**: 4 Hours
 
 ---
