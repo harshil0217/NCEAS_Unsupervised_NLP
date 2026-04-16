@@ -48,6 +48,8 @@ KAGGLE_KEY=your_kaggle_api_key
 GROQ_API_KEY=your_groq_api_key
 ```
 
+### NOTE: A Paid API key is required to use GPT-OSS-120B, the model used for synthetic data generation. It shouldn't cost you more than a few cents however
+
 ---
 
 ## 4. Data Setup
