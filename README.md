@@ -66,7 +66,11 @@ This notebook demonstrates the full pipeline including loading data, generating 
 
 ## Reproducibility
 
-A Shepard Diagram reproducibility notebook is available at:
+For step-by-step instructions to reproduce all figures and results, see:
+
+[REPRODUCIBILITY.md](REPRODUCIBILITY.md)
+
+A Shepard Diagram reproducibility notebook is also available at:
 
 ```
 notebooks/milestones/NCEAS_Reproducibility.ipynb
