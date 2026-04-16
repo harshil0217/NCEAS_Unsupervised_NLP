@@ -54,6 +54,12 @@ GROQ_API_KEY=your_groq_api_key
 
 This repository does **not include benchmark datasets**. Use the provided download script to fetch all datasets automatically.
 
+### Install Kaggle CLI
+
+Install Kaggle CLI tool with 
+
+`pip install kaggle`
+
 ### Download All Datasets
 
 ```bash

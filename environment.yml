@@ -33,6 +33,7 @@ dependencies:
   - hdbscan
   - umap-learn
   - openpyxl
+  - kaggle
   - pip:
     - trimap
     - apted
