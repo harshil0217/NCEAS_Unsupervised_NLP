@@ -4,23 +4,19 @@ import pandas as pd
 import nltk
 from nltk.corpus import reuters
 
-target_folder = "src"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-current_dir = os.getcwd()
-while os.path.basename(current_dir) != target_folder:
-    parent_dir = os.path.abspath(os.path.join(current_dir, ".."))
-    if parent_dir == current_dir:
-        raise FileNotFoundError(f"{target_folder} not found in the directory tree.")
-    current_dir = parent_dir
+current_dir = os.path.dirname(os.path.abspath(__file__))
+while not os.path.exists(os.path.join(current_dir, "src")):
+    parent = os.path.abspath(os.path.join(current_dir, ".."))
+    if parent == current_dir:
+        raise FileNotFoundError("Could not find repo root.")
+    current_dir = parent
 
-os.chdir(current_dir)
-sys.path.insert(0, current_dir)
+OUT_DIR = os.path.join(current_dir, "data", "rcv1")
+os.makedirs(OUT_DIR, exist_ok=True)
 
-DATA_GEN_DIR = "data/rcv1"
-os.makedirs(DATA_GEN_DIR, exist_ok=True)
-
-filename = f'{DATA_GEN_DIR}/rcv1.csv'
+filename = os.path.join(OUT_DIR, "rcv1.csv")
 
 def main():
     print("Fetching NLTK Reuters...")

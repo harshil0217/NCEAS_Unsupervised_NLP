@@ -180,11 +180,7 @@ def download_rcv1():
         return
 
     print("  Fetching via sklearn (no Kaggle needed) ...")
-    run([sys.executable, path("data", "rcv1", "import_rcv1.py")], cwd=path("src"))
-    # import_rcv1.py chdir's to src/ and saves relative to there — move to correct location
-    wrong = path("src", "data", "rcv1", "rcv1.csv")
-    if os.path.exists(wrong):
-        shutil.move(wrong, out)
+    run([sys.executable, path("data", "rcv1", "import_rcv1.py")])
     print(f"  Done: {out}")
 
 
