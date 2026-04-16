@@ -44,35 +44,20 @@ Four clustering methods are applied at multiple hierarchy levels: Agglomerative 
 ### Evaluation
 Clustering quality is measured against ground truth labels using FM index, Adjusted Rand Index (ARI), Adjusted Mutual Information (AMI), and Rand Index.
 
----
-
-## Demo
-
-After installing the environment, run:
-
-```bash
-jupyter notebook
-```
-
-Then open:
-
-```
-notebooks/milestones/demo.ipynb
-```
 
 This notebook demonstrates the full pipeline including loading data, generating embeddings, dimensionality reduction, clustering, and visualization.
 
 ---
-
-## Reproducibility
-
-A Shepard Diagram reproducibility notebook is available at:
-
-```
-notebooks/milestones/NCEAS_Reproducibility.ipynb
-```
+## Hardware Configuration
+All experiments in this codebase were conducted in an HPC cluster with 12 CPU cores, 64 GB of RAM, and 2 V100 NVIDIA GPUs
 
 ---
+
+## Reproducibility
+All reproducibility instructions can be found in [REPRODUCIBILITY.md](./REPRODUCIBILITY.md)
+
+
+--- 
 
 ## Running Benchmark Experiments
 
@@ -85,6 +70,15 @@ python src/run_models/benchmark_datasets/eval_pipeline.py --dataset dbpedia
 python src/run_models/benchmark_datasets/eval_pipeline.py --dataset rcv1
 python src/run_models/benchmark_datasets/eval_pipeline.py --dataset wos
 ```
+
+### Expected Runtimes
+The following are expected runtimes for each dataset pipeline, assuming a hardware configuration similar to ours
+
+-**Arxiv**: 2 Hours
+-**Amazon**: 2 Hours
+-**Dbpedia**: 5 Hours
+-**RCV1**: 30 min
+-**WOS**: 4 Hours
 
 ---
 
