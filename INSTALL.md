@@ -1,5 +1,5 @@
 # Installation Instructions
-NCEAS Unsupervised NLP – PHATE Benchmark Pipeline
+NCEAS Unsupervised NLP 
 
 These instructions allow instructors, classmates, and community partners to reproduce the project environment and run the benchmark pipeline on a Linux system with CUDA support.
 
