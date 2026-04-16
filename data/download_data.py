@@ -30,6 +30,8 @@ import subprocess
 import sys
 import urllib.request
 import zipfile
+from dotenv import load_dotenv
+load_dotenv()
 
 try:
     import requests as _requests
@@ -59,11 +61,14 @@ def run(cmd, cwd=None):
         sys.exit(1)
 
 def check_kaggle():
-    kaggle_json = os.path.expanduser("~/.kaggle/kaggle.json")
-    if not os.path.exists(kaggle_json):
-        print("Kaggle credentials not found at ~/.kaggle/kaggle.json")
-        print("Get yours at https://www.kaggle.com/settings > API > Create New Token")
+    username = os.environ.get("KAGGLE_USERNAME")
+    key = os.environ.get("KAGGLE_KEY")
+    if not username or not key:
+        print("Kaggle credentials not found. Set KAGGLE_USERNAME and KAGGLE_KEY in your .env file.")
+        print("Get your API token at https://www.kaggle.com/settings > API > Create New Token")
         sys.exit(1)
+    os.environ["KAGGLE_USERNAME"] = username
+    os.environ["KAGGLE_KEY"] = key
     if shutil.which("kaggle") is None:
         print("Kaggle CLI not installed. Run: pip install kaggle")
         sys.exit(1)

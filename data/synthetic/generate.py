@@ -103,8 +103,8 @@ def generate_hierarchy(topics, theme, terms=None, depth=2, temperature=0.7, mode
         print(f"Warning: Failed to parse valid JSON from response: {response_text}")
         return []
 
-    def get_synonyms(topic, model="gpt-4o-mini", num=3):
-        """Generate synonyms for a given topic using GPT and store separately."""
+    def get_synonyms(topic, model=model, num=3):
+        """Generate synonyms for a given topic using Groq and store separately."""
         messages = [
             {"role": "system", "content": "You provide synonyms and related phrases for a given term."},
             {"role": "user", "content": f"Generate {num} synonyms or closely related terms for '{topic}', in a JSON list format."}
@@ -284,7 +284,7 @@ def add_noise_row(df, column_name, num_samples=3):
     items = df[column_name].dropna().unique().tolist()
     sampled_items = random.sample(items, min(num_samples, len(items)))
 
-    # Construct GPT prompt
+    # Construct prompt
     prompt = (
         f"Given the following terms: {', '.join(sampled_items)}, "
         "return a phrase that is similar in style and length to the terms, "
@@ -292,7 +292,7 @@ def add_noise_row(df, column_name, num_samples=3):
         "**This term should represent the overlap of the terms given and belong to all categories seen**"
     )
 
-    # Call GPT
+    # Call Groq
     response = client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": prompt}],

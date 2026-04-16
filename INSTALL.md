@@ -33,23 +33,26 @@ This creates a fully reproducible environment using the provided `environment.ym
 
 ---
 
-## 3. Data Setup
+## 3. Set Up API Keys
+
+Create a `.env` file in the project root with the following keys:
+
+```bash
+# Kaggle (required for arXiv, Amazon, DBpedia downloads)
+# Get your token at https://www.kaggle.com/settings > API > Create New Token
+KAGGLE_USERNAME=your_kaggle_username
+KAGGLE_KEY=your_kaggle_api_key
+
+# Groq (required for synthetic data generation)
+# Get your key at https://console.groq.com
+GROQ_API_KEY=your_groq_api_key
+```
+
+---
+
+## 4. Data Setup
 
 This repository does **not include benchmark datasets**. Use the provided download script to fetch all datasets automatically.
-
-### Kaggle Credentials (required for arXiv, Amazon, DBpedia)
-
-1. Go to [kaggle.com](https://www.kaggle.com) → Settings → API → **Create New Token**
-2. Move the downloaded `kaggle.json` to:
-   ```bash
-   mkdir -p ~/.kaggle
-   mv ~/Downloads/kaggle.json ~/.kaggle/
-   chmod 600 ~/.kaggle/kaggle.json
-   ```
-3. Install the Kaggle CLI:
-   ```bash
-   pip install kaggle
-   ```
 
 ### Download All Datasets
 
@@ -102,7 +105,7 @@ results/{dataset}_clustering_scores.csv
 
 ---
 
-## 4. Synthetic Data
+## 5. Synthetic Data
 
 To generate synthetic data and perform the clustering evaluation pipeline run
 
