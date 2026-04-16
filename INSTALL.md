@@ -102,7 +102,7 @@ results/{dataset}_clustering_scores.csv
 
 ---
 
-## 5. Synthetic Data
+## 4. Synthetic Data
 
 To generate synthetic data and perform the clustering evaluation pipeline run
 
