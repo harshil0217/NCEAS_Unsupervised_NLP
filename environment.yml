@@ -38,5 +38,4 @@ dependencies:
     - trimap
     - apted
     - pyhercules
-  - numpy
   
