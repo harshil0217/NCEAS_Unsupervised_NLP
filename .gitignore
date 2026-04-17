@@ -213,7 +213,9 @@ __marimo__/
 # Data
 *.csv
 !results/*.csv
-      # keep CSVs directly in results/
+!results/viz_metrics/**/*.csv
+      # keep CSVs in results/ and results/viz_metrics/
+results/shepard_diagrams/
 *.npy
 *.xlsx
 *.lock
