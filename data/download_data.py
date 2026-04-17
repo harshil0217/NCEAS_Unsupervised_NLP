@@ -147,27 +147,22 @@ def download_dbpedia():
         return
 
     check_kaggle()
-    # Dataset slug from: https://www.kaggle.com/code/danofer/dbpedia-preprocessing/input
     run(["kaggle", "datasets", "download", "-d", "danofer/dbpedia-classes",
          "-p", path("data", "dbpedia")])
 
-    zips = [f for f in os.listdir(path("data", "dbpedia")) if f.endswith(".zip")]
-    if zips:
-        extract_zip(path("data", "dbpedia", zips[0]), path("data", "dbpedia"))
-
-    # Rename to expected filename if needed
     dbpedia_dir = path("data", "dbpedia")
-    csvs = [f for f in os.listdir(dbpedia_dir) if f.endswith(".csv") and f != "DBPEDIA_test.csv"]
-    for f in csvs:
-        candidate = os.path.join(dbpedia_dir, f)
-        if "test" in f.lower() or "dbpedia" in f.lower():
-            os.rename(candidate, out)
-            print(f"  Renamed {f} -> DBPEDIA_test.csv")
-            break
+    zips = [f for f in os.listdir(dbpedia_dir) if f.endswith(".zip")]
+    if zips:
+        extract_zip(path("data", "dbpedia", zips[0]), dbpedia_dir)
+
+    # Delete any extra CSVs that aren't DBPEDIA_test.csv
+    for f in os.listdir(dbpedia_dir):
+        if f.endswith(".csv") and f != "DBPEDIA_test.csv":
+            os.remove(os.path.join(dbpedia_dir, f))
+            print(f"  Deleted: {f}")
 
     if not os.path.exists(out):
         print("  Could not find DBPEDIA_test.csv after extraction.")
-        print("  Check data/dbpedia/ and rename the test split to DBPEDIA_test.csv manually.")
     else:
         print(f"  Done: {out}")
 
