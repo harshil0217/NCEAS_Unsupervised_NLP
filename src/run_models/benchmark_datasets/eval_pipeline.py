@@ -14,7 +14,6 @@ Example:
 """
 
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "0" 
 import sys
 from dotenv import load_dotenv
 import json
