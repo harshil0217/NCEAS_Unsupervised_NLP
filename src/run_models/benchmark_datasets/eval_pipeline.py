@@ -254,7 +254,7 @@ DATASET_CONFIGS = {
         "depth": 2,
         "short": "rcv1",
         "results_filename": "rcv1_clustering_scores.csv",
-        "batch_size": 4,
+        "batch_size": 2,
         "reduction_methods": ["Raw", "PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", 'TriMAP'],
     },
     "wos": {
