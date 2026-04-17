@@ -211,6 +211,9 @@ __marimo__/
 **/.DS_Store
 
 # Data
+!results/**/*.csv    # keep CSVs inside results/
+
+!results/*.csv       # keep CSVs directly in results/
 *.csv
 !results/**/*.csv    # keep CSVs inside results/
 !results/*.csv       # keep CSVs directly in results/
