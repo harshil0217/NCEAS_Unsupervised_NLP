@@ -303,7 +303,7 @@ def get_embeddings(texts, model_id, batch_size=32):
 
     print("Generating embeddings...")
     embeddings = model.encode(
-        texts,
+        texts.to_list(),
         batch_size=batch_size,
         show_progress_bar=True,
         convert_to_numpy=True,
