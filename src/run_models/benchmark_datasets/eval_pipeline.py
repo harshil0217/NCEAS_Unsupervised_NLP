@@ -293,6 +293,8 @@ def get_embeddings(texts, model_id, batch_size=32):
         tokenizer_kwargs={"padding_side": "left"} if "Qwen" in model_id else {},
         device="cuda:0"
     )
+    
+    pool = model.start_multi_process_pool(target_devices=["cuda:0", "cuda:1"])
 
     # Print token statistics
     tok = model.tokenizer(texts.tolist(), truncation=False, padding=False)
@@ -302,14 +304,16 @@ def get_embeddings(texts, model_id, batch_size=32):
     print(f"Max tokens: {max(lens)}")
 
     print("Generating embeddings...")
-    embeddings = model.encode(
+    embeddings = model.encode_multi_process_pool(
         texts.to_list(),
         batch_size=batch_size,
         show_progress_bar=True,
         convert_to_numpy=True,
         normalize_embeddings=True,
-        device="cuda:0"
+        pool = pool
     )
+    
+    model.stop_multi_process_pool(pool)
 
     return embeddings
 
