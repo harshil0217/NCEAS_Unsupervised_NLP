@@ -307,7 +307,6 @@ def get_embeddings(texts, model_id, batch_size=32):
         show_progress_bar=True,
         convert_to_numpy=True,
         normalize_embeddings=True,
-        pool = pool
     )
 
     return embeddings
