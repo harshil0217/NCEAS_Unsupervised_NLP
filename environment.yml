@@ -23,7 +23,6 @@ dependencies:
   - tqdm
   - sentence-transformers
   - ipykernel
-  - conda-forge::accelerate
   - jupyter
   - nltk
   - python-annoy
