@@ -212,6 +212,8 @@ __marimo__/
 
 # Data
 *.csv
+!results/**/*.csv    # keep CSVs inside results/
+!results/*.csv       # keep CSVs directly in results/
 *.npy
 *.xlsx
 *.lock
