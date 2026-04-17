@@ -356,7 +356,7 @@ def generate_dataset(theme, max_sub, depth, add_noise, t=T, synonyms=SYNONYMS, b
         print(f"Saved JSON: {json_file}")
 
         df = hierarchy_to_df(hierarchy)
-        df.to_csv(file_name, index=False)
+        df.to_csv(file_name, index=False, escapechar='\\')
         print(f"Saved CSV: {file_name}")
     else:
         print(f"Loading existing: {file_name}")
@@ -370,7 +370,7 @@ def generate_dataset(theme, max_sub, depth, add_noise, t=T, synonyms=SYNONYMS, b
             print(f"Adding {num_noise} noise rows...")
             for _ in tqdm(range(num_noise), desc="Generating noise"):
                 df = add_noise_row(df, column_name="topic", num_samples=10)
-            df.to_csv(noise_file, index=False)
+            df.to_csv(noise_file, index=False, escapechar='\\')
             print(f"Saved noisy dataset: {noise_file}")
         else:
             print(f"Noisy dataset already exists: {noise_file}")
