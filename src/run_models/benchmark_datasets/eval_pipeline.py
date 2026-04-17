@@ -14,6 +14,7 @@ Example:
 """
 
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0" 
 import sys
 from dotenv import load_dotenv
 import json
@@ -307,6 +308,7 @@ def get_embeddings(texts, model_id, batch_size=32):
         show_progress_bar=True,
         convert_to_numpy=True,
         normalize_embeddings=True,
+        device="cuda:0"
     )
 
     return embeddings
