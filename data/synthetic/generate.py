@@ -6,15 +6,7 @@ import sys
 from dotenv import load_dotenv
 load_dotenv()
 
-# Walk up from this file to find repo root (directory containing 'src' folder)
-current_dir = os.path.dirname(os.path.abspath(__file__))
-while not os.path.isdir(os.path.join(current_dir, 'src')):
-    parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
-    if parent_dir == current_dir:
-        raise FileNotFoundError("Could not find repo root containing 'src'")
-    current_dir = parent_dir
-repo_root = current_dir
-os.chdir(repo_root)
+repo_root = os.getcwd()
 sys.path.insert(0, os.path.join(repo_root, 'src'))
 
 from groq import Groq
@@ -24,7 +16,6 @@ import json
 import random
 import re
 from tqdm import tqdm
-import argparse
 import os
 
 key = os.getenv('GROQ_API_KEY')
@@ -310,94 +301,80 @@ def add_noise_row(df, column_name, num_samples=3):
     return df
 
 
-def noise_range(value):
-    f = float(value)
-    if f < 0 or f > 1:
-        raise argparse.ArgumentTypeError("add_noise must be a float between 0 and 1.")
-    return f
+# ========================
+# Config
+# ========================
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--theme", type=str, required=True)
-parser.add_argument("--t", type=float, required=True)
-parser.add_argument("--max_sub", type=int, required=True)
-parser.add_argument("--depth", type=int, required=True)
-parser.add_argument("--synonyms", type=int, required=True)
-parser.add_argument("--branching", type=str, required=True)
-parser.add_argument("--add_noise", type=noise_range, default=0.0,
-                    help="Amount of noise to add (float between 0 and 1, default: 0.0)")
+CONFIGS = [
+    # (theme, max_sub, depth, add_noise)
+    ("Energy_Ecosystems_and_Humans",         5, 3, 0.0),
+    ("Energy_Ecosystems_and_Humans",         5, 3, 0.25),
+    ("Energy_Ecosystems_and_Humans",         5, 3, 0.5),
+    ("Energy_Ecosystems_and_Humans",         3, 5, 0.0),
+    ("Energy_Ecosystems_and_Humans",         3, 5, 0.25),
+    ("Energy_Ecosystems_and_Humans",         3, 5, 0.5),
+    ("Offshore_energy_impacts_on_fisheries", 5, 3, 0.0),
+    ("Offshore_energy_impacts_on_fisheries", 5, 3, 0.25),
+    ("Offshore_energy_impacts_on_fisheries", 5, 3, 0.5),
+    ("Offshore_energy_impacts_on_fisheries", 3, 5, 0.0),
+    ("Offshore_energy_impacts_on_fisheries", 3, 5, 0.25),
+    ("Offshore_energy_impacts_on_fisheries", 3, 5, 0.5),
+]
 
-args = parser.parse_args()
-
-theme = args.theme
-t = args.t
-max_sub = args.max_sub
-depth = args.depth
-with_synonyms = args.synonyms
-branching = args.branching
-add_noise = float(args.add_noise)
-os.makedirs('data/synthetic/generated_data', exist_ok=True)
-
-with open('data/synthetic/theme_keys.json', 'r') as file:
-    data = json.load(file)
-
-top_level_topics = data[theme]
-file_name = f'data/synthetic/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise0.0_{branching}.csv'
-
-print(f"\n=== Hierarchy Generation Script ===")
-print(f"Theme: {theme}")
-print(f"Temperature: {t}")
-print(f"Max Subtopics: {max_sub}")
-print(f"Depth: {depth}")
-print(f"Synonyms: {with_synonyms}")
-print(f"Branching: {branching}")
-print(f"Add Noise: {add_noise}")
-print(f"\nOutput file: {file_name}")
-print(f"Root topics: {top_level_topics}\n")
-
-if not os.path.exists(file_name):
-    print("Hierarchy file not found. Generating new hierarchy...")
-    hierarchy = generate_hierarchy(top_level_topics, 
-                                theme, depth=depth, 
-                                temperature=t, 
-                                num=max_sub,model = model,
-                                with_synonyms=with_synonyms,
-                                branching=branching)
-    
-    hierarchy = clean_strings(hierarchy)
-    file_name = f'data/synthetic/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise0.0_{branching}.csv'
-
-    # Save JSON version
-    json_file = file_name.replace('.csv', '.json')
-    print(f"Saving JSON hierarchy to: {json_file}")
-    with open(json_file, 'w') as f:
-        json.dump(hierarchy, f, indent=2)
-
-    # Convert to DataFrame and save CSV
-    print(f"Converting hierarchy to DataFrame...")
-    df = hierarchy_to_df(hierarchy)
-    print(f"DataFrame shape: {df.shape}")
-    print(f"Saving CSV to: {file_name}")
-    df.to_csv(file_name, index=False)
-    print(f"✓ Hierarchy generation complete!\n")
-else:
-    print(f"Loading existing hierarchy from: {file_name}")
-    df = pd.read_csv(file_name)
-    print(f"Loaded DataFrame shape: {df.shape}\n")
+T = 1.0
+SYNONYMS = 0
+BRANCHING = "random"
 
 
-if add_noise > 0.0:
-    noise_file = f'data/synthetic/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{with_synonyms}_noise{add_noise}_{branching}.csv'
-    if not os.path.exists(noise_file):
-        num_noise = int(add_noise * len(df))
-        print(f"=== Adding Noise ===")
-        print(f"Original dataset size: {len(df)}")
-        print(f"Adding {num_noise} synthetic rows...")
-        for i in tqdm(range(num_noise), desc="Generating noise"):
-            df = add_noise_row(df, column_name="topic", num_samples=10)
-        
-        print(f"New dataset size: {len(df)}")
-        print(f"Saving noisy dataset to: {noise_file}")
-        df.to_csv(noise_file, index=False)
-        print(f"✓ Noise addition complete!\n")
+def generate_dataset(theme, max_sub, depth, add_noise, t=T, synonyms=SYNONYMS, branching=BRANCHING):
+    add_noise = float(add_noise)
+    os.makedirs('data/synthetic/generated_data', exist_ok=True)
+
+    with open('data/synthetic/theme_keys.json', 'r') as f:
+        data = json.load(f)
+
+    top_level_topics = data[theme]
+    file_name = f'data/synthetic/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise0.0_{branching}.csv'
+
+    print(f"\n{'='*60}")
+    print(f"Theme: {theme} | depth={depth} | max_sub={max_sub} | noise={add_noise}")
+    print(f"Output: {file_name}")
+    print(f"{'='*60}")
+
+    if not os.path.exists(file_name):
+        print("Generating new hierarchy...")
+        hierarchy = generate_hierarchy(
+            top_level_topics, theme, depth=depth,
+            temperature=t, num=max_sub, model=model,
+            with_synonyms=synonyms, branching=branching,
+        )
+        hierarchy = clean_strings(hierarchy)
+
+        json_file = file_name.replace('.csv', '.json')
+        with open(json_file, 'w') as f:
+            json.dump(hierarchy, f, indent=2)
+        print(f"Saved JSON: {json_file}")
+
+        df = hierarchy_to_df(hierarchy)
+        df.to_csv(file_name, index=False)
+        print(f"Saved CSV: {file_name}")
     else:
-        print(f"Noisy dataset already exists: {noise_file}\n")
+        print(f"Loading existing: {file_name}")
+        df = pd.read_csv(file_name)
+        print(f"Loaded {df.shape[0]} rows.")
+
+    if add_noise > 0.0:
+        noise_file = f'data/synthetic/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}.csv'
+        if not os.path.exists(noise_file):
+            num_noise = int(add_noise * len(df))
+            print(f"Adding {num_noise} noise rows...")
+            for _ in tqdm(range(num_noise), desc="Generating noise"):
+                df = add_noise_row(df, column_name="topic", num_samples=10)
+            df.to_csv(noise_file, index=False)
+            print(f"Saved noisy dataset: {noise_file}")
+        else:
+            print(f"Noisy dataset already exists: {noise_file}")
+
+
+for theme, max_sub, depth, add_noise in CONFIGS:
+    generate_dataset(theme, max_sub, depth, add_noise)

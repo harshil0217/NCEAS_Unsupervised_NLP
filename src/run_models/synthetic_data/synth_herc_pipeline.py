@@ -28,7 +28,6 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 # ========================
 import re
 import warnings
-import argparse
 import pickle
 
 # ========================
@@ -380,70 +379,41 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
     print(f"{'='*60}\n")
 
 
-# ====================
-# Setup & Execution
-# ====================
-def noise_range(value):
-    f = float(value)
-    if f < 0 or f > 1:
-        raise argparse.ArgumentTypeError("add_noise must be a float between 0 and 1.")
-    return f
+# ========================
+# Config
+# ========================
 
+CONFIGS = [
+    # (theme, max_sub, depth, add_noise)
+    ("Energy_Ecosystems_and_Humans",         5, 3, 0.0),
+    ("Energy_Ecosystems_and_Humans",         5, 3, 0.25),
+    ("Energy_Ecosystems_and_Humans",         5, 3, 0.5),
+    ("Energy_Ecosystems_and_Humans",         3, 5, 0.0),
+    ("Energy_Ecosystems_and_Humans",         3, 5, 0.25),
+    ("Energy_Ecosystems_and_Humans",         3, 5, 0.5),
+    ("Offshore_energy_impacts_on_fisheries", 5, 3, 0.0),
+    ("Offshore_energy_impacts_on_fisheries", 5, 3, 0.25),
+    ("Offshore_energy_impacts_on_fisheries", 5, 3, 0.5),
+    ("Offshore_energy_impacts_on_fisheries", 3, 5, 0.0),
+    ("Offshore_energy_impacts_on_fisheries", 3, 5, 0.25),
+    ("Offshore_energy_impacts_on_fisheries", 3, 5, 0.5),
+]
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Run Hercules hierarchical clustering on synthetic data",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Example usage:
-    python synth_herc_pipeline.py \\
-        --theme "Energy_Ecosystems_and_Humans" \\
-        --t 1.0 \\
-        --max_sub 5 \\
-        --depth 3 \\
-        --synonyms 0 \\
-        --branching random \\
-        --add_noise 0.0 \\
-        --rep_mode direct
+REP_MODES = ["direct", "description"]
 
-Representation modes:
-    direct      - Use raw text for cluster representation
-    description - Use LLM-generated cluster descriptions
-        """
-    )
+T = 1.0
+SYNONYMS = 0
+BRANCHING = "random"
 
-    parser.add_argument("--theme", type=str, required=True,
-                        help="Theme name (must match generated data file)")
-    parser.add_argument("--t", type=float, required=True,
-                        help="Temperature parameter")
-    parser.add_argument("--max_sub", type=int, required=True,
-                        help="Maximum number of subtopics")
-    parser.add_argument("--depth", type=int, required=True,
-                        help="Hierarchy depth")
-    parser.add_argument("--synonyms", type=int, required=True,
-                        help="Number of synonyms")
-    parser.add_argument("--branching", type=str, required=True,
-                        choices=["constant", "decreasing", "increasing", "random"],
-                        help="Branching pattern")
-    parser.add_argument("--add_noise", type=noise_range, default=0.0,
-                        help="Amount of noise to add (float between 0 and 1)")
-    parser.add_argument("--rep_mode", type=str, required=True,
-                        choices=["direct", "description"],
-                        help="Hercules representation mode")
-
-    args = parser.parse_args()
-
-    run_synth_herc_pipeline(
-        theme=args.theme,
-        t=args.t,
-        max_sub=args.max_sub,
-        depth=args.depth,
-        synonyms=args.synonyms,
-        branching=args.branching,
-        add_noise=args.add_noise,
-        rep_mode=args.rep_mode
-    )
-
-
-if __name__ == "__main__":
-    main()
+for theme, max_sub, depth, add_noise in CONFIGS:
+    for rep_mode in REP_MODES:
+        run_synth_herc_pipeline(
+            theme=theme,
+            t=T,
+            max_sub=max_sub,
+            depth=depth,
+            synonyms=SYNONYMS,
+            branching=BRANCHING,
+            add_noise=add_noise,
+            rep_mode=rep_mode,
+        )

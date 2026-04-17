@@ -24,10 +24,8 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 # ========================
 # Standard Libraries
 # ========================
-import argparse
 import importlib
 import re
-import time
 import warnings
 
 # ========================
@@ -335,229 +333,218 @@ def safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, clus
         return embedding_model, embed_name, cluster_method, combo_scores
 
 
-# ====================
-# Setup & Execution
-# ====================
-def noise_range(value):
-    f = float(value)
-    if f < 0 or f > 1:
-        raise argparse.ArgumentTypeError("add_noise must be a float between 0 and 1.")
-    return f
+# ========================
+# Config
+# ========================
 
-
-parser = argparse.ArgumentParser()
-parser.add_argument("--theme", type=str, required=True)
-parser.add_argument("--t", type=float, required=True)
-parser.add_argument("--max_sub", type=int, required=True)
-parser.add_argument("--depth", type=int, required=True)
-parser.add_argument("--synonyms", type=int, required=True)
-parser.add_argument("--branching", type=str, required=True)
-parser.add_argument("--add_noise", type=noise_range, default=0.0,
-                    help="Amount of noise to add (float between 0 and 1, default: 0.0)")
-parser.add_argument("--wait", type=str, choices=["True", "False"], default="False", help="Set wait to True or False")
-
-args = parser.parse_args()
-
-theme = args.theme
-t = args.t
-max_sub = args.max_sub
-depth = args.depth
-synonyms = args.synonyms
-branching = args.branching
-add_noise = args.add_noise
-wait = args.wait == "True"
-
-# Load generated data
-filename = f'../data/synthetic/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}.csv'
-
-print(f"Waiting for {filename} to be created...")
-while not os.path.exists(filename):
-    time.sleep(1)
-print(f"{filename} detected! Reading file...")
-
-topic_data_original = pd.read_csv(filename)
-
-# Keep only rows that reach the deepest category level (consistent depth across all rows)
-topic_data_original = topic_data_original.dropna(subset=[f'category {depth - 1}']).reset_index(drop=True)
-# Drop rows where the topic text is identical to its deepest category label (trivial samples)
-deepest_col = f'category {depth - 1}'
-topic_data_original = topic_data_original[
-    topic_data_original['topic'] != topic_data_original[deepest_col]
-].reset_index(drop=True)
-print(f"Filtered to {len(topic_data_original)} rows with full depth-{depth} labels and non-trivial topics.")
-
-# Embedding models to use
-embedding_model_names = [
-    "Qwen/Qwen3-Embedding-0.6B",
-    "sentence-transformers/all-MiniLM-L6-v2",
+CONFIGS = [
+    # (theme, max_sub, depth, add_noise)
+    ("Energy_Ecosystems_and_Humans",         5, 3, 0.0),
+    ("Energy_Ecosystems_and_Humans",         5, 3, 0.25),
+    ("Energy_Ecosystems_and_Humans",         5, 3, 0.5),
+    ("Energy_Ecosystems_and_Humans",         3, 5, 0.0),
+    ("Energy_Ecosystems_and_Humans",         3, 5, 0.25),
+    ("Energy_Ecosystems_and_Humans",         3, 5, 0.5),
+    ("Offshore_energy_impacts_on_fisheries", 5, 3, 0.0),
+    ("Offshore_energy_impacts_on_fisheries", 5, 3, 0.25),
+    ("Offshore_energy_impacts_on_fisheries", 5, 3, 0.5),
+    ("Offshore_energy_impacts_on_fisheries", 3, 5, 0.0),
+    ("Offshore_energy_impacts_on_fisheries", 3, 5, 0.25),
+    ("Offshore_energy_impacts_on_fisheries", 3, 5, 0.5),
 ]
 
-embedding_models = {}  # Will store {model_name: {reduction_method: embeddings}}
+T = 1.0
+SYNONYMS = 0
+BRANCHING = "random"
 
-# Prepare data once (same shuffle for all embedding models)
-shuffle_idx = np.random.RandomState(seed=67).permutation(len(topic_data_original))
-topic_data = topic_data_original.iloc[shuffle_idx].reset_index(drop=True)
-reverse_idx = np.argsort(shuffle_idx)
 
-# Build topic_dict from ground truth categories
-topic_dict = {}
-for col in topic_data.columns:
-    if re.match(r'^category \d+$', col):
-        unique_count = len(topic_data[col].unique())
-        topic_dict[unique_count] = np.array(topic_data[col])
+# ====================
+# Main Pipeline
+# ====================
 
-# Determine cluster levels from hierarchy depth
-print(f"Depth: {depth}")
-print(f"Building cluster levels by counting unique categories at each level...\n")
+def run_eval_pipeline(theme, max_sub, depth, add_noise, t=T, synonyms=SYNONYMS, branching=BRANCHING):
+    print(f"\n{'='*80}")
+    print(f"Running eval pipeline: {theme} | depth={depth} | max_sub={max_sub} | noise={add_noise}")
+    print(f"{'='*80}\n")
 
-cluster_levels = []
-for i in reversed(range(0, depth)):
-    unique_count = len(topic_data[f'category {i}'].unique())
-    print(f"Level {i} (category {i}): {unique_count} unique categories")
-    cluster_levels.append(unique_count)
+    filename = f'../data/synthetic/generated_data/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}.csv'
 
-print(f"\nFinal cluster_levels (from deepest to shallowest): {cluster_levels}\n")
+    if not os.path.exists(filename):
+        raise FileNotFoundError(f"Data file not found: {filename}\nRun generate.py first.")
 
-# Process each embedding model
-for embedding_model in embedding_model_names:
-    print(f"\n{'='*60}")
-    print(f"Processing embedding model: {embedding_model}")
-    print(f"{'='*60}\n")
+    print(f"Reading {filename}...")
+    topic_data_original = pd.read_csv(filename)
 
-    os.makedirs(f'cache/{embedding_model}_results', exist_ok=True)
-    os.makedirs(f"cache/{embedding_model}_embeddings", exist_ok=True)
+    topic_data_original = topic_data_original.dropna(subset=[f'category {depth - 1}']).reset_index(drop=True)
+    deepest_col = f'category {depth - 1}'
+    topic_data_original = topic_data_original[
+        topic_data_original['topic'] != topic_data_original[deepest_col]
+    ].reset_index(drop=True)
+    print(f"Filtered to {len(topic_data_original)} rows with full depth-{depth} labels and non-trivial topics.")
 
-    # Generate or load embeddings
-    if float(add_noise) > 0:
-        embed_file = f'cache/{embedding_model}_embeddings/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy'
-    else:
-        embed_file = f'cache/{embedding_model}_embeddings/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy'
+    embedding_model_names = [
+        "Qwen/Qwen3-Embedding-0.6B",
+        "sentence-transformers/all-MiniLM-L6-v2",
+    ]
 
-    if not os.path.exists(embed_file):
-        embedding_list = get_embeddings(topic_data_original['topic'], model=embedding_model)
-        np.save(embed_file, embedding_list)
-    else:
-        embedding_list = np.load(embed_file)
+    embedding_models = {}
 
-    reduction_dir = f"cache/{embedding_model}_reduced_embeddings"
-    os.makedirs(reduction_dir, exist_ok=True)
+    shuffle_idx = np.random.RandomState(seed=67).permutation(len(topic_data_original))
+    topic_data = topic_data_original.iloc[shuffle_idx].reset_index(drop=True)
 
-    data = np.array(embedding_list)[shuffle_idx]
-    embeddings = np.array(data)
+    topic_dict = {}
+    for col in topic_data.columns:
+        if re.match(r'^category \d+$', col):
+            unique_count = len(topic_data[col].unique())
+            topic_dict[unique_count] = np.array(topic_data[col])
 
-    if float(add_noise) > 0:
-        embed_filename = f"{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}"
-    else:
-        embed_filename = f"{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}"
+    print(f"Depth: {depth}")
+    cluster_levels = []
+    for i in reversed(range(0, depth)):
+        unique_count = len(topic_data[f'category {i}'].unique())
+        print(f"Level {i} (category {i}): {unique_count} unique categories")
+        cluster_levels.append(unique_count)
+    print(f"\nFinal cluster_levels (from deepest to shallowest): {cluster_levels}\n")
 
-    reduction_tasks = {
-        "PHATE": {
-            "path": f"{reduction_dir}/PHATE_{embed_filename}_embed.npy",
-            "run": lambda: phate.PHATE(n_jobs=-2, random_state=67, n_components=300, decay=20, t="auto", n_pca=None).fit_transform(data),
-        },
-        "PCA": {
-            "path": f"{reduction_dir}/PCA_{embed_filename}_embed.npy",
-            "run": lambda: cuPCA(n_components=300).fit_transform(embeddings),
-        },
-        "UMAP": {
-            "path": f"{reduction_dir}/UMAP_{embed_filename}_embed.npy",
-            "run": lambda: cuUMAP(n_components=300, min_dist=.05, n_neighbors=10).fit_transform(embeddings),
-        },
-        "tSNE": {
-            "path": f"{reduction_dir}/tSNE_{embed_filename}_embed.npy",
-            "run": lambda: cuTSNE(n_components=2).fit_transform(embeddings),
-        },
-        "PaCMAP": {
-            "path": f"{reduction_dir}/PaCMAP_{embed_filename}_embed.npy",
-            "run": lambda: pacmap.PaCMAP(n_components=300, random_state=67).fit_transform(embeddings),
-        },
-        "TriMAP": {
-            "path": f"{reduction_dir}/TriMAP_{embed_filename}_embed.npy",
-            "run": lambda: trimap.TRIMAP(n_dims=300).fit_transform(embeddings),
-        },
-    }
+    # Process each embedding model
+    for embedding_model in embedding_model_names:
+        print(f"\n{'='*60}")
+        print(f"Processing embedding model: {embedding_model}")
+        print(f"{'='*60}\n")
 
-    embedding_methods_for_model = {"Raw": embeddings}
-    for method_name, task in reduction_tasks.items():
-        if os.path.exists(task["path"]):
-            print(f"Loading cached {method_name} from {task['path']}...")
-            result = np.load(task["path"])
+        os.makedirs(f'cache/{embedding_model}_results', exist_ok=True)
+        os.makedirs(f"cache/{embedding_model}_embeddings", exist_ok=True)
+
+        if float(add_noise) > 0:
+            embed_file = f'cache/{embedding_model}_embeddings/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_embed.npy'
         else:
-            print(f"Running {method_name}...")
-            result = task["run"]()
-            if hasattr(result, 'to_output'):
-                result = result.to_output('numpy')
-            elif not isinstance(result, np.ndarray):
-                result = np.array(result)
-            np.save(task["path"], result)
-            print(f"Saved {method_name} to {task['path']}")
-        embedding_methods_for_model[method_name] = result
+            embed_file = f'cache/{embedding_model}_embeddings/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_embed.npy'
 
-    # Store the embedding methods for this model
-    embedding_models[embedding_model] = embedding_methods_for_model
+        if not os.path.exists(embed_file):
+            embedding_list = get_embeddings(topic_data_original['topic'], model=embedding_model)
+            np.save(embed_file, embedding_list)
+        else:
+            embedding_list = np.load(embed_file)
 
-# Build ground truth tree from synthetic data (topic_data already shuffled to match embeddings)
-print("Building ground truth tree for synthetic data...")
-gt_df = topic_data.rename(columns={f'category {i}': f'category_{i}' for i in range(depth)})
-gt_tree_root, _ = build_ground_truth_tree(gt_df, depth)
-print(f"Ground truth tree built. Root id: {gt_tree_root.name}")
+        reduction_dir = f"cache/{embedding_model}_reduced_embeddings"
+        os.makedirs(reduction_dir, exist_ok=True)
 
-# Run clustering and evaluation
-scores_all = defaultdict(lambda: defaultdict(list))
+        data = np.array(embedding_list)[shuffle_idx]
+        embeddings = np.array(data)
 
-combo_params = [
-    (embedding_model, embed_name, cluster_method)
-    for embedding_model in embedding_models.keys()
-    for embed_name in embedding_models[embedding_model].keys()
-    for cluster_method in ["Agglomerative", "HDBSCAN", "DC"]
-]
+        if float(add_noise) > 0:
+            embed_filename = f"{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}"
+        else:
+            embed_filename = f"{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}"
 
-combo_results = []
-for embedding_model, embed_name, cluster_method in tqdm(combo_params, desc="Processing embedding-clustering combos"):
-    embed_data = embedding_models[embedding_model][embed_name]
-    result = safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, cluster_levels, topic_dict, theme, t, max_sub, depth, synonyms, branching, add_noise, gt_tree_root=gt_tree_root)
-    combo_results.append(result)
+        reduction_tasks = {
+            "PHATE": {
+                "path": f"{reduction_dir}/PHATE_{embed_filename}_embed.npy",
+                "run": lambda: phate.PHATE(n_jobs=-2, random_state=67, n_components=300, decay=20, t="auto", n_pca=None).fit_transform(data),
+            },
+            "PCA": {
+                "path": f"{reduction_dir}/PCA_{embed_filename}_embed.npy",
+                "run": lambda: cuPCA(n_components=300).fit_transform(embeddings),
+            },
+            "UMAP": {
+                "path": f"{reduction_dir}/UMAP_{embed_filename}_embed.npy",
+                "run": lambda: cuUMAP(n_components=300, min_dist=.05, n_neighbors=10).fit_transform(embeddings),
+            },
+            "tSNE": {
+                "path": f"{reduction_dir}/tSNE_{embed_filename}_embed.npy",
+                "run": lambda: cuTSNE(n_components=2).fit_transform(embeddings),
+            },
+            "PaCMAP": {
+                "path": f"{reduction_dir}/PaCMAP_{embed_filename}_embed.npy",
+                "run": lambda: pacmap.PaCMAP(n_components=300, random_state=67).fit_transform(embeddings),
+            },
+            "TriMAP": {
+                "path": f"{reduction_dir}/TriMAP_{embed_filename}_embed.npy",
+                "run": lambda: trimap.TRIMAP(n_dims=300).fit_transform(embeddings),
+            },
+        }
 
-for embedding_model, embed_name, cluster_method, combo_scores in combo_results:
-    scores_all[(embedding_model, embed_name, cluster_method)]["FM"] = combo_scores["FM"]
-    scores_all[(embedding_model, embed_name, cluster_method)]["Rand"] = combo_scores["Rand"]
-    scores_all[(embedding_model, embed_name, cluster_method)]["ARI"] = combo_scores["ARI"]
-    scores_all[(embedding_model, embed_name, cluster_method)]["AMI"] = combo_scores["AMI"]
-    scores_all[(embedding_model, embed_name, cluster_method)]["Dendrogram Purity"] = combo_scores["Dendrogram Purity"]
-    scores_all[(embedding_model, embed_name, cluster_method)]["LCA_F1"] = combo_scores["LCA_F1"]
-    scores_all[(embedding_model, embed_name, cluster_method)]["TED"] = combo_scores["TED"]
+        embedding_methods_for_model = {"Raw": embeddings}
+        for method_name, task in reduction_tasks.items():
+            if os.path.exists(task["path"]):
+                print(f"Loading cached {method_name} from {task['path']}...")
+                result = np.load(task["path"])
+            else:
+                print(f"Running {method_name}...")
+                result = task["run"]()
+                if hasattr(result, 'to_output'):
+                    result = result.to_output('numpy')
+                elif not isinstance(result, np.ndarray):
+                    result = np.array(result)
+                np.save(task["path"], result)
+                print(f"Saved {method_name} to {task['path']}")
+            embedding_methods_for_model[method_name] = result
 
-print(f"\n{'='*60}")
-print("All clustering and evaluation complete!")
-print(f"{'='*60}")
+        embedding_models[embedding_model] = embedding_methods_for_model
 
-# Save results to CSV
-rows = []
-for (embedding_model, embed_name, cluster_method), score_dict in scores_all.items():
-    n_levels = len(score_dict["FM"])
-    for i in range(n_levels):
-        rows.append({
-            "embedding_model": embedding_model,
-            "reduction_method": embed_name,
-            "cluster_method": cluster_method,
-            "level": cluster_levels[i],
-            "FM": score_dict["FM"][i],
-            "Rand": score_dict["Rand"][i],
-            "ARI": score_dict["ARI"][i],
-            "AMI": score_dict["AMI"][i],
-            "Dendrogram_Purity": score_dict["Dendrogram Purity"][i],
-            "LCA_F1": score_dict["LCA_F1"][i],
-            "TED": score_dict["TED"],
-        })
+    print("Building ground truth tree for synthetic data...")
+    gt_df = topic_data.rename(columns={f'category {i}': f'category_{i}' for i in range(depth)})
+    gt_tree_root, _ = build_ground_truth_tree(gt_df, depth)
+    print(f"Ground truth tree built. Root id: {gt_tree_root.name}")
 
-scores_df = pd.DataFrame(rows)
-scores_df = scores_df.sort_values(by=["embedding_model", "reduction_method", "cluster_method", "level"]).reset_index(drop=True)
+    scores_all = defaultdict(lambda: defaultdict(list))
 
-os.makedirs("../results", exist_ok=True)
-if float(add_noise) > 0:
-    output_file = f"../results/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_clustering_scores.csv"
-else:
-    output_file = f"../results/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_clustering_scores.csv"
+    combo_params = [
+        (embedding_model, embed_name, cluster_method)
+        for embedding_model in embedding_models.keys()
+        for embed_name in embedding_models[embedding_model].keys()
+        for cluster_method in ["Agglomerative", "HDBSCAN", "DC"]
+    ]
 
-scores_df.to_csv(output_file, index=False)
-print(f"\nResults saved to: {output_file}")
+    combo_results = []
+    for embedding_model, embed_name, cluster_method in tqdm(combo_params, desc="Processing embedding-clustering combos"):
+        embed_data = embedding_models[embedding_model][embed_name]
+        result = safe_run_combo(embedding_model, embed_name, cluster_method, embed_data, cluster_levels, topic_dict, theme, t, max_sub, depth, synonyms, branching, add_noise, gt_tree_root=gt_tree_root)
+        combo_results.append(result)
+
+    for embedding_model, embed_name, cluster_method, combo_scores in combo_results:
+        scores_all[(embedding_model, embed_name, cluster_method)]["FM"] = combo_scores["FM"]
+        scores_all[(embedding_model, embed_name, cluster_method)]["Rand"] = combo_scores["Rand"]
+        scores_all[(embedding_model, embed_name, cluster_method)]["ARI"] = combo_scores["ARI"]
+        scores_all[(embedding_model, embed_name, cluster_method)]["AMI"] = combo_scores["AMI"]
+        scores_all[(embedding_model, embed_name, cluster_method)]["Dendrogram Purity"] = combo_scores["Dendrogram Purity"]
+        scores_all[(embedding_model, embed_name, cluster_method)]["LCA_F1"] = combo_scores["LCA_F1"]
+        scores_all[(embedding_model, embed_name, cluster_method)]["TED"] = combo_scores["TED"]
+
+    print(f"\n{'='*60}")
+    print("All clustering and evaluation complete!")
+    print(f"{'='*60}")
+
+    rows = []
+    for (embedding_model, embed_name, cluster_method), score_dict in scores_all.items():
+        n_levels = len(score_dict["FM"])
+        for i in range(n_levels):
+            rows.append({
+                "embedding_model": embedding_model,
+                "reduction_method": embed_name,
+                "cluster_method": cluster_method,
+                "level": cluster_levels[i],
+                "FM": score_dict["FM"][i],
+                "Rand": score_dict["Rand"][i],
+                "ARI": score_dict["ARI"][i],
+                "AMI": score_dict["AMI"][i],
+                "Dendrogram_Purity": score_dict["Dendrogram Purity"][i],
+                "LCA_F1": score_dict["LCA_F1"][i],
+                "TED": score_dict["TED"],
+            })
+
+    scores_df = pd.DataFrame(rows)
+    scores_df = scores_df.sort_values(by=["embedding_model", "reduction_method", "cluster_method", "level"]).reset_index(drop=True)
+
+    os.makedirs("../results", exist_ok=True)
+    if float(add_noise) > 0:
+        output_file = f"../results/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_clustering_scores.csv"
+    else:
+        output_file = f"../results/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_clustering_scores.csv"
+
+    scores_df.to_csv(output_file, index=False)
+    print(f"\nResults saved to: {output_file}")
+
+
+for theme, max_sub, depth, add_noise in CONFIGS:
+    run_eval_pipeline(theme, max_sub, depth, add_noise)
