@@ -37,6 +37,7 @@ def main():
         })
 
     df = pd.DataFrame(data_list)
+    df = df[['item_id', 'topic', 'category_0', 'category_1']]
     df.to_csv(filename, index=False)
     print(f"Success! Data saved to {filename}")
 
