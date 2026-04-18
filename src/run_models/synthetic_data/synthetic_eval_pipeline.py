@@ -4,6 +4,7 @@
 from dotenv import load_dotenv
 load_dotenv()
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0" 
 import sys
 
 target_folder = "src"
