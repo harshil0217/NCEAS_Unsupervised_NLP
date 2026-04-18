@@ -11,7 +11,25 @@ These instructions allow instructors, classmates, and community partners to repr
 
 ---
 
-## 1. Clone the Repository
+## 1. HPCC Setup (MSU HPCC users)
+
+If running on MSU HPCC, run these commands at the start of every new terminal session before anything else:
+
+```bash
+module purge
+module load Miniforge3
+conda activate phate-env
+```
+
+If you see import errors like `No module named regex` on a dev node, prefix your commands with `PYTHONPATH=""`:
+
+```bash
+PYTHONPATH="" python src/run_models/benchmark_datasets/eval_pipeline.py --dataset rcv1
+```
+
+---
+
+## 2. Clone the Repository
 
 ```bash
 git clone https://github.com/harshil0217/NCEAS_Unsupervised_NLP.git
@@ -20,7 +38,9 @@ cd NCEAS_Unsupervised_NLP
 
 ---
 
-## 2. Create the Project Environment with Conda
+## 3. Create the Project Environment with Conda
+
+Skip this step if you are on MSU HPCC and already ran `conda activate phate-env` above.
 
 From the root project directory:
 
@@ -33,7 +53,7 @@ This creates a fully reproducible environment using the provided `environment.ym
 
 ---
 
-## 3. Set Up API Keys
+## 4. Set Up API Keys
 
 Create a `.env` file in the project root with the following keys:
 
@@ -52,7 +72,7 @@ GROQ_API_KEY=your_groq_api_key
 
 ---
 
-## 4. Data Setup
+## 5. Data Setup
 
 This repository does **not include benchmark datasets**. Use the provided download script to fetch all datasets automatically.
 
@@ -105,15 +125,34 @@ data/
 
 
 
-Results are saved to:
+**Path convention note:** All scripts must be run from the **repo root** (not from inside `src/`). The scripts internally `cd` into `src/` at startup and use `../` to reference data and results. Running from the wrong directory will cause file-not-found errors.
 
-```bash
-results/{dataset}_clustering_scores.csv
-```
+Results are saved to `results/clustering/benchmark/`.
 
 ---
 
-## 5. Synthetic Data
+## 6. Quickstart (end-to-end on RCV1)
+
+RCV1 is the smallest dataset and recommended for a quick end-to-end test:
+
+```bash
+# HPCC only - run at the start of every session
+module purge
+module load Miniforge3
+conda activate phate-env
+
+# download data (only needed once)
+python data/download_data.py --datasets rcv1
+
+# run the pipeline
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset rcv1
+```
+
+Results will be saved to `results/clustering/benchmark/rcv1_clustering_scores.csv`.
+
+---
+
+## 7. Synthetic Data
 
 To generate synthetic data and perform the clustering evaluation pipeline run
 
