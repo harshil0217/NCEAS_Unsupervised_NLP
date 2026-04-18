@@ -365,8 +365,8 @@ def run_pipeline(dataset_name, rep_mode):
 
         # Save cluster membership CSV
         cluster_df = hercules.get_cluster_membership_dataframe(include_l0_details=data['topic'].tolist())
-        os.makedirs(os.path.dirname(f"../results/cluster_assignments/{config['short']}_{rep_mode}.csv"), exist_ok=True)
-        cluster_df.to_csv(f"../results/cluster_assignments/{config['short']}_{rep_mode}.csv", index=False)
+        os.makedirs("../results/clustering/benchmark/analysis", exist_ok=True)
+        cluster_df.to_csv(f"../results/clustering/benchmark/analysis/{config['short']}_{rep_mode}.csv", index=False)
 
         # Build predicted tree from the single root cluster
         top_cluster = top_clusters[0]
@@ -416,10 +416,10 @@ def run_pipeline(dataset_name, rep_mode):
         by=["embedding_model", "level"]
     ).reset_index(drop=True)
 
-    os.makedirs("../results", exist_ok=True)
+    os.makedirs("../results/clustering/benchmark", exist_ok=True)
     results_filename = config['results_filename'].replace('.csv', f'_{rep_mode}.csv')
-    scores_df.to_csv(f"../results/{results_filename}", index=False)
-    print(f"\nResults saved to: ../results/{results_filename}")
+    scores_df.to_csv(f"../results/clustering/benchmark/{results_filename}", index=False)
+    print(f"\nResults saved to: ../results/clustering/benchmark/{results_filename}")
 
 
 def main():
