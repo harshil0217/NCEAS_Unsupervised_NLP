@@ -245,7 +245,7 @@ The notebook loads precomputed CSVs from `results/viz_metrics/`, plots the metri
 ## 6. Figure: Clustering Evaluation Figures
 **Used in:** Final report (Phase 3.1), final presentation.
 
-**Description:** Summary tables showing the average performance of each dimensionality reduction method when coupled with various clustering algorithms. Performance is measured using AMI, ARI, Dendrogram Purity (DP), Fowlkes-Mallows (FM), Least Common Ancestor F1 (LCA-F1), and Rand Index.
+**Description:** Summary tables showing the top 8 dataset (benchmark/synthetic) combinations averaged across all (benchmark/synthetic) datasets ordered by Dendrogram Purity. Performance is measured using AMI, ARI, Dendrogram Purity (DP), Fowlkes-Mallows (FM), and Least Common Ancestor F1 (LCA-F1) , while the synthetic dataset also includes the Tree Edit Distance (TED).
 
 **Output files** 
 
@@ -253,8 +253,8 @@ The notebook loads precomputed CSVs from `results/viz_metrics/`, plots the metri
 
 Top 8 benchmark combinations averaged across all benchmark datasets ordered by Dendrogram Purity.
 Best performing is in **bold**, second best  is <u>underlined</u>.
-| Configuration | FM | Rand | ARI | AMI | DP | LCA-F1|
-|---------------|----|------|-----|-----|----|-------|
+| Configuration | FM | Rand | ARI | AMI | DP | LCA-F1 |
+|---------------|----|------|-----|-----|----|--------|
 Qwen3-0.6B + UMAP + Agglomerative | **0.3977** | 0.8932 | 0.3113 | 0.5109 | **0.4889** | **0.4291** |
 Qwen3-0.6B + PaCMAP + Agglomerative | 0.3837 | **0.9102** | 0.3091 | **0.5213** | <ins>0.4882</ins> | <ins>0.4243</ins> |
 Qwen3-0.6B + TriMAP + Agglomerative | 0.3840 | 0.9004 | 0.3031 | <ins>0.5200</ins> | 0.4860 | 0.4215 |
@@ -264,8 +264,8 @@ MiniLM-L6-v2 + TriMAP + Agglomerative | 0.3663 | 0.8442 | 0.2617 | 0.4644 | 0.47
 Qwen3-0.6B + PHATE + Agglomerative | 0.3510 | 0.9030 | 0.2769 | 0.4858 | 0.4692 | 0.4056 |
 Qwen3-0.6B + PCA + Agglomerative | 0.3293 | 0.8745 | 0.2222 | 0.4512 | 0.4584 | 0.4121 |
 
-| Configuration | FM | Rand | ARI | AMI | DP | LCA-F1| TED | 
-|---------------|----|------|-----|-----|----|-------|-----|
+| Configuration | FM | Rand | ARI | AMI | DP | LCA-F1 | TED | 
+|---------------|----|------|-----|-----|----|-------|------|
 MiniLM-L6-v2 + UMAP + Agglomerative | **0.5013** | **0.9494** | **0.4705** | 0.6003 | **0.5411** | 0.4721 | 1045.333 |
 Qwen3-0.6B + UMAP + Agglomerative | <ins>0.4884</ins> | 0.9415 | <ins>0.4517</ins> | 0.6044 | <ins>0.5367</ins> | **0.4775** | 1046.000 |
 Qwen3-0.6B + Raw + Agglomerative | 0.4722 | 0.9342 | 0.4315 | 0.5860 | 0.5187 | 0.4574 | **1001.333** |
