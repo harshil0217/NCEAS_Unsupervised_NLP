@@ -1,0 +1,189 @@
+"""
+scatter_grid_benchmark.py
+
+Produces a scatter grid for benchmark datasets:
+- Rows: rcv1, arxiv, amazon, wos (4 datasets with matching label/embedding alignment)
+- Columns: PHATE, PCA, UMAP, t-SNE, PaCMAP, TriMAP (6 DR methods)
+- Points colored by top-level category (category_0)
+- One figure per embedding model (MiniLM, Qwen)
+
+Run from repo root:
+    python src/run_models/benchmark_datasets/scatter_grid_benchmark.py
+"""
+
+import os
+import sys
+import numpy as np
+import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+
+# path setup
+current = os.path.dirname(os.path.abspath(__file__))
+while os.path.basename(current) != "src" and current != os.path.dirname(current):
+    current = os.path.dirname(current)
+src_dir = current
+os.chdir(src_dir)
+sys.path.insert(0, src_dir)
+
+EMBEDDING_MODELS = [
+    ("MiniLM", "cache/sentence-transformers/all-MiniLM-L6-v2_reduced_2d"),
+    ("Qwen",   "cache/Qwen/Qwen3-Embedding-0.6B_reduced_2d"),
+]
+
+OUT_DIR = "../results/summary_figures"
+os.makedirs(OUT_DIR, exist_ok=True)
+
+METHODS = ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"]
+METHOD_LABELS = {"tSNE": "t-SNE"}
+
+VIS_SUBSAMPLE = 5000  # max points to plot per dataset (for readability)
+
+PALETTE = [
+    "#E63946", "#457B9D", "#2A9D8F", "#E9C46A",
+    "#F4A261", "#6A4C93", "#80B918", "#FF6B6B",
+    "#4CC9F0", "#F72585", "#023E8A", "#8338EC",
+    "#FB5607", "#3A86FF", "#06D6A0",
+]
+
+
+# ========================
+# Data loaders (mirror eval_pipeline.py exactly)
+# ========================
+
+def load_arxiv():
+    df = pd.read_csv('../data/arxiv/arxiv_clean.csv')
+    df = df.dropna().reset_index(drop=True)
+    return df
+
+
+def load_rcv1():
+    df = pd.read_csv('../data/rcv1/rcv1.csv')
+    df = df.drop_duplicates(subset='topic', keep=False).reset_index(drop=True)
+    df = df.drop_duplicates(subset='item_id', keep=False).reset_index(drop=True)
+    df = df.dropna().reset_index(drop=True)
+    df = df[df['topic'].apply(lambda x: isinstance(x, str) and x.strip() != '')].reset_index(drop=True)
+    return df
+
+
+def load_amazon():
+    amz_40 = pd.read_csv('../data/amazon/train_40k.csv')
+    amz_10 = pd.read_csv('../data/amazon/val_10k.csv')
+    df = pd.concat([amz_40, amz_10])
+    df = df.drop_duplicates(subset='Title', keep=False).reset_index(drop=True)
+    df = df.drop_duplicates(subset='productId', keep=False).reset_index(drop=True)
+    df = df.dropna().reset_index(drop=True)
+    df = df[df['Title'].apply(lambda x: isinstance(x, str) and x.strip() != '')].reset_index(drop=True)
+    df = df.rename(columns={'Cat1': 'category_0'})
+    return df
+
+
+def load_wos():
+    raw = pd.read_excel('../data/WebOfScience/Data.xlsx')
+    df = pd.DataFrame([
+        {'topic': str(r['keywords']), 'category_0': r['Domain'], 'category_1': r['area']}
+        for _, r in raw.iterrows()
+    ])
+    return df
+
+
+DATASETS = [
+    ("rcv1",   load_rcv1,   1566,  "RCV1"),
+    ("arxiv",  load_arxiv,  29966, "arXiv"),
+    ("amazon", load_amazon, 14824, "Amazon"),
+    ("wos",    load_wos,    46985, "WoS"),
+]
+
+
+# ========================
+# Plotting
+# ========================
+
+def make_scatter_grid(model_label, cache_dir, out_suffix):
+    n_rows = len(DATASETS)
+    n_cols = len(METHODS)
+    fig, axes = plt.subplots(n_rows, n_cols,
+                             figsize=(n_cols * 4.0, n_rows * 3.5),
+                             facecolor="white")
+    fig.patch.set_facecolor("white")
+
+    for row_idx, (dataset, loader, n_full, row_label) in enumerate(DATASETS):
+        print(f"  Loading {dataset}...")
+        df = loader()
+        assert len(df) == n_full, f"{dataset}: expected {n_full} rows, got {len(df)}"
+
+        labels_raw = df['category_0'].values
+        categories = sorted(df['category_0'].unique())
+        cat2idx = {c: i for i, c in enumerate(categories)}
+        color_idx = np.array([cat2idx[l] for l in labels_raw])
+
+        # subsample same indices across all methods for comparability
+        np.random.seed(42)
+        if n_full > VIS_SUBSAMPLE:
+            vis_idx = np.random.choice(n_full, VIS_SUBSAMPLE, replace=False)
+        else:
+            vis_idx = np.arange(n_full)
+
+        colors_vis = [PALETTE[color_idx[i] % len(PALETTE)] for i in vis_idx]
+
+        for col_idx, method in enumerate(METHODS):
+            ax = axes[row_idx, col_idx]
+            npy_path = os.path.join(cache_dir, f"{method}_2d_{dataset}_full{n_full}.npy")
+
+            if not os.path.exists(npy_path):
+                ax.set_visible(False)
+                print(f"    Missing: {npy_path}")
+                continue
+
+            coords = np.load(npy_path)[vis_idx]
+            ax.scatter(coords[:, 0], coords[:, 1],
+                       c=colors_vis, s=4, alpha=0.4, linewidths=0)
+            for dim, setter in [(0, ax.set_xlim), (1, ax.set_ylim)]:
+                lo, hi = np.percentile(coords[:, dim], [1, 99])
+                vmin, vmax = coords[:, dim].min(), coords[:, dim].max()
+                if vmax > 5 * hi or vmin < 5 * lo:
+                    setter(lo, hi)
+            ax.set_xticks([])
+            ax.set_yticks([])
+            for spine in ax.spines.values():
+                spine.set_visible(False)
+            ax.set_facecolor("#f8f8f8")
+
+            if row_idx == 0:
+                ax.set_title(METHOD_LABELS.get(method, method), fontsize=13, fontweight='bold', pad=6)
+            if col_idx == 0:
+                ax.set_ylabel(row_label, fontsize=12, fontweight='bold', labelpad=6)
+
+        # legend on rightmost column (cap at 15 entries)
+        ax_leg = axes[row_idx, -1]
+        legend_cats = categories[:15]
+        patches = [
+            mpatches.Patch(color=PALETTE[i % len(PALETTE)], label=str(c))
+            for i, c in enumerate(legend_cats)
+        ]
+        leg_title = row_label if len(categories) <= 15 else f"{row_label} (top 15/{len(categories)})"
+        ax_leg.legend(handles=patches, fontsize=7, loc='center left',
+                      bbox_to_anchor=(1.01, 0.5), frameon=False,
+                      title=leg_title, title_fontsize=8)
+
+    plt.suptitle(f"Benchmark Scatter Grid — {model_label}", fontsize=14, fontweight='bold', y=1.01)
+    plt.tight_layout()
+
+    out_path = os.path.join(OUT_DIR, f"fig_scatter_grid_benchmark_{out_suffix}.png")
+    plt.savefig(out_path, dpi=150, bbox_inches='tight')
+    plt.close()
+    print(f"Saved: {out_path}")
+
+
+# ========================
+# Main
+# ========================
+
+for model_label, cache_dir in EMBEDDING_MODELS:
+    print(f"\n{'='*50}")
+    print(f"Model: {model_label}")
+    print('='*50)
+    out_suffix = "minilm" if "MiniLM" in model_label else "qwen"
+    make_scatter_grid(model_label, cache_dir, out_suffix)

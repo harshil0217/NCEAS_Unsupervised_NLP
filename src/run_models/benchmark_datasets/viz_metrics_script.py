@@ -151,11 +151,14 @@ def plot_shepard(x_high, x_low, name, dataset, sample_size=500):
 # Main loop
 # ========================
 
+cache_base = "intermediate_data" if os.path.isdir("intermediate_data") else "cache"
+
 for embedding_model in embedding_models:
-    embedding_dir    = f"{embedding_model}_embeddings"
-    reduction_2d_dir = f"cache/{embedding_model}_reduced_2d"
-    results_dir      = f"../results/viz_metrics/{embedding_model}"
-    shepard_dir      = f"../results/shepard_diagrams/{embedding_model}"
+    provider         = embedding_model.split("/")[0]  # "sentence-transformers" or "Qwen"
+    embedding_dir    = f"{cache_base}/{embedding_model}_embeddings"
+    reduction_2d_dir = f"{cache_base}/{embedding_model}_reduced_2d"
+    results_dir      = f"../results/viz_metrics/{provider}"
+    shepard_dir      = f"../results/shepard_diagrams/{provider}"
 
     os.makedirs(reduction_2d_dir, exist_ok=True)
     os.makedirs(results_dir, exist_ok=True)
