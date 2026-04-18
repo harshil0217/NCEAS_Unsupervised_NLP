@@ -84,48 +84,6 @@ from custom_packages.graph_utils import clusternode_to_anytree, apted_distance
 from run_models.benchmark_datasets.build_ground_truth_trees import build_ground_truth_tree
 
 
-def bootstrap_ci(target_labels, pred_labels, n_bootstrap=500):
-    """
-    Bootstrap 95% percentile confidence intervals for FM, Rand, ARI, AMI.
-
-    Resamples (target, pred) pairs with replacement and recomputes each metric.
-    Preferred over normal approximation when scores are bounded near zero.
-
-    Returns:
-        dict mapping each metric name to (lower, upper) CI tuple
-    """
-    rng = np.random.RandomState(67)
-    n = len(target_labels)
-    target_labels = np.asarray(target_labels)
-    pred_labels = np.asarray(pred_labels)
-
-    fm_boot, rand_boot, ari_boot, ami_boot = [], [], [], []
-    for _ in range(n_bootstrap):
-        idx = rng.choice(n, n, replace=True)
-        t, p = target_labels[idx], pred_labels[idx]
-        try:
-            fm = FowlkesMallows.fm_index(t, p)['FM']
-        except Exception:
-            fm = np.nan
-        fm_boot.append(fm)
-        rand_boot.append(rand_score(t, p))
-        ari_boot.append(adjusted_rand_score(t, p))
-        ami_boot.append(adjusted_mutual_info_score(t, p))
-
-    def pct_ci(scores):
-        valid = [s for s in scores if not np.isnan(s)]
-        if not valid:
-            return np.nan, np.nan
-        return float(np.percentile(valid, 2.5)), float(np.percentile(valid, 97.5))
-
-    return {
-        "FM":   pct_ci(fm_boot),
-        "Rand": pct_ci(rand_boot),
-        "ARI":  pct_ci(ari_boot),
-        "AMI":  pct_ci(ami_boot),
-    }
-
-
 # ===================
 # Global Config
 # ===================
@@ -536,11 +494,11 @@ def run_eval_pipeline(theme, max_sub, depth, add_noise, t=T, synonyms=SYNONYMS, 
     scores_df = pd.DataFrame(rows)
     scores_df = scores_df.sort_values(by=["embedding_model", "reduction_method", "cluster_method", "level"]).reset_index(drop=True)
 
-    os.makedirs("../results", exist_ok=True)
+    os.makedirs("../results/clustering/synthetic", exist_ok=True)
     if float(add_noise) > 0:
-        output_file = f"../results/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_clustering_scores.csv"
+        output_file = f"../results/clustering/synthetic/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_clustering_scores.csv"
     else:
-        output_file = f"../results/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_clustering_scores.csv"
+        output_file = f"../results/clustering/synthetic/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_clustering_scores.csv"
 
     scores_df.to_csv(output_file, index=False)
     print(f"\nResults saved to: {output_file}")

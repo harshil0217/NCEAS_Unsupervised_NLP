@@ -263,7 +263,7 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
 
         # Save cluster assignments
         cluster_df = hercules.get_cluster_membership_dataframe(include_l0_details=topic_data['topic'].tolist())
-        assignments_dir = f"../results/cluster_assignments/synthetic"
+        assignments_dir = f"../results/clustering/synthetic"
         os.makedirs(assignments_dir, exist_ok=True)
         assignment_file = f"{assignments_dir}/{safe_theme}_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_{rep_mode}_{embedding_model.replace('/', '_')}.csv"
         cluster_df.to_csv(assignment_file, index=False)
@@ -366,11 +366,11 @@ def run_synth_herc_pipeline(theme, t, max_sub, depth, synonyms, branching, add_n
     scores_df = pd.DataFrame(rows)
     scores_df = scores_df.sort_values(by=["embedding_model", "level"]).reset_index(drop=True)
 
-    os.makedirs("../results", exist_ok=True)
+    os.makedirs("../results/clustering/synthetic", exist_ok=True)
     if float(add_noise) > 0:
-        output_file = f"../results/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_herc_{rep_mode}_scores.csv"
+        output_file = f"../results/clustering/synthetic/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_noise{add_noise}_{branching}_herc_{rep_mode}_scores.csv"
     else:
-        output_file = f"../results/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_herc_{rep_mode}_scores.csv"
+        output_file = f"../results/clustering/synthetic/{theme}_hierarchy_t{t}_maxsub{max_sub}_depth{depth}_synonyms{synonyms}_{branching}_herc_{rep_mode}_scores.csv"
 
     scores_df.to_csv(output_file, index=False)
     print(f"\nResults saved to: {output_file}")
