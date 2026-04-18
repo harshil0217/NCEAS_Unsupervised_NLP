@@ -100,7 +100,7 @@ def get_embeddings(texts, model):
     model = SentenceTransformer(model, device=device)
     print("Generating embeddings...")
     embeddings = model.encode(
-        texts,
+        texts.to_list(),
         batch_size=32,
         show_progress_bar=True,
         convert_to_numpy=True,
