@@ -264,6 +264,9 @@ MiniLM-L6-v2 + TriMAP + Agglomerative | 0.3663 | 0.8442 | 0.2617 | 0.4644 | 0.47
 Qwen3-0.6B + PHATE + Agglomerative | 0.3510 | 0.9030 | 0.2769 | 0.4858 | 0.4692 | 0.4056 |
 Qwen3-0.6B + PCA + Agglomerative | 0.3293 | 0.8745 | 0.2222 | 0.4512 | 0.4584 | 0.4121 |
 
+Top 8 synthetic combinations averaged across all synthetic datasets ordered by Dendrogram Purity.
+Best performing is in **bold**, second best  is <u>underlined</u>.
+
 | Configuration | FM | Rand | ARI | AMI | DP | LCA-F1 | TED | 
 |---------------|----|------|-----|-----|----|-------|------|
 MiniLM-L6-v2 + UMAP + Agglomerative | **0.5013** | **0.9494** | **0.4705** | 0.6003 | **0.5411** | 0.4721 | 1045.333 |
