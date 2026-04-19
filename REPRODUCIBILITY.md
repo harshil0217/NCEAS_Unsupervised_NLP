@@ -243,14 +243,14 @@ The notebook loads precomputed CSVs from `results/viz_metrics/`, plots the metri
 ---
 
 ## 6. Figure: Clustering Evaluation Figures
-**Used in:** Final report (Phase 3.1), final presentation.
+**Used in:** Final report (Phase 3.1)
 
 **Description:** Summary tables showing the top 8 dataset (benchmark/synthetic) combinations averaged across all (benchmark/synthetic) datasets ordered by Dendrogram Purity. Performance is measured using AMI, ARI, Dendrogram Purity (DP), Fowlkes-Mallows (FM), and Least Common Ancestor F1 (LCA-F1) , while the synthetic dataset also includes the Tree Edit Distance (TED).
 
-**Output files** 
+**Output files** (saved to `results/clustering/synthetic/` and `results/clustering/benchmark/`)
+- The results are stored in multiple csv files that contain all the clustering scores for each inputted dataset
 
 **Intermediate results:**
-
 Top 8 benchmark combinations averaged across all benchmark datasets ordered by Dendrogram Purity.
 Best performing is in **bold**, second best  is <u>underlined</u>.
 | Configuration | FM | Rand | ARI | AMI | DP | LCA-F1 |
