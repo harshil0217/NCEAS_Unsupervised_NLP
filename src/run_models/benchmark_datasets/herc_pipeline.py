@@ -214,7 +214,8 @@ qwen_model_name = "Qwen/Qwen3-4B-Instruct-2507"
 tokenizer = AutoTokenizer.from_pretrained(qwen_model_name)
 
 model = AutoModelForCausalLM.from_pretrained(qwen_model_name, torch_dtype="auto", device_map='auto')
-print(model.hf_device_map)
+model_device_map = getattr(model, "hf_device_map", None)
+print(f"Model device placement: {model_device_map if model_device_map is not None else model.device}")
 
 
 def qwen_caller(prompt: str) -> str:
