@@ -13,7 +13,7 @@ For installation and environment setup, see [INSTALL.md](INSTALL.md).
 3. [Figure: Benchmark Scatter Grid](#3-figure-benchmark-scatter-grid)
 4. [Figure: Shepard Diagrams - Synthetic Data](#4-figure-shepard-diagrams---synthetic-data)
 5. [Figure: Shepard Diagrams - Benchmark Datasets](#5-figure-shepard-diagrams---benchmark-datasets)
-6. [Figure: Clustering Evaluation Figure](#6-figure-clustering-evaluation-figures)
+6. [Figure: Clustering Evaluation Figures](#6-figure-clustering-evaluation-figures)
 
 ---
 
