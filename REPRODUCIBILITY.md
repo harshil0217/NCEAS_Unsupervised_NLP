@@ -264,6 +264,34 @@ MiniLM-L6-v2 + TriMAP + Agglomerative | 0.3663 | 0.8442 | 0.2617 | 0.4644 | 0.47
 Qwen3-0.6B + PHATE + Agglomerative | 0.3510 | 0.9030 | 0.2769 | 0.4858 | 0.4692 | 0.4056 |
 Qwen3-0.6B + PCA + Agglomerative | 0.3293 | 0.8745 | 0.2222 | 0.4512 | 0.4584 | 0.4121 |
 
+---
+
+### Step 1: Generate Benchmark Data and Embeddings
+
+Follow Step 1 from [Section 3](#3-figure-benchmark-scatter-grid) above, or skip if already done.
+
+---
+
+### Step 2: Run Pipeline Evals
+Generate the raw clustering metrics by running the evaluation scripts found in `src/run_models/`.
+
+Run for a specific dataset
+`python src/run_models/benchmark_datasets/eval_pipeline.py --dataset amazon`
+
+Or run the batch script to process all benchmarks
+`bash src/run_models/benchmark_datasets/run_all_clustering.sh`
+
+---
+
+### Step 3: Run Metric Tables Notebook
+
+Open and run all cells in the aggregation notebook to produce the final summary tables:
+`notebooks/evaluations/metric_tables.ipynb`
+
+This notebook will import the precomputed CSVs from results/clustering/benchmark/, group results by embedding model and reduction method, and sort by Dendrogram Purity to identify the top 8 combinations for the final report
+
+---
+
 Top 8 synthetic combinations averaged across all synthetic datasets ordered by Dendrogram Purity.
 Best performing is in **bold**, second best  is <u>underlined</u>.
 
@@ -277,3 +305,24 @@ MiniLM-L6-v2 + Raw + Agglomerative | 0.4546 | 0.9310 | 0.4125 | 0.5718 | 0.5088 
 MiniLM-L6-v2 + PCA + Agglomerative | 0.4507 | 0.9300 | 0.4080 | 0.5682 | 0.5061 | 0.4541 | <ins>1002.667</ins> | 
 Qwen3-0.6B + PaCMAP + Agglomerative | 0.4516 | **0.9445** | 0.4169 | 0.5676 | 0.5043 | 0.4414 | 1038.667 |
 Qwen3-0.6B + TriMAP + Agglomerative | 0.4478 | 0.9377 | 0.4072 | 0.5647 | 0.4959 | 0.4321 | 1056.000 |
+
+---
+
+### Step 1: Generate Synthetic Data and Embeddings
+
+Follow Step 1 from [Section 2](#2-figure-synthetic-scatter-grid) above, or skip if already done.
+
+---
+
+### Step 2: Run Pipeline Evals
+
+Generate the raw clustering metrics by running the evaluation scripts found in `src/run_models/synthetic_data/synthetic_eval_pipeline.py`.
+
+`python src/run_models/synthetic_data/synthetic_eval_pipeline.py`
+
+---
+
+### Step 3: Run Metric Tables Notebook
+Open and run all cells in the aggregation notebook to produce the final summary tables:
+
+`notebooks/evaluations/metric_tables.ipynb`
