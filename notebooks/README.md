@@ -21,3 +21,4 @@ Notebooks for analyzing and visualizing benchmark results.
 | `visualization_metrics_benchmark.ipynb` | Computes Trustworthiness, Continuity, Spearman, and DEMaP for benchmark datasets; produces Shepard diagrams |
 | `visualization_metrics_synthetic.ipynb` | Same visualization metrics for synthetic dataset configurations |
 | `dataset_statistics.ipynb` | Summary statistics for each benchmark dataset (size, label distribution, hierarchy depth) |
+| `results.ipynb` | Combined results analysis notebook for the final paper |

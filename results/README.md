@@ -27,8 +27,11 @@ results/
 │   ├── fig_scatter_grid_benchmark_{model}.png
 │   └── fig2_scatter_grid_{model}.png  # synthetic scatter grids
 │
-└── tables/                             # LaTeX tables
-    └── {dataset}_table.tex
+├── tables/                             # LaTeX tables
+│   └── {dataset}_table.tex
+│
+└── paper_results/                      # Figures used directly in the paper
+    └── shepard_grids/                  # Shepard grid PDFs per model/config
 ```
 
 ## What Goes Where
@@ -43,6 +46,7 @@ results/
 | Scatter grids | `results/summary_figures/` | `scatter_grid_*.py` |
 | LaTeX tables | `results/tables/` | manual |
 | Exploratory analysis | `results/clustering/benchmark/analysis/` | manual |
+| Paper figures (Shepard grids) | `results/paper_results/shepard_grids/` | manual |
 
 ## Notes
 
