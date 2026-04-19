@@ -6,10 +6,7 @@ Custom implementations of clustering algorithms and hierarchical evaluation metr
 
 | Module | Description |
 |--------|-------------|
-| `hercules.py` | HERCULES: LLM-based hierarchical k-means clustering using the Groq API for cluster summarization |
 | `diffusion_condensation.py` | GPU-accelerated Diffusion Condensation: iteratively applies a diffusion operator until clusters condense into stable regions |
-| `hierarchical_kmeans_gpu.py` | GPU-accelerated hierarchical k-means (adapted from Meta) |
-| `clusters.py` | Shared cluster data structures (adapted from Meta) |
 
 ## Evaluation Metrics
 
