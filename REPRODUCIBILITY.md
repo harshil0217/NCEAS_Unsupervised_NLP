@@ -144,6 +144,7 @@ This reads cached 2D reductions and dataset labels, then saves both PNGs to `res
 | arXiv | 29,966 |
 | Amazon | 14,824 |
 | WoS | 46,985 |
+| DBpedia | 60,794 |
 
 ---
 
@@ -204,7 +205,7 @@ The notebook computes Trustworthiness, Continuity, Spearman Correlation, and DEM
 | RCV1 | 1,566 | No - full dataset used |
 | arXiv | 29,966 | Yes - 30x subsamples of 10,000 |
 | Amazon | 14,824 | Yes - 30x subsamples of 10,000 |
-| DBpedia | ~40,000 | Yes - 30x subsamples of 10,000 |
+| DBpedia | 60,794 | Yes - 30x subsamples of 10,000 |
 | WoS | 46,985 | Yes - 30x subsamples of 10,000 |
 
 ---

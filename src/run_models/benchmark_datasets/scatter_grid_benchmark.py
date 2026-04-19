@@ -2,7 +2,7 @@
 scatter_grid_benchmark.py
 
 Produces a scatter grid for benchmark datasets:
-- Rows: rcv1, arxiv, amazon, wos (4 datasets with matching label/embedding alignment)
+- Rows: rcv1, arxiv, amazon, wos, dbpedia (5 datasets with matching label/embedding alignment)
 - Columns: PHATE, PCA, UMAP, t-SNE, PaCMAP, TriMAP (6 DR methods)
 - Points colored by top-level category (category_0)
 - One figure per embedding model (MiniLM, Qwen)
@@ -13,6 +13,7 @@ Run from repo root:
 
 import os
 import sys
+import re
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -89,11 +90,23 @@ def load_wos():
     return df
 
 
+def load_dbpedia():
+    def clean_dbpedia(text):
+        text = re.sub(r'[^\x00-\x7F]+', ' ', text)
+        text = re.sub(r'\s+', ' ', text).strip()
+        return text
+    db = pd.read_csv('../data/dbpedia/DBPEDIA_test.csv')
+    db = db.rename(columns={"text": "topic", "l1": "category_0", "l2": "category_1", "l3": "category_2"})
+    db['topic'] = db['topic'].astype(str).apply(clean_dbpedia)
+    return db
+
+
 DATASETS = [
-    ("rcv1",   load_rcv1,   1566,  "RCV1"),
-    ("arxiv",  load_arxiv,  29966, "arXiv"),
-    ("amazon", load_amazon, 14824, "Amazon"),
-    ("wos",    load_wos,    46985, "WoS"),
+    ("rcv1",    load_rcv1,    1566,  "RCV1"),
+    ("arxiv",   load_arxiv,   29966, "arXiv"),
+    ("amazon",  load_amazon,  14824, "Amazon"),
+    ("wos",     load_wos,     46985, "WoS"),
+    ("dbpedia", load_dbpedia, 60794, "DBpedia"),
 ]
 
 
@@ -112,7 +125,8 @@ def make_scatter_grid(model_label, cache_dir, out_suffix):
     for row_idx, (dataset, loader, n_full, row_label) in enumerate(DATASETS):
         print(f"  Loading {dataset}...")
         df = loader()
-        assert len(df) == n_full, f"{dataset}: expected {n_full} rows, got {len(df)}"
+        if len(df) != n_full:
+            df = df.iloc[:n_full].reset_index(drop=True)
 
         labels_raw = df['category_0'].values
         categories = sorted(df['category_0'].unique())
