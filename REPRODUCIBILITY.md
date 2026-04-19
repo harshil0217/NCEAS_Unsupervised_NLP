@@ -95,7 +95,7 @@ METHODS = ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"]
 
 **Used in:** Final report, final presentation.
 
-**Description:** A 4x6 scatter grid for real-world benchmark datasets. Rows = RCV1, arXiv, Amazon, WoS. Columns = 6 DR methods. Points colored by top-level category.
+**Description:** A 5x6 scatter grid for real-world benchmark datasets. Rows = RCV1, arXiv, Amazon, WoS, DBpedia. Columns = 6 DR methods. Points colored by top-level category.
 
 **Output files** (saved to `results/summary_figures/`, gitignored):
 - `fig_scatter_grid_benchmark_minilm.png`
@@ -122,6 +122,7 @@ python src/run_models/benchmark_datasets/viz_metrics_script.py --dataset rcv1
 python src/run_models/benchmark_datasets/viz_metrics_script.py --dataset arxiv
 python src/run_models/benchmark_datasets/viz_metrics_script.py --dataset amazon
 python src/run_models/benchmark_datasets/viz_metrics_script.py --dataset wos
+python src/run_models/benchmark_datasets/viz_metrics_script.py --dataset dbpedia
 ```
 
 2D reductions are cached in `src/cache/{model}_reduced_2d/` with filenames like `PHATE_2d_{dataset}_full{N}.npy`. The script is safe to rerun and resumes from the last completed method.
