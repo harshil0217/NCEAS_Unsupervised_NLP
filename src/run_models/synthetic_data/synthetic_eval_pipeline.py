@@ -384,6 +384,10 @@ def run_eval_pipeline(theme, max_sub, depth, add_noise, t=T, synonyms=SYNONYMS, 
             np.save(embed_file, embedding_list)
         else:
             embedding_list = np.load(embed_file)
+            if len(embedding_list) != len(topic_data_original):
+                print(f"Cached embeddings size mismatch ({len(embedding_list)} vs {len(topic_data_original)}), regenerating...")
+                embedding_list = get_embeddings(topic_data_original['topic'], model=embedding_model)
+                np.save(embed_file, embedding_list)
 
         reduction_dir = f"cache/{embedding_model}_reduced_embeddings"
         os.makedirs(reduction_dir, exist_ok=True)
