@@ -40,7 +40,7 @@ os.makedirs(OUT_DIR, exist_ok=True)
 METHODS = ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"]
 METHOD_LABELS = {"tSNE": "t-SNE"}
 
-VIS_SUBSAMPLE = 5000  # max points to plot per dataset (for readability)
+VIS_SUBSAMPLE = None  # set to an int (e.g. 5000) to subsample for readability; None = all points
 
 PALETTE = [
     "#E63946", "#457B9D", "#2A9D8F", "#E9C46A",
@@ -135,7 +135,7 @@ def make_scatter_grid(model_label, cache_dir, out_suffix):
 
         # subsample same indices across all methods for comparability
         np.random.seed(42)
-        if n_full > VIS_SUBSAMPLE:
+        if VIS_SUBSAMPLE is not None and n_full > VIS_SUBSAMPLE:
             vis_idx = np.random.choice(n_full, VIS_SUBSAMPLE, replace=False)
         else:
             vis_idx = np.arange(n_full)

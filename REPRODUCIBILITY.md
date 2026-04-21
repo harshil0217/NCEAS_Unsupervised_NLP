@@ -136,7 +136,7 @@ python src/run_models/benchmark_datasets/viz_metrics_script.py --dataset dbpedia
 python src/run_models/benchmark_datasets/scatter_grid_benchmark.py
 ```
 
-This reads cached 2D reductions and dataset labels, then saves both PNGs to `results/summary_figures/`. Subsamples to 5,000 points per dataset with fixed seed 42.
+This reads cached 2D reductions and dataset labels, then saves both PNGs to `results/summary_figures/`. All points are plotted (no subsampling). To subsample for readability, set `VIS_SUBSAMPLE = 5000` in the script.
 
 **Expected dataset sizes used in the script:**
 
