@@ -443,6 +443,10 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
         if os.path.exists(linkage_path):
             print(f"Loading cached Agglomerative linkage from {linkage_path}")
             Z = np.load(linkage_path)
+            if len(Z) + 1 != len(embed_data):
+                print(f"Cached linkage size mismatch ({len(Z)+1} vs {len(embed_data)}), recomputing...")
+                Z = linkage(embed_data, method='ward')
+                np.save(linkage_path, Z)
         else:
             print("Building ward linkage tree for Agglomerative Clustering...")
             Z = linkage(embed_data, method='ward')
@@ -461,6 +465,12 @@ def cluster_combo(embedding_model, dim_reduction_method, cluster_method, reduced
         if os.path.exists(linkage_path):
             print(f"Loading cached HDBSCAN linkage from {linkage_path}")
             Z = np.load(linkage_path)
+            if len(Z) + 1 != len(embed_data):
+                print(f"Cached linkage size mismatch ({len(Z)+1} vs {len(embed_data)}), recomputing...")
+                model = cuHDBSCAN(min_cluster_size=5, min_samples=1)
+                model.fit(embed_data)
+                Z = model.single_linkage_tree_.to_numpy()
+                np.save(linkage_path, Z)
             tree, _ = to_tree(Z, rd=True)
         else:
             print("Using cuML HDBSCAN (GPU)...")
