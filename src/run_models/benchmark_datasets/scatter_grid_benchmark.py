@@ -156,9 +156,8 @@ def make_scatter_grid(model_label, cache_dir, out_suffix):
                        c=colors_vis, s=4, alpha=0.4, linewidths=0)
             for dim, setter in [(0, ax.set_xlim), (1, ax.set_ylim)]:
                 lo, hi = np.percentile(coords[:, dim], [1, 99])
-                vmin, vmax = coords[:, dim].min(), coords[:, dim].max()
-                if vmax > 5 * hi or vmin < 5 * lo:
-                    setter(lo, hi)
+                pad = (hi - lo) * 0.05
+                setter(lo - pad, hi + pad)
             ax.set_xticks([])
             ax.set_yticks([])
             for spine in ax.spines.values():
@@ -182,7 +181,7 @@ def make_scatter_grid(model_label, cache_dir, out_suffix):
                       bbox_to_anchor=(1.01, 0.5), frameon=False,
                       title=leg_title, title_fontsize=8)
 
-    plt.suptitle(f"Benchmark Scatter Grid — {model_label}", fontsize=14, fontweight='bold', y=1.01)
+    plt.suptitle(f"Benchmark Scatter Grid ({model_label})", fontsize=14, fontweight='bold', y=1.01)
     plt.tight_layout()
 
     out_path = os.path.join(OUT_DIR, f"fig_scatter_grid_benchmark_{out_suffix}.png")
