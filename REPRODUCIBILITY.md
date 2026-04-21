@@ -154,7 +154,7 @@ This reads cached 2D reductions and dataset labels, then saves both PNGs to `res
 
 **Used in:** Final report (Phase 3.1)
 
-**Description:** Summary tables showing the top 8 dataset (benchmark/synthetic) combinations averaged across all (benchmark/synthetic) datasets ordered by Dendrogram Purity. Performance is measured using AMI, ARI, Dendrogram Purity (DP), Fowlkes-Mallows (FM), and Least Common Ancestor F1 (LCA-F1) , while the synthetic dataset also includes the Tree Edit Distance (TED).
+**Description:** Summary tables showing the top 8 dataset (benchmark/synthetic) combinations averaged across all (benchmark/synthetic) datasets ordered by Dendrogram Purity. Performance is measured using AMI, ARI, Dendrogram Purity (DP), Fowlkes-Mallows (FM), and Least Common Ancestor F1 (LCA-F1).
 
 **Output files** (saved to `results/clustering/benchmark/`)
 - The results are stored in multiple csv files that contain all the clustering scores for each inputted dataset
@@ -191,7 +191,7 @@ This notebook will import the precomputed CSVs from results/clustering/benchmark
 
 **Used in:** Final report (Phase 3.1)
 
-**Description:** Like the previous evaluation, but with the synthetic datasets we created. The displayed performances are measured using AMI, ARI, Dendrogram Purity (DP), Fowlkes-Mallows (FM), Least Common Ancestor F1 (LCA-F1) , and Tree Edit Distance (TED).
+**Description:** Like the previous evaluation, but with the synthetic datasets we created. The displayed performances are measured using AMI, ARI, Dendrogram Purity (DP), Fowlkes-Mallows (FM), and Least Common Ancestor F1 (LCA-F1).
 
 **Output files** (saved to `results/clustering/synthetic/`)
 - The results are stored in multiple csv files that contain all the clustering scores for each inputted dataset
