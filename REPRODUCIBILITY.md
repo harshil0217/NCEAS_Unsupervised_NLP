@@ -49,30 +49,29 @@ All commands below must be run from the **repo root**.
 
 ---
 
-### Step 1: Generate Synthetic Data, Embeddings, and 2D Reductions
+### Step 1: Generate Synthetic Data
 
-Skip if already done - cached `.npy` files in `src/cache/` are checked before recomputing.
-
-```
-cd src/run_models/synthetic_data
-bash run_all.sh
-cd ../../..
-```
-
-This generates synthetic CSVs under `data/synthetic/generated_data/`, embeds each config with both `all-MiniLM-L6-v2` and `Qwen3-Embedding-0.6B`, and reduces to 2D using all six DR methods. Results are cached in `src/cache/{model}_reduced_2d/`.
-
-> **Note:** This step requires a GPU and is intended to run on HPCC. It may take several hours for all configs. If you want to skip it, precomputed 2D reductions can be generated on a subset by running individual configs manually (see below).
-
-To generate a single config:
+Skip if already done - the script checks for existing files before regenerating.
 
 ```
-python data/synthetic/generate.py \
-  --theme Energy_Ecosystems_and_Humans \
-  --t 1.0 --max_sub 3 --depth 5 \
-  --synonyms 0 --branching random --add_noise 0
+python data/synthetic/generate.py
 ```
 
-Available themes: `Energy_Ecosystems_and_Humans`, `Offshore_energy_impacts_on_fisheries`
+This runs all 12 configs automatically (2 themes × 3 noise levels × 2 hierarchy shapes) and saves CSVs to `data/synthetic/generated_data/`. The configs cover both `Energy_Ecosystems_and_Humans` and `Offshore_energy_impacts_on_fisheries` themes with `add_noise` values of `0.0`, `0.25`, and `0.5`.
+
+> **Note:** This step calls the Groq API and may take a while for all 12 configs. Existing output files are skipped on rerun.
+
+---
+
+### Step 2: Generate Embeddings and 2D Reductions
+
+Run the viz metrics script for each synthetic config (requires GPU on HPCC):
+
+```
+python src/run_models/synthetic_data/viz_metrics_script.py
+```
+
+This embeds each config with both `all-MiniLM-L6-v2` and `Qwen3-Embedding-0.6B` and reduces to 2D using all six DR methods. Results are cached in `src/cache/{model}_reduced_2d/`.
 
 ---
 
@@ -214,13 +213,20 @@ This notebook will import the precomputed CSVs from `results/clustering/benchmar
 
 ### Step 1: Generate Synthetic Data and Embeddings
 
-Follow Step 1 from [Section 2](#2-figure-synthetic-scatter-grid) above, or skip if already done.
+Run data generation and embeddings if not already done:
+
+```
+python data/synthetic/generate.py
+python src/run_models/synthetic_data/viz_metrics_script.py
+```
+
+See [Section 2](#2-figure-synthetic-scatter-grid) for full details on what these produce.
 
 ---
 
-### Step 2: Run Pipeline Evals
+### Step 2: Run Clustering Evals
 
-Generate the raw clustering metrics by running the evaluation scripts found in `src/run_models/synthetic_data/synthetic_eval_pipeline.py`.
+Generate the raw clustering metrics by running:
 
 ```
 python src/run_models/synthetic_data/synthetic_eval_pipeline.py
@@ -254,7 +260,14 @@ notebooks/evaluations/metric_tables.ipynb
 
 ### Step 1: Generate Synthetic Data and Embeddings
 
-Follow Step 1 from [Section 2](#2-figure-synthetic-scatter-grid) above, or skip if already done.
+Run data generation and embeddings if not already done:
+
+```
+python data/synthetic/generate.py
+python src/run_models/synthetic_data/viz_metrics_script.py
+```
+
+See [Section 2](#2-figure-synthetic-scatter-grid) for full details on what these produce.
 
 ---
 
