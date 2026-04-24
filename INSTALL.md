@@ -9,15 +9,15 @@ These instructions allow instructors, classmates, and community partners to repr
 
 2. Running the full pipeline for all real and synthetic data sources will take hours with most hardware configurations. If you simply wish to run our pipeline end to end, to ensure our code is reproducible, we recommend only running our pipelines for the **RCV1** dataset, which is the smallest of our data sources.
 
-3.  A Paid Groq API key is required to use GPT-OSS-120B, the model used for synthetic data generation. It shouldn't cost you more than a few cents, however
+3.  A Devloper Groq API key with a payment method configured is required to use GPT-OSS-120B, the model used for synthetic data generation. It shouldn't cost you more than a few cents, however. Specific instructions for creating an account on Groq, enabling payment authorization, and creating an API key can be found below.
 
 
 
 ---
 
-## 1. HPCC Setup (MSU HPCC users)
+## 1. HPCC Set-up (Michigan State University students and faculty, specifically)
 
-If running on MSU HPCC, run these commands at the start of every new terminal session before anything else:
+If running on an HPCC system, run these commands at the start of every new terminal session before anything else:
 
 ```bash
 module purge
@@ -52,10 +52,13 @@ From the root project directory:
 conda env create -f environment.yml
 conda activate phate-env
 ```
+## 3. Create a Groq API key
 
-This creates a fully reproducible environment using the provided `environment.yml` file, including all CUDA-accelerated packages.
+If you do not have existing Groq credentials or a Groq developer account, follow the steps listed below as needed.
 
----
+1. Visit https://console.groq.com/home and create an account
+2. Navigate to the billing tab on the settings page to upgrade to a developer account
+3. Create an API key in the Groq console https://console.groq.com/keys
 
 ## 4. Set Up API Keys
 
