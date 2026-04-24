@@ -167,7 +167,7 @@ This reads cached embeddings and 2D reductions and saves scatter grid PNGs to `r
 
 ---
 
-### Step 1: Generate Benchmark Data and Embeddings
+### Step 1: Download datasets
 
 Follow Step 1 from [Section 3](#3-figure-benchmark-scatter-grid) above, or skip if already done.
 
@@ -211,13 +211,12 @@ This notebook will import the precomputed CSVs from `results/clustering/benchmar
 
 ---
 
-### Step 1: Generate Synthetic Data and Embeddings
+### Step 1: Generate Synthetic
 
 Run data generation and embeddings if not already done:
 
 ```
 python data/synthetic/generate.py
-python src/run_models/synthetic_data/viz_metrics_script.py
 ```
 
 See [Section 2](#2-figure-synthetic-scatter-grid) for full details on what these produce.
