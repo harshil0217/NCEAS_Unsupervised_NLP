@@ -52,7 +52,7 @@ From the root project directory:
 conda env create -f environment.yml
 conda activate phate-env
 ```
-## 3. Create a Groq API key
+## 4. Create a Groq API key
 
 If you do not have existing Groq credentials or a Groq developer account, follow the steps listed below as needed.
 
@@ -60,7 +60,7 @@ If you do not have existing Groq credentials or a Groq developer account, follow
 2. Navigate to the billing tab on the settings page to upgrade to a developer account
 3. Create an API key in the Groq console https://console.groq.com/keys
 
-## 4. Set Up API Keys
+## 5. Set Up API Keys
 
 Create a `.env` file in the project root with the following keys:
 
@@ -79,7 +79,7 @@ GROQ_API_KEY=your_groq_api_key
 
 ---
 
-## 5. Data Setup
+## 6. Data Setup
 
 This repository does **not include benchmark datasets**. Use the provided download script to fetch all datasets automatically.
 
@@ -138,7 +138,7 @@ Results are saved to `results/clustering/benchmark/`.
 
 ---
 
-## 6. Quickstart (end-to-end on RCV1)
+## 7. Quickstart (end-to-end on RCV1)
 
 RCV1 is the smallest dataset and recommended for a quick end-to-end test:
 
@@ -159,7 +159,7 @@ Results will be saved to `results/clustering/benchmark/rcv1_clustering_scores.cs
 
 ---
 
-## 7. Synthetic Data
+## 8. Synthetic Data
 
 To generate synthetic data run 
 
