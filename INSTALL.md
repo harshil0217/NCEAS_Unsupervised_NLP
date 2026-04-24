@@ -154,16 +154,12 @@ Results will be saved to `results/clustering/benchmark/rcv1_clustering_scores.cs
 
 ## 7. Synthetic Data
 
-To generate synthetic data and perform the clustering evaluation pipeline run
+To generate synthetic data run 
 
-`bash src/run_models/synthetic_data/run_all.sh`
+`python data/synthetic/generate.py`
 
-Like for benchmark datasets, results will be saved to 
+**Note**: Ensure that your Groq API key is configured properly in your `.env` file.
 
-```bash
-results/{dataset}_clustering_scores.csv
-```
-
-with the synthetic datasets saved to `data/synthetic/generated_data/`
+The synthetic datasets will be saved to `data/synthetic/generated_data/`
 
 
