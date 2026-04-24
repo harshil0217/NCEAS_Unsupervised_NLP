@@ -9,6 +9,10 @@ These instructions allow instructors, classmates, and community partners to repr
 
 2. Running the full pipeline for all real and synthetic data sources will take hours with most hardware configurations. If you simply wish to run our pipeline end to end, to ensure our code is reproducible, we recommend only running our pipelines for the **RCV1** dataset, which is the smallest of our data sources.
 
+3.  A Paid Groq API key is required to use GPT-OSS-120B, the model used for synthetic data generation. It shouldn't cost you more than a few cents, however
+
+
+
 ---
 
 ## 1. HPCC Setup (MSU HPCC users)
@@ -68,7 +72,7 @@ KAGGLE_KEY=your_kaggle_api_key
 GROQ_API_KEY=your_groq_api_key
 ```
 
-**NOTE**: A Paid API key is required to use GPT-OSS-120B, the model used for synthetic data generation. It shouldn't cost you more than a few cents, however
+
 
 ---
 
