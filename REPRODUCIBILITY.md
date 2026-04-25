@@ -46,6 +46,8 @@ All commands below must be run from the **repo root**.
 * `fig2_scatter_grid_qwen.png`
 * `fig2_scatter_grid_minilm_cat1.png`
 * `fig2_scatter_grid_qwen_cat1.png`
+* `fig2_scatter_grid_minilm_cat1_legend.png`
+* `fig2_scatter_grid_qwen_cat1_legend.png`
 
 ---
 
@@ -75,20 +77,13 @@ This embeds each config with both `all-MiniLM-L6-v2` and `Qwen3-Embedding-0.6B` 
 
 ---
 
-### Step 2: Generate the Figure
+### Step 3: Generate the Figure
 
 ```
 python src/run_models/synthetic_data/scatter_grid_synthetic.py
 ```
 
-This reads 2D reductions from `src/cache/` and labels from `data/synthetic/generated_data/`, then saves all four PNGs to `results/summary_figures/`. The script subsamples to 5,000 points per dataset for readability and uses a fixed random seed (42) for reproducibility.
-
-**Key parameters in the script** (`src/run_models/synthetic_data/scatter_grid_synthetic.py`):
-
-```
-VIS_SUBSAMPLE = 5000   # max points plotted per dataset
-METHODS = ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"]
-```
+This reads 2D reductions from `src/cache/` and labels from `data/synthetic/generated_data/`, then saves all PNGs to `results/summary_figures/`. Uses a fixed random seed (42) for reproducibility.
 
 ---
 
@@ -102,6 +97,8 @@ METHODS = ["PHATE", "PCA", "UMAP", "tSNE", "PaCMAP", "TriMAP"]
 
 * `fig_scatter_grid_benchmark_minilm.png`
 * `fig_scatter_grid_benchmark_qwen.png`
+* `fig_scatter_grid_benchmark_minilm_legend.png`
+* `fig_scatter_grid_benchmark_qwen_legend.png`
 
 ---
 
@@ -131,19 +128,15 @@ python src/run_models/benchmark_datasets/viz_metrics_script.py --dataset dbpedia
 
 ---
 
-### Step 3: Run Benchmark Evaluation Pipeline
+### Step 3: Generate the Figure
 
 ```
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset arxiv
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset amazon
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset dbpedia
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset rcv1
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset wos
+python src/run_models/benchmark_datasets/scatter_grid_benchmark.py
 ```
 
-This reads cached embeddings and 2D reductions and saves scatter grid PNGs to `results/summary_figures/`. All points are plotted (no subsampling). To subsample for readability, set `VIS_SUBSAMPLE = 5000` in the script.
+This reads 2D reductions from `src/cache/` and saves the scatter grid PNGs and separate legend PNGs to `results/summary_figures/`. All points are plotted using a 1-99 percentile axis clip with fixed random seed (42).
 
-**Expected dataset sizes used in the script:**
+**Expected dataset sizes:**
 
 | Dataset | N |
 | --- | --- |
