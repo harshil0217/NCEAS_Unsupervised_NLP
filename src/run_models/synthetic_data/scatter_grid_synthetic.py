@@ -132,9 +132,18 @@ def make_scatter_grid(model_name, reduction_dir, out_filename, title,
                 x2d = np.load(npy_path)
                 ax.scatter(x2d[:, 0], x2d[:, 1], c=point_colors,
                            s=pt_size, alpha=0.85, linewidths=0, rasterized=True)
+                for dim, setter in [(0, ax.set_xlim), (1, ax.set_ylim)]:
+                    lo, hi = np.percentile(x2d[:, dim], [1, 99])
+                    pad = (hi - lo) * 0.05
+                    setter(lo - pad, hi + pad)
 
             ax.set_xticks([])
             ax.set_yticks([])
+            for spine in ax.spines.values():
+                spine.set_visible(True)
+                spine.set_linewidth(0.5)
+                spine.set_color("#cccccc")
+            ax.set_facecolor("#f0f0f0")
 
             if r == 0:
                 ax.set_title(METHOD_LABELS.get(method, method),
@@ -152,63 +161,52 @@ def make_scatter_grid(model_name, reduction_dir, out_filename, title,
                 handles=patches,
                 loc="center left",
                 bbox_to_anchor=(1.03, 0.5),
-                fontsize=8,
+                fontsize=11,
                 frameon=True,
                 framealpha=0.9,
                 edgecolor="#CCCCCC",
                 title="Category",
-                title_fontsize=9,
+                title_fontsize=12,
             )
 
     plt.suptitle(title, fontsize=14, fontweight="bold", y=1.005)
 
-    if cat_level == 0:
-        plt.tight_layout(h_pad=1.5, w_pad=1.0)
-    else:
-        plt.tight_layout(h_pad=1.5, w_pad=1.0)
-
-        # two separate legend boxes: Ecosystems (rows 0-1) and Fisheries (rows 2-3)
-        # each topic has its own distinct set of cat1 labels
-        eco_labels   = sorted(set(
-            lbl for _, label_stem, _ in CONFIGS[:2]
-            for lbl in load_labels(label_stem, cat_level=cat_level)
-        ))
-        fish_labels  = sorted(set(
-            lbl for _, label_stem, _ in CONFIGS[2:]
-            for lbl in load_labels(label_stem, cat_level=cat_level)
-        ))
-
-        def make_legend(ax_anchor, labels, title, xanchor):
-            patches = [
-                mpatches.Patch(color=pal[i % len(pal)], label=lbl)
-                for i, lbl in enumerate(labels)
-            ]
-            return fig.legend(
-                handles=patches,
-                loc="lower left",
-                bbox_to_anchor=(xanchor, -0.01),
-                bbox_transform=fig.transFigure,
-                ncol=3,
-                fontsize=6.5,
-                frameon=True,
-                framealpha=0.95,
-                edgecolor="#CCCCCC",
-                title=title,
-                title_fontsize=7.5,
-                columnspacing=0.7,
-                handlelength=0.9,
-                handleheight=0.8,
-                labelspacing=0.35,
-            )
-
-        make_legend(None, eco_labels,  "Ecosystems — Level-2 Categories",  0.01)
-        make_legend(None, fish_labels, "Fisheries — Level-2 Categories",   0.51)
-
-        plt.subplots_adjust(bottom=0.30)
+    plt.tight_layout(h_pad=1.5, w_pad=1.0)
 
     out_path = os.path.join(OUT_DIR, out_filename)
     plt.savefig(out_path, dpi=300, bbox_inches="tight", facecolor="white")
     plt.close()
+
+    if cat_level == 1:
+        # save legend as a separate figure
+        eco_labels  = sorted(set(
+            lbl for _, label_stem, _ in CONFIGS[:2]
+            for lbl in load_labels(label_stem, cat_level=cat_level)
+        ))
+        fish_labels = sorted(set(
+            lbl for _, label_stem, _ in CONFIGS[2:]
+            for lbl in load_labels(label_stem, cat_level=cat_level)
+        ))
+
+        legend_fig, axes_leg = plt.subplots(1, 2, figsize=(18, max(len(eco_labels), len(fish_labels)) * 0.35 + 1))
+        legend_fig.patch.set_facecolor("white")
+
+        for ax_leg, labels, title in zip(axes_leg,
+                                         [eco_labels, fish_labels],
+                                         ["Ecosystems - Level-2 Categories",
+                                          "Fisheries - Level-2 Categories"]):
+            patches = [mpatches.Patch(color=pal[i % len(pal)], label=lbl)
+                       for i, lbl in enumerate(labels)]
+            ax_leg.legend(handles=patches, fontsize=11, frameon=True,
+                          framealpha=0.95, edgecolor="#CCCCCC",
+                          title=title, title_fontsize=12,
+                          loc="upper left", ncol=1)
+            ax_leg.axis("off")
+
+        legend_path = os.path.join(OUT_DIR, out_filename.replace(".png", "_legend.png"))
+        legend_fig.savefig(legend_path, dpi=200, bbox_inches="tight", facecolor="white")
+        plt.close(legend_fig)
+        print(f"Saved legend: {legend_path}")
     print(f"Saved: {out_path}")
 
 for model_name, reduction_dir in EMBEDDING_MODELS:
