@@ -93,6 +93,8 @@ This reads 2D reductions from `src/cache/` and labels from `data/synthetic/gener
 
 **Description:** A 5x6 scatter grid for real-world benchmark datasets. Rows = RCV1, arXiv, Amazon, WoS, DBpedia. Columns = 6 DR methods. Points colored by top-level category.
 
+> **Note:** This figure requires all 5 benchmark datasets. Run `python data/download_data.py` (not `--datasets rcv1`) to download all datasets before proceeding.
+
 **Output files** (saved to `results/summary_figures/`, gitignored):
 
 * `fig_scatter_grid_benchmark_minilm.png`

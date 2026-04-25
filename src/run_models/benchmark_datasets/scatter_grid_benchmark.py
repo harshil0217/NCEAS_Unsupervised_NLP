@@ -136,12 +136,13 @@ def make_scatter_grid(model_label, cache_dir, out_suffix):
         cat2idx = {c: i for i, c in enumerate(categories)}
         color_idx = np.array([cat2idx[l] for l in labels_raw])
 
+        n_actual = len(df)
         # subsample same indices across all methods for comparability
         np.random.seed(42)
-        if VIS_SUBSAMPLE is not None and n_full > VIS_SUBSAMPLE:
-            vis_idx = np.random.choice(n_full, VIS_SUBSAMPLE, replace=False)
+        if VIS_SUBSAMPLE is not None and n_actual > VIS_SUBSAMPLE:
+            vis_idx = np.random.choice(n_actual, VIS_SUBSAMPLE, replace=False)
         else:
-            vis_idx = np.arange(n_full)
+            vis_idx = np.arange(n_actual)
 
         colors_vis = [PALETTE[color_idx[i] % len(PALETTE)] for i in vis_idx]
 

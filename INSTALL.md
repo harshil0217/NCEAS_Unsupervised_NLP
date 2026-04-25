@@ -140,7 +140,11 @@ Results are saved to `results/clustering/benchmark/`.
 
 ## 7. Quickstart (end-to-end on RCV1)
 
-RCV1 is the smallest dataset and recommended for a quick end-to-end test:
+RCV1 is the smallest dataset and recommended for a quick end-to-end test. It completes within the 2-hour dev node limit (tested on `dev-amd24`, H200 GPU).
+
+> **Note:** On dev nodes, prefix all python commands with `PYTHONPATH=""` to avoid system Python conflicts (e.g. `PYTHONPATH="" python src/...`). For larger datasets, submit a SLURM job on `general-long-gpu` instead.
+
+> **Note:** To reproduce the scatter grid figures, all 5 datasets are required. Use `python data/download_data.py` (without `--datasets rcv1`) to download everything.
 
 ```bash
 # HPCC only - run at the start of every session
@@ -148,11 +152,11 @@ module purge
 module load Miniforge3/25.11.0-1
 conda activate phate-env
 
-# download data (only needed once)
+# download RCV1 only (for quick test)
 python data/download_data.py --datasets rcv1
 
 # run the pipeline
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset rcv1
+PYTHONPATH="" python src/run_models/benchmark_datasets/eval_pipeline.py --dataset rcv1
 ```
 
 Results will be saved to `results/clustering/benchmark/rcv1_clustering_scores.csv`.
