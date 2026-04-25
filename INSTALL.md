@@ -21,7 +21,7 @@ If running on an HPCC system, run these commands at the start of every new termi
 
 ```bash
 module purge
-module load Miniforge3
+module load Miniforge3/25.11.0-1
 conda activate phate-env
 ```
 
@@ -145,7 +145,7 @@ RCV1 is the smallest dataset and recommended for a quick end-to-end test:
 ```bash
 # HPCC only - run at the start of every session
 module purge
-module load Miniforge3
+module load Miniforge3/25.11.0-1
 conda activate phate-env
 
 # download data (only needed once)

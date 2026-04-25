@@ -30,7 +30,7 @@ Run these at the start of every new terminal session on HPCC:
 
 ```bash
 module purge
-module load Miniforge3
+module load Miniforge3/25.11.0-1
 conda activate phate-env
 ```
 
