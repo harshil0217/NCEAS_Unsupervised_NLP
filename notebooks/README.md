@@ -20,5 +20,6 @@ Notebooks for analyzing and visualizing benchmark results.
 | `clustering_summary_tables.ipynb` | Summary statistics (median, mean +/- std) across all clustering score CSVs |
 | `visualization_metrics_benchmark.ipynb` | Computes Trustworthiness, Continuity, Spearman, and DEMaP for benchmark datasets; produces Shepard diagrams |
 | `visualization_metrics_synthetic.ipynb` | Same visualization metrics for synthetic dataset configurations |
+| `clustering_results.ipynb` | Aggregates viz metrics CSVs across all synthetic configs and benchmark datasets to produce mean ± std summary tables (Tables 4 and 5 in the paper) |
 | `dataset_statistics.ipynb` | Summary statistics for each benchmark dataset (size, label distribution, hierarchy depth) |
 | `results.ipynb` | Combined results analysis notebook for the final paper |

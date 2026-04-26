@@ -16,6 +16,7 @@ For installation and environment setup, see [INSTALL.md](https://github.com/hars
 7. [Table: Top 8 Configurations - Synthetic](#7-table-top-8-configurations---synthetic)
 8. [Figure: Shepard Diagrams - Synthetic Data](#8-figure-shepard-diagrams---synthetic-data)
 9. [Figure: Shepard Diagrams - Benchmark Datasets](#9-figure-shepard-diagrams---benchmark-datasets)
+10. [Tables: Aggregated DR and Clustering Performance](#10-tables-aggregated-dr-and-clustering-performance)
 
 ---
 
@@ -156,9 +157,9 @@ This reads 2D reductions from `src/cache/` and saves the scatter grid PNGs and s
 
 ## 4. Table: Average Clustering Performance by Dimensionality Reduction Method - Benchmark
 
-**Used in:** Final report 
+**Used in:** Final report (Table 5).
 
-**Description:** Summary table showing average performance of all dimensionality reduction methods across all benchmark datasets and metrics
+**Description:** Summary table showing average performance of all dimensionality reduction methods across all benchmark datasets and metrics (AMI, ARI, Dendrogram Purity, FM, LCA-F1, Rand).
 
 **Output files** (saved to `results/clustering/benchmark/`)
 
@@ -200,9 +201,9 @@ This notebook will import the precomputed CSVs from `results/clustering/benchmar
 
 ## 5. Table: Average Clustering Performance by Dimensionality Reduction Method - Synthetic
 
-**Used in:** Final report
+**Used in:** Final report (Table 6).
 
-**Description:** Summary table showing average performance of all dimensionality reduction methods across all synthetic datasets and metrics
+**Description:** Summary table showing average performance of all dimensionality reduction methods across all synthetic datasets and metrics (AMI, ARI, Dendrogram Purity, FM, LCA-F1, Rand, TED).
 
 **Output files** (saved to `results/clustering/synthetic/`)
 
@@ -244,41 +245,35 @@ notebooks/evaluations/metric_tables.ipynb
 
 ## 6. Table: Top 8 Configurations - Benchmark
 
-**Used in:** Final report
+**Used in:** Final report (Table 7).
 
-**Description:** Top 8 best performing embedding model + dimensionality reduction + hierarchical clustering algorithm configurations, ordered by dendrogram purity performance, evaluated on benchmark data
+**Description:** Top 8 best performing embedding model + dimensionality reduction + hierarchical clustering algorithm configurations, ordered by Dendrogram Purity, evaluated on benchmark data.
 
-**Output files** (saved to `results/clustering/synthetic/`)
+**Output files** (saved to `results/clustering/benchmark/`)
 
 * The results are stored in multiple csv files that contain all the clustering scores for each inputted dataset
 
 ---
 
-### Step 1: Generate Synthetic
+### Step 1: Download datasets
 
-Run data generation and embeddings if not already done:
-
-```
-python data/synthetic/generate.py
-```
-
-See [Section 2](#2-figure-synthetic-scatter-grid) for full details on what these produce.
+Follow Step 1 from [Section 3](#3-figure-benchmark-scatter-grid) above, or skip if already done.
 
 ---
 
-### Step 2: Run Clustering Evals
-
-Generate the raw clustering metrics by running:
+### Step 2: Run Pipeline Evals
 
 ```
-python src/run_models/synthetic_data/synthetic_eval_pipeline.py
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset amazon
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset arxiv
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset dbpedia
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset rcv1
+python src/run_models/benchmark_datasets/eval_pipeline.py --dataset wos
 ```
 
 ---
 
 ### Step 3: Run Metric Tables Notebook
-
-Open and run all cells in the aggregation notebook to produce the final summary tables:
 
 ```
 notebooks/evaluations/metric_tables.ipynb
@@ -288,9 +283,9 @@ notebooks/evaluations/metric_tables.ipynb
 
 ## 7. Table: Top 8 Configurations - Synthetic
 
-**Used in:** Final report
+**Used in:** Final report (Table 8).
 
-**Description:** Top 8 best performing embedding model + dimensionality reduction + hierarchical clustering algorithm configurations, ordered by dendrogram purity performance, evaluated on synthetic data
+**Description:** Top 8 best performing embedding model + dimensionality reduction + hierarchical clustering algorithm configurations, ordered by Dendrogram Purity, evaluated on synthetic data.
 
 **Output files** (saved to `results/clustering/synthetic/`)
 
@@ -312,8 +307,6 @@ See [Section 2](#2-figure-synthetic-scatter-grid) for full details on what these
 
 ### Step 2: Run Clustering Evals
 
-Generate the raw clustering metrics by running:
-
 ```
 python src/run_models/synthetic_data/synthetic_eval_pipeline.py
 ```
@@ -322,19 +315,15 @@ python src/run_models/synthetic_data/synthetic_eval_pipeline.py
 
 ### Step 3: Run Metric Tables Notebook
 
-Open and run all cells in the aggregation notebook to produce the final summary tables:
-
 ```
 notebooks/evaluations/metric_tables.ipynb
 ```
 
 ---
 
-
-
 ## 8. Figure: Shepard Diagrams - Synthetic Data
 
-**Used in:** Final report, final presentation.
+**Used in:** Final report (Phase 3.2), final presentation.
 
 **Description:** Shepard diagrams compare pairwise distances in the original high-dimensional embedding space vs. distances in 2D. Points near the diagonal indicate better global distance preservation. One diagram per DR method per synthetic config.
 
@@ -383,7 +372,7 @@ The notebook computes Trustworthiness, Continuity, Spearman Correlation, and DEM
 
 ## 9. Figure: Shepard Diagrams - Benchmark Datasets
 
-**Used in:** Final report, final presentation.
+**Used in:** Final report (Phase 3.2), final presentation.
 
 **Description:** Same as above but for the five real-world benchmark datasets. For large datasets (>10,000 points), metrics are computed over 30 random subsamples of 10,000 points and reported as mean +/- std.
 
@@ -396,7 +385,7 @@ The notebook computes Trustworthiness, Continuity, Spearman Correlation, and DEM
 | Dataset | Points | Subsampling |
 | --- | --- |  --- |
 | RCV1 | 1,566 | No - full dataset used |
-| arXiv | 29,966 | Yes - 30x subsamples of 10,000 |
+| arXiv | ~29,500-30,000 | Yes - 30x subsamples of 10,000 |
 | Amazon | 14,824 | Yes - 30x subsamples of 10,000 |
 | DBpedia | 60,794 | Yes - 30x subsamples of 10,000 |
 | WoS | 46,985 | Yes - 30x subsamples of 10,000 |
@@ -432,3 +421,37 @@ dataset         = "rcv1"  # options: rcv1, arxiv, amazon, dbpedia, wos
 ```
 
 The notebook loads precomputed CSVs from `results/viz_metrics/`, plots the metrics, and generates Shepard diagrams saved to `results/shepard_diagrams/`.
+
+---
+
+## 10. Tables: Aggregated DR and Clustering Performance
+
+**Used in:** Final report (Tables 3, 4, 10, 11, 12, 13, 14).
+
+**Description:** `clustering_results.ipynb` produces all aggregated performance tables:
+- **Table 3**: Mean DR performance (Trust, Cont, Spearman, DEMaP) across all benchmark datasets
+- **Table 4**: Same across all synthetic configs
+- **Tables 10-13**: Per-dataset clustering performance (arXiv, RCV1, WoS, DBpedia)
+- **Table 14**: Benchmark DR evaluation per dataset and embedding model
+
+**Prerequisites:** Viz metrics CSVs in `results/viz_metrics/` (tracked in git) and clustering CSVs in `results/clustering/` (tracked in git). Skip Step 1 to use precomputed results.
+
+---
+
+### Step 1: Generate CSVs (if not already done)
+
+For viz metrics: run Section 8 Step 1 (synthetic) and Section 9 Step 1 (benchmark).
+
+For clustering scores: run Section 4 Step 2 (benchmark) and Section 5 Step 2 (synthetic).
+
+---
+
+### Step 2: Run the Aggregation Notebook
+
+Open and run all cells in:
+
+```
+notebooks/evaluations/clustering_results.ipynb
+```
+
+This notebook loads all viz metrics and clustering CSVs, aggregates across configs/datasets, and produces all summary tables.
