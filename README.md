@@ -30,15 +30,15 @@ Run these at the start of every new terminal session on HPCC:
 
 ```bash
 module purge
-module load Miniforge3
+module load Miniforge3/25.11.0-1
 conda activate phate-env
 ```
 
 Then download data (once) and run the smallest dataset end-to-end:
 
 ```bash
-python data/download_data.py --datasets rcv1
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset rcv1
+PYTHONPATH="" python data/download_data.py --datasets rcv1
+PYTHONPATH="" python src/run_models/benchmark_datasets/eval_pipeline.py --dataset rcv1
 ```
 
 All scripts must be run from the **repo root** - not from inside `src/`. See [INSTALL.md](INSTALL.md) for full setup.
@@ -65,7 +65,7 @@ We compare six reduction methods: PHATE, PCA, UMAP, t-SNE, PaCMAP, and TriMAP. G
 Four clustering methods are applied at multiple hierarchy levels: Agglomerative Clustering, HDBSCAN, Diffusion Condensation, and Hercules.
 
 ### Evaluation
-Clustering quality is measured against ground truth labels using FM index, Adjusted Rand Index (ARI), Adjusted Mutual Information (AMI), and Rand Index.
+Clustering quality is measured against ground truth labels using FM index, Adjusted Rand Index (ARI), Adjusted Mutual Information (AMI), Rand Index, Dendrogram Purity, and LCA-F1.
 
 ---
 
@@ -96,11 +96,11 @@ A Shepard Diagram reproducibility notebook is also available at `notebooks/miles
 Once datasets are in place (see INSTALL.md), run:
 
 ```bash
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset arxiv
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset amazon
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset dbpedia
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset rcv1
-python src/run_models/benchmark_datasets/eval_pipeline.py --dataset wos
+PYTHONPATH="" python src/run_models/benchmark_datasets/eval_pipeline.py --dataset arxiv
+PYTHONPATH="" python src/run_models/benchmark_datasets/eval_pipeline.py --dataset amazon
+PYTHONPATH="" python src/run_models/benchmark_datasets/eval_pipeline.py --dataset dbpedia
+PYTHONPATH="" python src/run_models/benchmark_datasets/eval_pipeline.py --dataset rcv1
+PYTHONPATH="" python src/run_models/benchmark_datasets/eval_pipeline.py --dataset wos
 ```
 
 ---
@@ -166,7 +166,8 @@ NCEAS_Unsupervised_NLP/
 │       ├── benchmark_datasets/             # Benchmark evaluation pipeline
 │       │   ├── eval_pipeline.py
 │       │   ├── herc_pipeline.py
-│       │   └── viz_metrics_script.py
+│       │   ├── viz_metrics_script.py
+│       │   └── scatter_grid_benchmark.py
 │       └── synthetic_data/                 # Synthetic data evaluation pipeline
 │           ├── scatter_grid_synthetic.py
 │           ├── synth_herc_pipeline.py

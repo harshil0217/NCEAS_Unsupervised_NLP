@@ -122,6 +122,8 @@ def make_scatter_grid(model_label, cache_dir, out_suffix):
                              facecolor="white")
     fig.patch.set_facecolor("white")
 
+    all_categories = {}  # dataset -> categories list, for legend figure
+
     for row_idx, (dataset, loader, n_full, row_label) in enumerate(DATASETS):
         print(f"  Loading {dataset}...")
         df = loader()
@@ -130,15 +132,17 @@ def make_scatter_grid(model_label, cache_dir, out_suffix):
 
         labels_raw = df['category_0'].values
         categories = sorted(df['category_0'].unique())
+        all_categories[row_label] = categories
         cat2idx = {c: i for i, c in enumerate(categories)}
         color_idx = np.array([cat2idx[l] for l in labels_raw])
 
+        n_actual = len(df)
         # subsample same indices across all methods for comparability
         np.random.seed(42)
-        if VIS_SUBSAMPLE is not None and n_full > VIS_SUBSAMPLE:
-            vis_idx = np.random.choice(n_full, VIS_SUBSAMPLE, replace=False)
+        if VIS_SUBSAMPLE is not None and n_actual > VIS_SUBSAMPLE:
+            vis_idx = np.random.choice(n_actual, VIS_SUBSAMPLE, replace=False)
         else:
-            vis_idx = np.arange(n_full)
+            vis_idx = np.arange(n_actual)
 
         colors_vis = [PALETTE[color_idx[i] % len(PALETTE)] for i in vis_idx]
 
@@ -161,25 +165,15 @@ def make_scatter_grid(model_label, cache_dir, out_suffix):
             ax.set_xticks([])
             ax.set_yticks([])
             for spine in ax.spines.values():
-                spine.set_visible(False)
-            ax.set_facecolor("#f8f8f8")
+                spine.set_visible(True)
+                spine.set_linewidth(0.5)
+                spine.set_color("#cccccc")
+            ax.set_facecolor("#f0f0f0")
 
             if row_idx == 0:
                 ax.set_title(METHOD_LABELS.get(method, method), fontsize=13, fontweight='bold', pad=6)
             if col_idx == 0:
                 ax.set_ylabel(row_label, fontsize=12, fontweight='bold', labelpad=6)
-
-        # legend on rightmost column (cap at 15 entries)
-        ax_leg = axes[row_idx, -1]
-        legend_cats = categories[:15]
-        patches = [
-            mpatches.Patch(color=PALETTE[i % len(PALETTE)], label=str(c))
-            for i, c in enumerate(legend_cats)
-        ]
-        leg_title = row_label if len(categories) <= 15 else f"{row_label} (top 15/{len(categories)})"
-        ax_leg.legend(handles=patches, fontsize=7, loc='center left',
-                      bbox_to_anchor=(1.01, 0.5), frameon=False,
-                      title=leg_title, title_fontsize=8)
 
     plt.suptitle(f"Benchmark Scatter Grid ({model_label})", fontsize=14, fontweight='bold', y=1.01)
     plt.tight_layout()
@@ -188,6 +182,25 @@ def make_scatter_grid(model_label, cache_dir, out_suffix):
     plt.savefig(out_path, dpi=150, bbox_inches='tight')
     plt.close()
     print(f"Saved: {out_path}")
+
+    # save legend as a separate figure
+    max_cats = max(len(c[:15]) for c in all_categories.values())
+    legend_fig, axes_leg = plt.subplots(1, len(all_categories),
+                                        figsize=(len(all_categories) * 3.5, max_cats * 0.4 + 1))
+    legend_fig.patch.set_facecolor("white")
+    for ax_leg, (row_label, categories) in zip(axes_leg, all_categories.items()):
+        legend_cats = categories[:15]
+        title = row_label if len(categories) <= 15 else f"{row_label} (top 15/{len(categories)})"
+        patches = [mpatches.Patch(color=PALETTE[i % len(PALETTE)], label=str(c))
+                   for i, c in enumerate(legend_cats)]
+        ax_leg.legend(handles=patches, fontsize=11, frameon=True, framealpha=0.95,
+                      edgecolor="#CCCCCC", title=title, title_fontsize=12,
+                      loc="upper left", ncol=1)
+        ax_leg.axis("off")
+    legend_path = os.path.join(OUT_DIR, f"fig_scatter_grid_benchmark_{out_suffix}_legend.png")
+    legend_fig.savefig(legend_path, dpi=200, bbox_inches='tight', facecolor="white")
+    plt.close(legend_fig)
+    print(f"Saved legend: {legend_path}")
 
 
 # ========================

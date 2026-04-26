@@ -19,8 +19,8 @@ Requires Kaggle credentials for arXiv, Amazon, and DBpedia. See [INSTALL.md](../
 | arXiv | `arxiv/` | ~30k abstracts | Kaggle / Cornell |
 | Amazon | `amazon/` | 50k reviews | Kaggle |
 | DBpedia | `dbpedia/` | ~342k articles | Kaggle |
-| RCV1 | `rcv1/` | ~10k news articles | scikit-learn |
+| RCV1 | `rcv1/` | 1,566 news articles | scikit-learn |
 | Web of Science | `WebOfScience/` | ~46k papers | Mendeley |
-| Synthetic | `synthetic/` | 24 configs | LLM-generated (Groq API) |
+| Synthetic | `synthetic/` | 12 configs | LLM-generated (Groq API) |
 
-Synthetic data is generated separately — see [INSTALL.md](../INSTALL.md) Section 5.
+Synthetic data is generated separately, see [INSTALL.md](../INSTALL.md) Section 5.

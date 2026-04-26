@@ -36,5 +36,6 @@ dependencies:
   - pip:
     - trimap
     - apted
+    - accelerate
     - pyhercules
   
