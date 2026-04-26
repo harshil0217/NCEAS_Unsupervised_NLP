@@ -242,7 +242,7 @@ notebooks/evaluations/metric_tables.ipynb
 
 ## 6. Figure: Shepard Diagrams - Synthetic Data
 
-**Used in:** Final report (Phase 3.2), final presentation.
+**Used in:** Final report, final presentation.
 
 **Description:** Shepard diagrams compare pairwise distances in the original high-dimensional embedding space vs. distances in 2D. Points near the diagonal indicate better global distance preservation. One diagram per DR method per synthetic config.
 
@@ -291,7 +291,7 @@ The notebook computes Trustworthiness, Continuity, Spearman Correlation, and DEM
 
 ## 7. Figure: Shepard Diagrams - Benchmark Datasets
 
-**Used in:** Final report (Phase 3.2), final presentation.
+**Used in:** Final report, final presentation.
 
 **Description:** Same as above but for the five real-world benchmark datasets. For large datasets (>10,000 points), metrics are computed over 30 random subsamples of 10,000 points and reported as mean +/- std.
 
