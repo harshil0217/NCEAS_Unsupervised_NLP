@@ -10,10 +10,12 @@ For installation and environment setup, see [INSTALL.md](https://github.com/hars
 1. [Setup](#1-setup)
 2. [Figure: Synthetic Scatter Grid](#2-figure-synthetic-scatter-grid)
 3. [Figure: Benchmark Scatter Grid](#3-figure-benchmark-scatter-grid)
-4. [Figure: Clustering Evaluation Figures - Benchmark Datasets](#4-figure-clustering-evaluation-figures---benchmark)
-5. [Figure: Clustering Evaluation Figures - Synthetic Datasets](#5-figure-clustering-evaluation-figures---synthetic)
-6. [Figure: Shepard Diagrams - Synthetic Data](#6-figure-shepard-diagrams---synthetic-data)
-7. [Figure: Shepard Diagrams - Benchmark Datasets](#7-figure-shepard-diagrams---benchmark-datasets)
+4. [Table: Average Clustering Performance by Dimensionality Reduction Method - Benchmark](#4-table-average-clustering-performance-by-dimensionality-reduction-method---benchmark)
+5. [Table: Average Clustering Performance by Dimensionality Reduction Method - Synthetic](#5-table-average-clustering-performance-by-dimensionality-reduction-method---synthetic)
+6. [Table: Top 8 Configurations - Benchmark](#6-table-top-8-configurations---benchmark)
+7. [Table: Top 8 Configurations - Synthetic](#7-table-top-8-configurations---synthetic)
+8. [Figure: Shepard Diagrams - Synthetic Data](#8-figure-shepard-diagrams---synthetic-data)
+9. [Figure: Shepard Diagrams - Benchmark Datasets](#9-figure-shepard-diagrams---benchmark-datasets)
 
 ---
 
@@ -152,11 +154,11 @@ This reads 2D reductions from `src/cache/` and saves the scatter grid PNGs and s
 
 ---
 
-## 4. Figure: Clustering Evaluation Figures - Benchmark
+## 4. Table: Average Clustering Performance by Dimensionality Reduction Method - Benchmark
 
-**Used in:** Final report (Phase 3.1)
+**Used in:** Final report 
 
-**Description:** Summary tables showing the top 8 benchmark dataset combinations averaged across all benchmark datasets ordered by Dendrogram Purity. Performance is measured using AMI, ARI, Dendrogram Purity (DP), Fowlkes-Mallows (FM), and Least Common Ancestor F1 (LCA-F1).
+**Description:** Summary table showing average performance of all dimensionality reduction methods across all benchmark datasets and metrics
 
 **Output files** (saved to `results/clustering/benchmark/`)
 
@@ -196,11 +198,11 @@ This notebook will import the precomputed CSVs from `results/clustering/benchmar
 
 ---
 
-## 5. Figure: Clustering Evaluation Figures - Synthetic
+## 5. Table: Average Clustering Performance by Dimensionality Reduction Method - Synthetic
 
-**Used in:** Final report (Phase 3.1)
+**Used in:** Final report
 
-**Description:** Summary tables showing the top 8 synthetic dataset combinations averaged across all synthetic datasets ordered by Dendrogram Purity. Performance is measured using AMI, ARI, Dendrogram Purity (DP), Fowlkes-Mallows (FM), and Least Common Ancestor F1 (LCA-F1).
+**Description:** Summary table showing average performance of all dimensionality reduction methods across all synthetic datasets and metrics
 
 **Output files** (saved to `results/clustering/synthetic/`)
 
@@ -240,9 +242,99 @@ notebooks/evaluations/metric_tables.ipynb
 
 ---
 
-## 6. Figure: Shepard Diagrams - Synthetic Data
+## 6. Table: Top 8 Configurations - Benchmark
 
-**Used in:** Final report (Phase 3.2), final presentation.
+**Used in:** Final report
+
+**Description:** Top 8 best performing embedding model + dimensionality reduction + hierarchical clustering algorithm configurations, ordered by dendrogram purity performance, evaluated on benchmark data
+
+**Output files** (saved to `results/clustering/synthetic/`)
+
+* The results are stored in multiple csv files that contain all the clustering scores for each inputted dataset
+
+---
+
+### Step 1: Generate Synthetic
+
+Run data generation and embeddings if not already done:
+
+```
+python data/synthetic/generate.py
+```
+
+See [Section 2](#2-figure-synthetic-scatter-grid) for full details on what these produce.
+
+---
+
+### Step 2: Run Clustering Evals
+
+Generate the raw clustering metrics by running:
+
+```
+python src/run_models/synthetic_data/synthetic_eval_pipeline.py
+```
+
+---
+
+### Step 3: Run Metric Tables Notebook
+
+Open and run all cells in the aggregation notebook to produce the final summary tables:
+
+```
+notebooks/evaluations/metric_tables.ipynb
+```
+
+---
+
+## 7. Table: Top 8 Configurations - Synthetic
+
+**Used in:** Final report
+
+**Description:** Top 8 best performing embedding model + dimensionality reduction + hierarchical clustering algorithm configurations, ordered by dendrogram purity performance, evaluated on synthetic data
+
+**Output files** (saved to `results/clustering/synthetic/`)
+
+* The results are stored in multiple csv files that contain all the clustering scores for each inputted dataset
+
+---
+
+### Step 1: Generate Synthetic
+
+Run data generation and embeddings if not already done:
+
+```
+python data/synthetic/generate.py
+```
+
+See [Section 2](#2-figure-synthetic-scatter-grid) for full details on what these produce.
+
+---
+
+### Step 2: Run Clustering Evals
+
+Generate the raw clustering metrics by running:
+
+```
+python src/run_models/synthetic_data/synthetic_eval_pipeline.py
+```
+
+---
+
+### Step 3: Run Metric Tables Notebook
+
+Open and run all cells in the aggregation notebook to produce the final summary tables:
+
+```
+notebooks/evaluations/metric_tables.ipynb
+```
+
+---
+
+
+
+## 8. Figure: Shepard Diagrams - Synthetic Data
+
+**Used in:** Final report, final presentation.
 
 **Description:** Shepard diagrams compare pairwise distances in the original high-dimensional embedding space vs. distances in 2D. Points near the diagonal indicate better global distance preservation. One diagram per DR method per synthetic config.
 
@@ -289,9 +381,9 @@ The notebook computes Trustworthiness, Continuity, Spearman Correlation, and DEM
 
 ---
 
-## 7. Figure: Shepard Diagrams - Benchmark Datasets
+## 9. Figure: Shepard Diagrams - Benchmark Datasets
 
-**Used in:** Final report (Phase 3.2), final presentation.
+**Used in:** Final report, final presentation.
 
 **Description:** Same as above but for the five real-world benchmark datasets. For large datasets (>10,000 points), metrics are computed over 30 random subsamples of 10,000 points and reported as mean +/- std.
 
