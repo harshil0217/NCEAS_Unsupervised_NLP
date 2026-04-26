@@ -4,7 +4,13 @@ Reuters Corpus Volume 1: a benchmark news categorization dataset with hierarchic
 
 ## Download
 
-RCV1 is fetched automatically via scikit-learn. Run the import script:
+Run from the repo root to download automatically (recommended):
+
+```bash
+python data/download_data.py --datasets rcv1
+```
+
+Or run the import script directly:
 
 ```bash
 python data/rcv1/import_rcv1.py
