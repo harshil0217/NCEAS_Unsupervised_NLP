@@ -519,5 +519,31 @@ def run_eval_pipeline(theme, max_sub, depth, add_noise, t=T, synonyms=SYNONYMS, 
     print(f"\nResults saved to: {output_file}")
 
 
-for theme, max_sub, depth, add_noise in CONFIGS:
-    run_eval_pipeline(theme, max_sub, depth, add_noise)
+TOPIC_MAP = {
+    "energy":    "Energy_Ecosystems_and_Humans",
+    "fisheries": "Offshore_energy_impacts_on_fisheries",
+}
+
+MAX_SUB_MAP = {3: 5, 5: 3}
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run synthetic data evaluation pipeline.")
+    parser.add_argument("--topic",  choices=["energy", "fisheries"], default=None,
+                        help="Topic theme: 'energy' or 'fisheries'. Omit to run all configs.")
+    parser.add_argument("--depth",  type=int, choices=[3, 5], default=None,
+                        help="Hierarchy depth: 3 or 5. Omit to run all configs.")
+    parser.add_argument("--noise",  type=float, choices=[0.0, 0.25, 0.5], default=None,
+                        help="Noise level: 0, 0.25, or 0.5. Omit to run all configs.")
+    args = parser.parse_args()
+
+    if args.topic is not None or args.depth is not None or args.noise is not None:
+        if not (args.topic and args.depth and args.noise is not None):
+            parser.error("--topic, --depth, and --noise must all be specified together.")
+        theme   = TOPIC_MAP[args.topic]
+        max_sub = MAX_SUB_MAP[args.depth]
+        run_eval_pipeline(theme, max_sub, args.depth, args.noise)
+    else:
+        for theme, max_sub, depth, add_noise in CONFIGS:
+            run_eval_pipeline(theme, max_sub, depth, add_noise)
