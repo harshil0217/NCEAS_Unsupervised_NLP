@@ -154,7 +154,7 @@ This reads 2D reductions from `src/cache/` and saves the scatter grid PNGs and s
 
 ## 4. Figure: Clustering Evaluation Figures - Benchmark
 
-**Used in:** Final report (Phase 3.1)
+**Used in:** Final report 
 
 **Description:** Summary tables showing the top 8 benchmark dataset combinations averaged across all benchmark datasets ordered by Dendrogram Purity. Performance is measured using AMI, ARI, Dendrogram Purity (DP), Fowlkes-Mallows (FM), and Least Common Ancestor F1 (LCA-F1).
 
@@ -198,7 +198,7 @@ This notebook will import the precomputed CSVs from `results/clustering/benchmar
 
 ## 5. Figure: Clustering Evaluation Figures - Synthetic
 
-**Used in:** Final report (Phase 3.1)
+**Used in:** Final report
 
 **Description:** Summary tables showing the top 8 synthetic dataset combinations averaged across all synthetic datasets ordered by Dendrogram Purity. Performance is measured using AMI, ARI, Dendrogram Purity (DP), Fowlkes-Mallows (FM), and Least Common Ancestor F1 (LCA-F1).
 
