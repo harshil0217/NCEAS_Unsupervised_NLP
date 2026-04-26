@@ -152,7 +152,7 @@ This reads 2D reductions from `src/cache/` and saves the scatter grid PNGs and s
 
 ---
 
-## 4. Figure: Clustering Evaluation Figures - Benchmark
+## 4. Table: Clustering Evaluation - Benchmark
 
 **Used in:** Final report 
 
@@ -196,7 +196,7 @@ This notebook will import the precomputed CSVs from `results/clustering/benchmar
 
 ---
 
-## 5. Figure: Clustering Evaluation Figures - Synthetic
+## 5. Table: Clustering Evaluation - Synthetic
 
 **Used in:** Final report
 
