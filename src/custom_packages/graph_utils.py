@@ -33,40 +33,6 @@ def apted_distance(tree1, tree2):
     return APTED(tree1, tree2, AnyTreeAPTEDConfig()).compute_edit_distance()
 
 
-def anytree_to_networkx(root):
-    """Convert an anytree Node hierarchy to a networkx DiGraph.
-
-    Each node's ``name`` attribute becomes the node ID. Edges run
-    child → parent.
-    """
-    G = nx.DiGraph()
-    stack = [root]
-    while stack:
-        node = stack.pop()
-        G.add_node(node.name)
-        for child in node.children:
-            G.add_edge(child.name, node.name)
-            stack.append(child)
-    return G
-
-
-def anytree_to_zss(root):
-    """Convert an anytree Node hierarchy to a zss.Node tree for ZSS tree edit distance.
-
-    Node labels are the string representation of each node's ``name`` attribute.
-    """
-    import zss
-    zss_root = zss.Node(str(root.name))
-    stack = [(root, zss_root)]
-    while stack:
-        an_node, zss_node = stack.pop()
-        for child in an_node.children:
-            zss_child = zss.Node(str(child.name))
-            zss_node.addkid(zss_child)
-            stack.append((child, zss_child))
-    return zss_root
-
-
 def clusternode_to_anytree(cluster_node):
     """Convert scipy ClusterNode (binary tree) to anytree Node (multi-way tree).
 
