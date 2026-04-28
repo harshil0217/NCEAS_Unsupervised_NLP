@@ -94,15 +94,10 @@ from cuml.cluster import HDBSCAN as cuHDBSCAN
 from custom_packages.fowlkes_mallows import FowlkesMallows
 from custom_packages.dendrogram_purity import dendrogram_purity
 from custom_packages.lca_f1 import lca_f1
-from custom_packages.graph_utils import clusternode_to_anytree
+from custom_packages.graph_utils import clusternode_to_anytree, build_ground_truth_tree
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
-import pickle
 
 from tqdm import tqdm
-from run_models.benchmark_datasets.build_ground_truth_trees import (
-    build_ground_truth_tree,
-    save_ground_truth_tree,
-)
 
 # ==============
 # Global Config
@@ -115,23 +110,6 @@ warnings.filterwarnings("ignore")
 # =====================================
 # Reload modules if needed
 importlib.reload(phate)
-
-
-def load_gt_tree(dataset_name):
-    """
-    Load a pre-built ground truth tree from pkl.
-
-    Args:
-        dataset_name: Dataset name matching the saved pkl filename
-
-    Returns:
-        root: anytree.Node root of the ground truth tree
-        node_map: dict mapping node ID → anytree.Node (leaf IDs are row indices)
-    """
-    path = f"cache/ground_truth_trees/{dataset_name}_tree.pkl"
-    with open(path, "rb") as f:
-        saved = pickle.load(f)
-    return saved["root"], saved["node_map"]
 
 
 # =====================================
@@ -605,15 +583,9 @@ def run_pipeline(dataset_name):
     # Prepare data once (same for all embedding models)
     topic_data = data.reset_index(drop=True)
 
-    # Build ground truth tree if not cached, then load it
-    gt_tree_cache_path = f"cache/ground_truth_trees/{dataset_name}_tree.pkl"
-    if not os.path.exists(gt_tree_cache_path):
-        print("Ground truth tree not found — building from dataset...")
-        gt_tree_root, gt_node_map = build_ground_truth_tree(data, config["depth"])
-        save_ground_truth_tree(gt_tree_root, gt_node_map, dataset_name)
-    else:
-        print("Loading pre-built ground truth tree...")
-        gt_tree_root, gt_node_map = load_gt_tree(dataset_name)
+    # Build ground truth tree
+    print("Building ground truth tree...")
+    gt_tree_root, gt_node_map = build_ground_truth_tree(data, config["depth"])
 
     # Build topic_dict from ground truth categories
     topic_dict = {}

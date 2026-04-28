@@ -62,9 +62,8 @@ from pyhercules import Hercules
 from custom_packages.fowlkes_mallows import FowlkesMallows
 from custom_packages.dendrogram_purity import dendrogram_purity
 from custom_packages.lca_f1 import lca_f1
-from custom_packages.graph_utils import apted_distance
+from custom_packages.graph_utils import apted_distance, build_ground_truth_tree
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
-from run_models.benchmark_datasets.build_ground_truth_trees import build_ground_truth_tree
 
 # ========================
 # Utilities

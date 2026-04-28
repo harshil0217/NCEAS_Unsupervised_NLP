@@ -2,7 +2,6 @@ import os
 import sys
 from dotenv import load_dotenv
 import json
-import pickle
 load_dotenv()
 
 target_folder = "src"
@@ -55,6 +54,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from custom_packages.fowlkes_mallows import FowlkesMallows
 from custom_packages.dendrogram_purity import dendrogram_purity
 from custom_packages.lca_f1 import lca_f1
+from custom_packages.graph_utils import build_ground_truth_tree
 from sklearn.metrics import adjusted_rand_score, rand_score, adjusted_mutual_info_score
 
 from tqdm import tqdm
@@ -322,17 +322,9 @@ def run_pipeline(dataset_name, rep_mode):
 
     print(f"\nFinal cluster_levels (from deepest to shallowest): {cluster_levels}\n")
 
-    # Load pre-built ground truth tree (leaf IDs = row indices 0..n-1)
-    gt_tree_path = f"cache/ground_truth_trees/{dataset_name}_tree.pkl"
-    gt_tree_root = None
-    if os.path.exists(gt_tree_path):
-        with open(gt_tree_path, 'rb') as f:
-            gt_data = pickle.load(f)
-        gt_tree_root = gt_data['root']
-        print(f"Loaded ground truth tree from {gt_tree_path}")
-    else:
-        print(f"WARNING: Ground truth tree not found at {gt_tree_path}. "
-              f"Run build_ground_truth_trees.py first. TED/LCA-F1/DP will be NaN.")
+    # Build ground truth tree (leaf IDs = row indices 0..n-1)
+    print("Building ground truth tree...")
+    gt_tree_root, _ = build_ground_truth_tree(topic_data, config["depth"])
 
     rows = []
 
