@@ -7,7 +7,6 @@ Custom implementations of clustering algorithms and hierarchical evaluation metr
 | Module | Description |
 |--------|-------------|
 | `diffusion_condensation.py` | GPU-accelerated Diffusion Condensation: iteratively applies a diffusion operator until clusters condense into stable regions |
-| `hercules.py` | LLM-based hierarchical k-means clustering using the Groq API for cluster label assignment |
 
 ## Evaluation Metrics
 
